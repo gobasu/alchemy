@@ -1,7 +1,7 @@
 <?php
 namespace alchemy\storage\db;
 
-use alchemy\storage\db\EntityException;
+use alchemy\storage\db\ModelException;
 use alchemy\util\AnnotationReflection;
 use alchemy\app\Loader;
 
@@ -53,44 +53,55 @@ class SchemaBuilder
 
         $classAnnotations = $annotationReflection->getFromClass();
         $propertyList = $annotationReflection->getDeclaredProperties();
+        $connectionName = \alchemy\storage\DB::DEFAULT_NAME;
 
         //get PK for Entity
         if (!isset($classAnnotations[self::ANNOTATION_PK])) {
-            throw new EntityException('Missing @' . self::ANNOTATION_PK . ' annotation in ' . $this->className . ' definition');
+            throw new ModelException('Missing @' . self::ANNOTATION_PK . ' annotation in ' . $this->className . ' definition');
         }
 
-        if (!isset($classAnnotations[self::ANNOTATION_COLLECTION])) {
-            throw new EntityException('Missing @' . self::ANNOTATION_COLLECTION . ' annotation in ' . $this->className . ' definition');
+        if (isset($classAnnotations[self::ANNOTATION_CONNECTION])) {
+            $connectionName = $classAnnotations[self::ANNOTATION_CONNECTION];
         }
+
+        $className = explode('\\', $this->className);
+        $namespace = implode('\\', array_slice($className,0, -1));
+        $className = array_slice($className, -1);
+
+        if (isset($classAnnotations[self::ANNOTATION_COLLECTION])) {
+            $collectionName = $classAnnotations[self::ANNOTATION_COLLECTION];
+        } else {
+            $collectionName = $className;
+        }
+
+        $className = $className[0] . self::SCHEMA_CLASS_POSTFIX;
 
         $pk = $classAnnotations[self::ANNOTATION_PK];
-        $collection = $classAnnotations[self::ANNOTATION_COLLECTION];
         $constructBody = '';
-        $externalProperties = array();
-        $internalProperties = array();
-
+        $propertyAliases = array();
 
         foreach ($propertyList as $propertyName) {
+
             $propertyAnnotation = $annotationReflection->getFromProperty($propertyName);
-            //ommit properties without @Property annotation
+
+            //ommit properties without @Param annotation
             if (!isset($propertyAnnotation[self::ANNOTATION_PROPERTY])) {
                 continue;
             }
             $annotation = $propertyAnnotation[self::ANNOTATION_PROPERTY];
 
-            $internalProperties[] = $propertyName;
             //add property to schema
             $property = '        $this->propertyList[\'' . $propertyName . '\']';
             if (isset($annotation[self::PROPERTY_ATTRIBUTE_NAME])) {
-                $externalProperties[] = $annotation[self::PROPERTY_ATTRIBUTE_NAME];
-                $constructBody .= PHP_EOL . $property . ' = new \alchemy\storage\db\Property(\'' . $annotation[self::PROPERTY_ATTRIBUTE_NAME] . '\');';
+                $propertyAliases[] = "\n\t" . '\'' . $propertyName . '\' => \'' . $annotation[self::PROPERTY_ATTRIBUTE_NAME] . '\'';
+                $constructBody .= PHP_EOL . $property . ' = new \alchemy\storage\db\Property(\'' . $propertyName . '\', \'' . $annotation[self::PROPERTY_ATTRIBUTE_NAME] . '\');';
             } else {
-                $externalProperties[] = $propertyName;
+                $propertyAliases[] = "\n\t" . '\'' . $propertyName . '\' => \'' . $propertyName . '\'';
                 $constructBody .= PHP_EOL . $property . ' = new \alchemy\storage\db\Property(\'' . $propertyName . '\');';
             }
 
             if (!isset($annotation[self::PROPERTY_ATTRIBUTE_TYPE])) {
-                throw new EntityException('Missing attribute `' . self::PROPERTY_ATTRIBUTE_TYPE . '` in @' . self::ANNOTATION_PROPERTY . ' annotation used at ' . $this->className . '::$' . $propertyName);
+                throw new ModelException('Missing attribute `' . self::PROPERTY_ATTRIBUTE_TYPE . '` in @' . self::ANNOTATION_PROPERTY . ' annotation used at ' . $this->className . '::$' . $propertyName);
             }
 
             //set property type
@@ -104,17 +115,10 @@ class SchemaBuilder
             if (isset($annotation[self::PROPERTY_ATTRIBUTE_REQUIRED])) {
                 $constructBody .= PHP_EOL . $property . '->setRequired();';
             }
-
-
         }
-        $externalProperties = 'array(\'' . implode('\',\'', $externalProperties) .  '\')';
-        $internalProperties = 'array(\'' . implode('\',\'', $internalProperties) .  '\')';
 
-        $className = explode('\\', $this->className);
-        $namespace = implode('\\', array_slice($className,0, -1));
-        $className = array_slice($className, -1);
-        $className = $className[0] . self::SCHEMA_CLASS_POSTFIX;
-        $this->schemaData = sprintf(self::CLASS_TEMPLATE, $namespace, $className, $constructBody, '\'' . $pk . '\'', '\'' . $collection . '\'', $externalProperties, $internalProperties);
+
+        $this->schemaData = sprintf(self::CLASS_TEMPLATE, $namespace, $className, $constructBody, $pk, $connectionName, implode(',', $propertyAliases), $collectionName);
 
         eval($this->schemaData);
     }
@@ -176,18 +180,10 @@ final class %s implements \alchemy\storage\db\ISchema, \Iterator
     {
         %s
     }
-    public function getPK()
-    {
-        return \$this->pk;
-    }
 
-    public function getPropertyNameList(\$external = false)
+    public function getPropertyList()
     {
-        if (\$external) {
-            return \$this->externalPropertyNameList;
-        } else {
-            return \$this->internalPropertyNameList;
-        }
+        return \$this->propertyNameList;
     }
 
     public function __get(\$name)
@@ -195,18 +191,24 @@ final class %s implements \alchemy\storage\db\ISchema, \Iterator
         return \$this->propertyList[\$name];
     }
 
-    public function getPKProperty()
+    public function getProperty(\$name)
     {
-        return \$this->propertyList[\$this->getPK()];
+        return \$this->propertyList[\$name];
     }
 
-    public function getPropertyType(\$name)
+    public function getPKProperty()
     {
-        return \$this->propertyList[\$name]->getType();
+        return \$this->propertyList[\$this->pk];
     }
-    public function getCollection()
+
+    public function getCollectionName()
     {
         return \$this->collectionName;
+    }
+
+    public function getConnectionName()
+    {
+        return \$this->connectionName;
     }
     public function rewind()
     {
@@ -230,12 +232,11 @@ final class %s implements \alchemy\storage\db\ISchema, \Iterator
         return \$key !== NULL && \$key !== FALSE;
     }
 
-    protected \$pk = %s;
+    protected \$pk = '%s';
     protected \$propertyList = array();
-    protected \$collectionName = %s;
-    protected \$instance;
-    protected \$externalPropertyNameList = %s;
-    protected \$internalPropertyNameList = %s;
+    protected \$connectionName = '%s';
+    protected \$propertyNameList = array(%s);
+    protected \$collectionName = '%s';
 }
 CLASS;
 

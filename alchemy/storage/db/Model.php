@@ -1,9 +1,9 @@
 <?php
 namespace alchemy\storage\db;
-
+use alchemy\storage\DB;
 use alchemy\app\Loader;
 
-class EntityException extends \Exception {}
+class ModelException extends \Exception {}
 /**
  * Entity
  *
@@ -26,15 +26,21 @@ class EntityException extends \Exception {}
  *
  * @author: lunereaper
  */
-abstract class Entity
+abstract class Model
 {
-    public function __construct(array $data = null)
-    {
-        if ($data !== null) {
-            $this->fetch($data);
-        }
-    }
     /**
+     * @return IConnection|\PDO
+     */
+    protected static function getConnection()
+    {
+        $schema = self::getSchema();
+        return DB::get($schema->getConnection());
+    }
+
+    /**
+     * Gets schema object corresponding to given model class
+     * If schema was not loaded than generates a new one
+     *
      * @return ISchema
      */
     public static function getSchema()
@@ -49,21 +55,29 @@ abstract class Entity
     public function onSave()  {}
     public function onPersist() {}
     public function onDelete() {}
-    public function onGet() {}
 
     /**
      * @param $pk
-     * @return Entity
+     * @return Model
      */
     public static function get($pk)
     {
-        $class = get_called_class();
-        $entity = new $class();
-        $schema = $entity->getSchema();
-        $collection = $schema->getCollection();
-        $db = $collection::load()->getConnection();
-        $db->get($entity, $pk);
-        return $entity;
+        $modelName = get_called_class();
+
+        $schema = self::getSchema();
+
+        $connection = DB::get($schema->getConnectionName());
+        return $connection->get($modelName, $pk);
+    }
+
+    public function getPK()
+    {
+        return $this->{self::getSchema()->getPKProperty()->getLocalName()};
+    }
+
+    private function setPK($value)
+    {
+        $this->{self::getSchema()->getPKProperty()->getLocalName()} = $value;
     }
 
     public static function findOne()
@@ -113,25 +127,14 @@ abstract class Entity
 
     }
 
-    protected function fetch(array $data)
-    {
-        $this->onGet();
-
-    }
-
 
     private $forceSave = false;
 
     /**
-     * Entity's schema
-     * array(
-     *  '{fieldName}' => Entity::TYPE_*
-     * )
+     * Model's schema
+     *
      * @var array of \alchemy\db\ISchema
      */
     protected static $schemaList = array();
-    /**
-     * @var ISchema
-     */
-    protected $schema;
+
 }

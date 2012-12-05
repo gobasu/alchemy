@@ -3,9 +3,29 @@ namespace alchemy\storage\db;
 
 interface ISchema
 {
+    /**
+     * @return Property
+     */
     public function getPKProperty();
-    public function getPropertyNameList();
-    public function getProperty($name);
-    public function getCollection();
 
+    /**
+     * @return array
+     */
+    public function getPropertyList();
+
+    /**
+     * @return string
+     */
+    public function getConnectionName();
+
+    /**
+     * @param string $name
+     * @return Property
+     */
+    public function getProperty($name);
+
+    /**
+     * @return string
+     */
+    public function getCollectionName();
 }

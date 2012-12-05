@@ -22,7 +22,7 @@ class DB
 
     /**
      * @param string $name connection name
-     * @return IDriver
+     * @return IConnection|\PDO
      * @throws DBException
      */
     public static function get($name = self::DEFAULT_NAME)

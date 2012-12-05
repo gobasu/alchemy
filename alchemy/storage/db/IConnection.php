@@ -8,7 +8,7 @@ namespace alchemy\storage\db;
 
 interface IConnection
 {
-    public function save(Entity $entity);
-    public function delete(Entity $entity);
-    public function get(Entity $entity);
+    public function save(Model $model);
+    public function delete(Model $model);
+    public function get($modelName, $parameters);
 }

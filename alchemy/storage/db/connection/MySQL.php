@@ -1,10 +1,9 @@
 <?php
 namespace alchemy\storage\db\connection;
-use alchemy\storage\db\Entity;
+use alchemy\storage\db\Model;
 /**
  * MySQL
  *
- * @author: lunereaper
  */
 
 class MySQL extends \PDO implements \alchemy\storage\db\IConnection
@@ -18,19 +17,27 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         ));
     }
 
-    public function save(Entity $entity)
+    public function save(Model $model)
     {
 
     }
 
-    public function delete(Entity $entity)
+    public function delete(Model $model)
     {
 
     }
 
-    public function get(Entity $entity)
+    public function get($model, $pkValue)
     {
-
+        $schema = $model::getSchema();
+        $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
+        $pkField = $schema->getPKProperty();
+        $where = '`' . $pkField->getExternalName() . '` = :pk';
+        $sql = sprintf(self::GET_SQL, $fieldList, $schema->getCollectionName(), $where);
+        $query = $this->prepare($sql);
+        $query->bindValue(':pk', $pkValue);
+        $query->execute();
+        return $query->fetchObject($model);
     }
 
     const INSERT_SQL    = 'INSERT INTO `%s`(%s) VALUES(%s)';
