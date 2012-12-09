@@ -29,6 +29,20 @@ class ModelException extends \Exception {}
 abstract class Model
 {
     /**
+     * Construct new Model with given PK
+     *
+     * @param mixed $pkValue id or pk value
+     */
+    public function __construct($pkValue = null)
+    {
+        if ($pkValue === null) {
+            return;
+        }
+
+        $this->{self::getSchema()->getPKProperty()->getName()} = $pkValue;
+    }
+
+    /**
      * @return IConnection|\PDO
      */
     protected static function getConnection()
@@ -121,6 +135,7 @@ abstract class Model
             $this->changes[$name] = $value;
             $this->isChanged = true;
         }
+
     }
 
     public function __get($name)
@@ -137,19 +152,21 @@ abstract class Model
         $this->onSave();
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
-        try {
-            $connection->save($this);
-            $this->onPersist();
-            $this->applyChanges();
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
+
+        $connection->save($this);
+        $this->onPersist();
+        $this->applyChanges();
+        return true;
+
     }
 
     public function delete()
     {
         $this->onDelete();
+        $schema = self::getSchema();
+        $connection = DB::get($schema->getConnectionName());
+
+        $connection->delete($this);
     }
 
     public function forceSave()

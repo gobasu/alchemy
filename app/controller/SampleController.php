@@ -15,19 +15,22 @@ class SampleController extends Controller
     public function index()
     {
         header('Content-Type:' . Headers::CONTENT_TYPE_TEXT);
-        $model = Product::get('S10_1678');
+        /*$model = Product::get('S10_1678');
 
         print_r($model);
         $model->buyPrice = 21.11;
 
         echo PHP_EOL;
-        $model->save();
+        //$model->save();
         print_r($model);
-
+        */
 
         $p = new Product();
+        $p->productCode = '1a1a1a1';
+        $p->productLine = 'some line';
         $p->productName = "nowy produkt";
         $p->save();
+        $p->delete();
 
 
     }
