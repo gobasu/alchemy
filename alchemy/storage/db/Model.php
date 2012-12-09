@@ -65,19 +65,18 @@ abstract class Model
         $modelName = get_called_class();
 
         $schema = self::getSchema();
-
         $connection = DB::get($schema->getConnectionName());
         return $connection->get($modelName, $pk);
     }
 
     public function getPK()
     {
-        return $this->{self::getSchema()->getPKProperty()->getLocalName()};
+        return $this->{self::getSchema()->getPKProperty()->getName()};
     }
 
     private function setPK($value)
     {
-        $this->{self::getSchema()->getPKProperty()->getLocalName()} = $value;
+        $this->{self::getSchema()->getPKProperty()->getName()} = $value;
     }
 
     public static function findOne()
@@ -90,21 +89,62 @@ abstract class Model
 
     }
 
+    /**
+     * Calculates the changes and writes them to $this->changes array
+     *
+     * @param string $name
+     * @param string|int\float $value
+     * @throws ModelException
+     */
     public function __set($name, $value)
     {
-        $this->getSchema();
+        if (!self::getSchema()->propertyExists($name)) {
+            throw new ModelException('Non existing property `' . $name . '` in model ' . get_called_class());
+        }
+        if (!isset($this->changes[$name])) {
+            if ($this->{$name} != $value) {
+                $this->changes[$name] = $value;
+                $this->isChanged = true;
+            }
+            return;
+        }
+
+        if ($this->changes[$name] != $value) {
+
+            //value was changed to existing in storage
+            if ($value == $this->{$name}) {
+                unset ($this->changes[$name]);
+                $this->isChanged = false;
+                return;
+            }
+
+            $this->changes[$name] = $value;
+            $this->isChanged = true;
+        }
     }
 
     public function __get($name)
     {
+        if (isset($this->changes[$name])) {
+            return $this->changes[$name];
+        }
 
+        return $this->{$name};
     }
 
     public function save()
     {
         $this->onSave();
-
-        $this->onPersist();
+        $schema = self::getSchema();
+        $connection = DB::get($schema->getConnectionName());
+        try {
+            $connection->save($this);
+            $this->onPersist();
+            $this->applyChanges();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     public function delete()
@@ -119,7 +159,18 @@ abstract class Model
 
     public function serialize()
     {
+        $schema = self::getSchema();
+        $serialized = array();
+        foreach ($schema as $field)
+        {
 
+        }
+        return $serialized;
+    }
+
+    public function getChanges()
+    {
+        return $this->changes;
     }
 
     public function validate()
@@ -127,8 +178,25 @@ abstract class Model
 
     }
 
+    private function applyChanges()
+    {
+        foreach ($this->changes as $key => $value) {
+            $this->{$key} = $value;
+        }
+        $this->changes = array();
+        $this->isChanged = false;
+    }
 
-    private $forceSave = false;
+    public function isChanged()
+    {
+        return $this->isChanged;
+    }
+
+    protected $forceSave = false;
+
+    protected $changes = array();
+
+    protected $isChanged = false;
 
     /**
      * Model's schema

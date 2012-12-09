@@ -92,12 +92,13 @@ class SchemaBuilder
 
             //add property to schema
             $property = '        $this->propertyList[\'' . $propertyName . '\']';
+
+            $constructBody .= PHP_EOL . $property . ' = new \alchemy\storage\db\Property(\'' . $propertyName . '\');';
+
             if (isset($annotation[self::PROPERTY_ATTRIBUTE_NAME])) {
                 $propertyAliases[] = "\n\t" . '\'' . $propertyName . '\' => \'' . $annotation[self::PROPERTY_ATTRIBUTE_NAME] . '\'';
-                $constructBody .= PHP_EOL . $property . ' = new \alchemy\storage\db\Property(\'' . $propertyName . '\', \'' . $annotation[self::PROPERTY_ATTRIBUTE_NAME] . '\');';
             } else {
                 $propertyAliases[] = "\n\t" . '\'' . $propertyName . '\' => \'' . $propertyName . '\'';
-                $constructBody .= PHP_EOL . $property . ' = new \alchemy\storage\db\Property(\'' . $propertyName . '\');';
             }
 
             if (!isset($annotation[self::PROPERTY_ATTRIBUTE_TYPE])) {
@@ -204,6 +205,11 @@ final class %s implements \alchemy\storage\db\ISchema, \Iterator
     public function getCollectionName()
     {
         return \$this->collectionName;
+    }
+
+    public function propertyExists(\$name)
+    {
+        return isset(\$this->propertyList[\$name]);
     }
 
     public function getConnectionName()

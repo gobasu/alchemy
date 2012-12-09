@@ -28,4 +28,10 @@ interface ISchema
      * @return string
      */
     public function getCollectionName();
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function propertyExists($name);
 }

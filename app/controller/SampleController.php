@@ -16,7 +16,18 @@ class SampleController extends Controller
     {
         header('Content-Type:' . Headers::CONTENT_TYPE_TEXT);
         $model = Product::get('S10_1678');
+
         print_r($model);
+        $model->buyPrice = 21.11;
+
+        echo PHP_EOL;
+        $model->save();
+        print_r($model);
+
+
+        $p = new Product();
+        $p->productName = "nowy produkt";
+        $p->save();
 
 
     }

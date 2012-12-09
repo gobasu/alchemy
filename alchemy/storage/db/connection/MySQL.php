@@ -19,6 +19,57 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
 
     public function save(Model $model)
     {
+        if (!$model->isChanged()) {
+            return;
+        }
+        $pk = $model->getPK();
+        if ($pk) {
+            $this->update($model);
+        } else {
+            $this->insert($model);
+        }
+    }
+
+    private function update(Model $model)
+    {
+        $schema = $model::getSchema();
+        $pkField = $schema->getPKProperty();
+        $where = '`' . $pkField->getName() . '` = :pk';
+
+        $changes = $model->getChanges();
+        $fields = array();
+        foreach ($changes as $key => $value) {
+            $fields[] = '`' . $key . '` = :' . $key;
+        }
+        $sql = sprintf(self::UPDATE_SQL, $schema->getCollectionName(), implode(',', $fields), $where);
+        $query = $this->prepare($sql);
+        foreach ($changes as $key => $value) {
+            $query->bindValue($key, $value);
+        }
+        $query->bindValue('pk', $model->getPK());
+        $query->execute();
+
+    }
+
+    private function insert(Model $model)
+    {
+        $schema = $model::getSchema();
+        $pkField = $schema->getPKProperty();
+        $fields = array();
+        $binds = array();
+        foreach ($schema as $field) {
+            $fields[] = '`' . $field->getName() . '`';
+            $binds[] = ':' . $field->getName();
+        }
+        $sql = sprintf(self::INSERT_SQL, $schema->getCollectionName(), implode(',', $fields), implode(',', $binds));
+        $query = $this->prepare($sql);
+        foreach ($schema as $field) {
+            $name = $field->getName();
+            $query->bindValue($name, $model->{$name});
+        }
+        $query->execute();
+
+        $model->$this->lastInsertId();
 
     }
 
@@ -32,7 +83,7 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         $schema = $model::getSchema();
         $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
         $pkField = $schema->getPKProperty();
-        $where = '`' . $pkField->getExternalName() . '` = :pk';
+        $where = '`' . $pkField->getName() . '` = :pk';
         $sql = sprintf(self::GET_SQL, $fieldList, $schema->getCollectionName(), $where);
         $query = $this->prepare($sql);
         $query->bindValue(':pk', $pkValue);

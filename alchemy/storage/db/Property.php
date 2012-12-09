@@ -7,20 +7,14 @@ namespace alchemy\storage\db;
 
 class Property
 {
-    public function __construct($localName, $externalName = null)
+    public function __construct($name)
     {
-        $this->localName = $localName;
-        $this->externalName = $externalName ? $externalName : $localName;
+        $this->name = $name;
     }
 
-    public function getExternalName()
+    public function getName()
     {
-        return $this->externalName;
-    }
-
-    public function getLocalName()
-    {
-        return $this->localName;
+        return $this->name;
     }
 
     public function getType()
@@ -49,8 +43,7 @@ class Property
     }
 
     private $type;
-    private $localName;
-    private $externalName;
+    private $name;
     private $required = false;
 
     const TYPE_BOOL = 0;
