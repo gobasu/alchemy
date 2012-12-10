@@ -31,5 +31,5 @@ class Product extends Model
     /**
      * @Param(type=number)
      */
-    protected $buyPrice = 0;
+    protected $buyPrice = 0.00;
 }

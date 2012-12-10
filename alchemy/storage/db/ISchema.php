@@ -34,4 +34,9 @@ interface ISchema
      * @return bool
      */
     public function propertyExists($name);
+
+    /**
+     * @return string
+     */
+    public function getModelClass();
 }

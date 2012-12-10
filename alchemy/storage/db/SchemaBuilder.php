@@ -119,7 +119,16 @@ class SchemaBuilder
         }
 
 
-        $this->schemaData = sprintf(self::CLASS_TEMPLATE, $namespace, $className, $constructBody, $pk, $connectionName, implode(',', $propertyAliases), $collectionName);
+        $this->schemaData = sprintf(self::CLASS_TEMPLATE,
+            $namespace, //Schema namespace
+            $className, //Schame class name
+            $constructBody, //set properties
+            $pk, //set pk field name
+            $connectionName, //set used connection name
+            implode(',', $propertyAliases), //set property fields name
+            $collectionName, // set collection name
+            $this->className // set model class name
+        );
 
         eval($this->schemaData);
     }
@@ -238,11 +247,17 @@ final class %s implements \alchemy\storage\db\ISchema, \Iterator
         return \$key !== NULL && \$key !== FALSE;
     }
 
+    public function getModelClass()
+    {
+        return \$this->modelClass;
+    }
+
     protected \$pk = '%s';
     protected \$propertyList = array();
     protected \$connectionName = '%s';
     protected \$propertyNameList = array(%s);
     protected \$collectionName = '%s';
+    protected \$modelClass = '%s';
 }
 CLASS;
 

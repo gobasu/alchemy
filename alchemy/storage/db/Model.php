@@ -93,14 +93,19 @@ abstract class Model
         $this->{self::getSchema()->getPKProperty()->getName()} = $value;
     }
 
-    public static function findOne()
+    public static function findOne($query, $sort = null)
     {
+        $schema = self::getSchema();
+        $connection = DB::get($schema->getConnectionName());
+        return $connection->findOne($schema, $query, $sort);
 
     }
 
-    public static function findAll()
+    public static function findAll(array $query, array $sort = null)
     {
-
+        $schema = self::getSchema();
+        $connection = DB::get($schema->getConnectionName());
+        return $connection->findAll($schema, $query, $sort);
     }
 
     /**

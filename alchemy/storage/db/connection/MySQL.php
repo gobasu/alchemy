@@ -1,6 +1,10 @@
 <?php
 namespace alchemy\storage\db\connection;
 use alchemy\storage\db\Model;
+use alchemy\storage\db\ISchema;
+
+class MySQLException extends \PDOException {}
+
 /**
  * MySQL
  *
@@ -120,12 +124,102 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         return $query->fetchObject($model);
     }
 
+    /**
+     * Finds all records matching the query in given schema
+     * Qeury needs to be an array and its should represent searched value
+     *
+     * <code>
+     * $query = array(
+     *  'fieldName' => 1,
+     *  'fieldName2' => 'string'
+     * );
+     * </code>
+     * Will search for a matching records where fieldName equals 1 and fieldName2 equals 'string'
+     *
+     * Sort tells how the records in DB should be sorted
+     *
+     * <code>
+     * $sort = array(
+     *  'fieldName' => -1
+     * );
+     * </code>
+     * Will sort records DESC by fieldName
+     *
+     * @param \alchemy\storage\db\ISchema $schema
+     * @param $query
+     * @param null $sort
+     * @return array
+     */
+    public function findAll(ISchema $schema, array $query, array $sort = null)
+    {
+
+        $sql = $this->generateFindSQL($schema, $query, $sort);
+
+        $q = $this->prepare($sql);
+        foreach ($query as $key => $value) {
+            $q->bindValue($key, $value);
+        }
+        $q->execute();
+        $set = array();
+
+        while($r = $q->fetchObject($schema->getModelClass())) {
+            $set[$r->getPK()] = $r;
+        }
+
+        return $set;
+    }
+
+    public function findOne(ISchema $schema, $query, $sort = null)
+    {
+        $sql = $this->generateFindSQL($schema, $query, $sort, 1);
+        $q = $this->prepare($sql);
+        foreach ($query as $key => $value) {
+            $q->bindValue($key, $value);
+        }
+        $q->execute();
+        return $q->fetchObject($schema->getModelClass());
+    }
+
+    private function generateFindSQL(ISchema $schema, array $query, array $sort = null, $limit = null)
+    {
+        $where = array();
+        $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
+        foreach ($query as $key => $value) {
+            $where[] = '`' . $key . '` = :' . $key;
+        }
+        $where = implode(' AND ', $where);
+        $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
+
+        if ($sort) {
+            $sql .= ' ORDER BY ';
+            foreach ($sort as $field => $direction) {
+                if (!isset(self::$sort[$direction])) {
+                    throw new MySQLException(__CLASS__ . ' does not handle SORT TYPE:' . $direction);
+                }
+                $sql .= '`' . $field . '` ' . self::$sort[$direction] . ',';
+            }
+            $sql = substr($sql, 0, -1);
+        }
+
+        if ($limit) {
+            $sql .= ' LIMIT '  . $limit;
+        }
+
+        return $sql;
+    }
+
     private $strictMode = false;
+
+    protected static $sort = array(
+        -1  => 'DESC',
+        1   => 'ASC',
+        0   => ''
+    );
 
     const INSERT_SQL    = 'INSERT INTO `%s`(%s) VALUES(%s)';
     const UPDATE_SQL    = 'UPDATE `%s` SET %s WHERE %s';
     const DELETE_SQL    = 'DELETE FROM `%s` WHERE %s';
     const GET_SQL       = 'SELECT %s FROM `%s` WHERE %s';
-
+    const FIND_SQL      = 'SELECT %s FROM `%s` WHERE %s';
     const UPDATE_ON_DUPLICATE = 'ON DUPLICATE KEY UPDATE';
 }
