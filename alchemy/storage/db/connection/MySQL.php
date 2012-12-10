@@ -96,6 +96,24 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         }
     }
 
+    public function query($sql, ISchema $schema, array $data = null)
+    {
+        $query = $this->prepare($sql);
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $query->bindValue($key, $value);
+            }
+        }
+        $query->execute();
+        $set = array();
+
+        while($r = $query->fetchObject($schema->getModelClass())) {
+            $set[$r->getPK()] = $r;
+        }
+
+        return $set;
+    }
+
     public function delete(Model $model)
     {
         $schema = $model::getSchema();
@@ -154,30 +172,13 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
     {
 
         $sql = $this->generateFindSQL($schema, $query, $sort);
-
-        $q = $this->prepare($sql);
-        foreach ($query as $key => $value) {
-            $q->bindValue($key, $value);
-        }
-        $q->execute();
-        $set = array();
-
-        while($r = $q->fetchObject($schema->getModelClass())) {
-            $set[$r->getPK()] = $r;
-        }
-
-        return $set;
+        return $this->query($sql, $schema, $query);
     }
 
     public function findOne(ISchema $schema, $query, $sort = null)
     {
         $sql = $this->generateFindSQL($schema, $query, $sort, 1);
-        $q = $this->prepare($sql);
-        foreach ($query as $key => $value) {
-            $q->bindValue($key, $value);
-        }
-        $q->execute();
-        return $q->fetchObject($schema->getModelClass());
+        return current($this->query($sql, $schema, $query));
     }
 
     private function generateFindSQL(ISchema $schema, array $query, array $sort = null, $limit = null)

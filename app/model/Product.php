@@ -11,10 +11,19 @@ use alchemy\storage\db\Model;
 
 class Product extends Model
 {
+    public static function getMotorcycles()
+    {
+        $schema = self::getSchema();
+        $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
+        $sql = 'SELECT ' . $fieldList . '
+            FROM ' . $schema->getCollectionName() . '
+            WHERE productLine = "Motorcycles"';
+
+        return self::getConnection()->query($sql, $schema);
+    }
+
     /**
      * @Param(type=number, required=true)
-     * @Validator(type=number,min-value=10,max-value=100)
-     *
      */
     protected $productCode;
 

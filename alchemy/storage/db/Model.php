@@ -48,7 +48,7 @@ abstract class Model
     protected static function getConnection()
     {
         $schema = self::getSchema();
-        return DB::get($schema->getConnection());
+        return DB::get($schema->getConnectionName());
     }
 
     /**
@@ -93,7 +93,14 @@ abstract class Model
         $this->{self::getSchema()->getPKProperty()->getName()} = $value;
     }
 
-    public static function findOne($query, $sort = null)
+    /**
+     * Finds first object which matches given query
+     *
+     * @param $query
+     * @param array $sort
+     * @return Model
+     */
+    public static function findOne(array $query, array $sort = null)
     {
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
@@ -101,6 +108,14 @@ abstract class Model
 
     }
 
+    /**
+     * Finds all objects in DB which match given query
+     *
+     * @param array $query
+     * @param array $sort sorts objects by given field
+     * @see More in coresponding to model IConnection handler
+     * @return array
+     */
     public static function findAll(array $query, array $sort = null)
     {
         $schema = self::getSchema();

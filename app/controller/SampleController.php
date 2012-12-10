@@ -29,11 +29,17 @@ class SampleController extends Controller
         $set = Product::findAll(array('productLine' => 'Motorcycles'));
         print_r($set);
 
+
+
         $p = new Product();
         $p->productCode = '1a1a1a1';
-        $p->productLine = 'some line';
+        $p->productLine = 'Motorcycles';
         $p->productName = "nowy produkt";
         $p->save();
+
+        $set = Product::getMotorcycles();
+        print_r($set);
+
         $p->delete();
 
 
