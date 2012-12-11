@@ -235,4 +235,65 @@ class Item extends Controller
     }
 }
 ```
+Keep in mind you shouldn't trust this data, always validate/escape to prevent from harming your application.
+
+Models
+======
+
+Alchemy has its own approach to models. Generally speaking alchemy's model is a mixin of entity and collection,
+therefore collection methods like aggregating data should be defined as class methods but entity's methods should
+be defined as a object's methods in the same class. 
+
+For every model's class framework dynamically creates schema class based on annotations used in model.
+The framework uses its own annotation system specially desinged for this purpouse. 
+
+Annotation system
+-----------------
+
+Annotations are split into two types:
+- class's annotations 
+  - `@Connection` (not required, defaul value is 'default')
+  - `@Collection` (required)
+  - `@Pk` (required)
+- property's annotations
+  - `@Param` (required)
+  - `@Validator` (not required) 
+
+**`@Connection`**
+Tells which connection should be used in given model class, e.g.
+
+    @Connection my_connection
+    
+Default value is: `default`
+
+**`@Collection`**
+If you are using MySQL or other PDO based connection class this means which table should be used
+for persisting your data, e.g.
+
+    @Collection SQLTableName
+
+This field is required and has no default value
+
+**`@Pk`**
+This tells which field should be used in get, save, delete operations, e.g.
+
+    @Pk Id
+    
+This field is required and has no default value
+
+**`@Param`**
+Used to inform schema that this field is integral part of data used by connection class.
+You need to setup this annotation on object's propery. 
+This annotation has two attributes:
+  -`type` tells what data type property holds (avaible: number, string, data, boolean, blob, enum)
+  -`required` tells whatever the value must be set or not 
+  
+Example:
+
+    @Param(type=string, required=false)
+    
+Example model
+-------------
+
+
 
