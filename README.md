@@ -92,7 +92,7 @@ Framework supports three variations of resources
         $app->addRoute('*', 'your\controller\MyController->index');
 
 The difference between using class' method and object's method is when you are using operator `->` 
-framework will automaticaly create an instance of given class. Otherhand if you use `::` operator
+framework will automaticaly create an instance of given class and call a method. Otherhand if you use `::` operator
 framework will search for a static method and instead creating an instace it will just call that method
 
 **Types**
