@@ -53,7 +53,7 @@ The other one is a framework package (the `alchemy` dir)- it holds all classes t
 Creating bootstrap file
 -----------------------
 
-In order to create your first application point you server's root directory to `public` and put there a `index.php` file
+In order to create your first application point you server's root directory to `public` dir and put there a `index.php` file
 
 ```php
 <?php
