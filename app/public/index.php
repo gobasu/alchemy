@@ -1,6 +1,8 @@
 <?php
-xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
-
+/**
+ * BOOTSTRAP FILE
+ * POINT ALL REQUEST TO THIS ONE
+ */
 require_once realpath(dirname(__FILE__) . '/../../alchemy/app/Application.php');
 use alchemy\app\Application;
 
@@ -13,10 +15,3 @@ $app->addRoute('/closure', function(){
 });
 $app->addRoute('*', 'app\controller\SampleController->index'); //default route
 $app->run();
-
-
-$xhprofData = xhprof_disable();
-include_once "xhprof_lib/utils/xhprof_lib.php";
-include_once "xhprof_lib/utils/xhprof_runs.php";
-$xhprof = new XHProfRuns_Default();
-$xhprof->save_run($xhprofData, md5($_SERVER['SCRIPT_NAME']));
