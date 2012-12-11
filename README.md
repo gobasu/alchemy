@@ -1,19 +1,17 @@
-alchemy
-=======
+Alchemy framework
+=================
 
 Fast and clean PHP micro framework to build websites and not only. Alchemy focus to be simple and yet
-gives you the way to build your application faster than writing from scratch.
-Alchemy mainly focuses to be usefull on handling and processing the requests. The main application
-flow is:
-- register rewrites in router
-- build the http request
-- pass request to the router
-- gently handle request and find out the matching controller
-- load it and fire right method
-- return Response object
+gives you the way to build your application faster than writing from scratch. 
 
-Index
------
+What differs this framework from others:
+- It does not trying force on you to use predefined dir structure you may not like or don't want to have.
+- It does not mixing framework files with your application files
+- Requires no configuration
+
+
+List of contents
+----------------
 
 [Installation](#installation)
 - [Server Requirements](#server-requirements)
