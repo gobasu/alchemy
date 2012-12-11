@@ -157,5 +157,5 @@ class Application extends EventDispatcher
      */
     private $route;
 
-    const VERSION = '1.0.0';
+    const VERSION = '0.9.2';
 }
