@@ -33,16 +33,17 @@ Dir structure looks like this:
 - `public` (server's root directory have to point at this one)
 
 Of course you can use totally different structure but you should follow some conventions:
-- dirnames must be lower case
-- every file in given dir which contains class which should be loaded dynamically by framework
-must have the same name as the class. The namespace of given class must corresponds to the dirname. 
-Assume we need to create `HelloWorld` class which will be one of controllers for our application, we should
-end with path similar to this one: `/myapp/something/mycontroller/HelloWorld.php`, and file containing contents
-below
+- Dirnames must be lower case
+- Every file containing class which should be loaded dynamically must have the same name as the class. 
+- The namespace of given class must corresponds to the dirname. 
+
+Assume we willing to create `HelloWorld` class which will be one of controllers for our application, we should
+end with path similar to: `/myapp/mycontroller/HelloWorld.php`, and therefore file must containing contents
+similar to below ones
 
 ```php
 <?php
-namespace myapp\something\mycontroller;
+namespace myapp\mycontroller;
 class HelloWorld extends \alchemy\app\Controller
 {
   //here goes your methods and properties
