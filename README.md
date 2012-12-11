@@ -8,12 +8,13 @@ What differs this framework from others:
 - It does not trying force on you to use predefined dir structure you may not like or don't want to have.
 - It does not mixing framework files with your application files
 - Requires no configuration
+- Say no to intricate configurations and setups
 
 
 List of contents
 ----------------
 
-[Installation](#installation)
+[Setup](#setup)
 - [Server Requirements](#server-requirements)
 - [Basics](#basics)
 - [Creating bootstrap file](#creating-bootstrap-file)
@@ -24,8 +25,8 @@ List of contents
 - [Advanced routing](#advanced-routing)
 
 
-Installation
-============
+Setup
+=====
 
 Server requirements
 -------------------
