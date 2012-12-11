@@ -139,10 +139,9 @@ $app->addRoute('/{$controller}/{$method}', 'app\controller\{$controller}->{$meth
 Right now if someone goes to `http://localhost/world/hello` the `app\controller\World->hello` resource
 will be executed if exists.
 
-Advanced routing
-----------------
+**Advanced routing**
 
-If you willing you can define various resources to be executed by various request like GET, POST, PUT, DELETE
+You can define various resources to be executed by various request types like GET, POST, PUT, DELETE
 Just simply put the request type before URI path, for example:
 ```php
 $app->addRoute('GET /{$controller}/{$method}', 'app\controller\{$controller}->{$method}');
