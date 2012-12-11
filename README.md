@@ -289,8 +289,8 @@ This field is required and has no default value
 Used to inform schema that this field is integral part of data used by connection class.
 You need to setup this annotation on object's propery. 
 This annotation has two attributes:
-  -`type` tells what data type property holds (avaible: number, string, data, boolean, blob, enum)
-  -`required` tells whatever the value must be set or not 
+-`type` tells what data type property holds (avaible: number, string, data, boolean, blob, enum)
+-`required` tells whatever the value must be set or not 
   
 Example:
 
