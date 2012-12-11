@@ -1,7 +1,7 @@
 Alchemy framework
 =================
 
-Fast and clean PHP micro framework to build websites and not only. Alchemy focus to be simple and yet
+Fast and clean PHP micro framework to build not only websites. Alchemy focus to be simple and yet
 gives you the way to build your application faster than writing from scratch. 
 
 What differs this framework from others:
