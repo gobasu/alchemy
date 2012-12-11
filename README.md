@@ -56,9 +56,10 @@ Framework has been sharded into packages, every package has its own role in fram
 - `app` FW's core classes which setup all application and controlls flow
 - `event` event package wich uses Observer pattern to make framework elastic 
 - `file` file manipullation classes (images, xls, etc... goes here)
-- `http` package which main job is to handle http request, also contains router
+- `http` classes connected with http protocol and request handling
 - `object`
 - `security` acl and validation class
+- `storage` package which role is to focus on persisting data
 - `ui` views and views helpers
 - `vendor` vendor classes and external API helpers (paypal, payu, ups, facebook, g+, etc...)
 
