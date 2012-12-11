@@ -51,6 +51,16 @@ class HelloWorld extends \alchemy\app\Controller
 ```
 
 The other one is a framework package (the `alchemy` dir)- it holds all classes that simplify your work.
+Framework has been sharded into packages, every package has its own role in framework;
+
+- `app` FW's core classes which setup all application and controlls flow
+- `event` event package wich uses Observer pattern to make framework elastic 
+- `file` file manipullation classes (images, xls, etc... goes here)
+- `http` package which main job is to handle http request, also contains router
+- `object`
+- `security` acl and validation class
+- `ui` views and views helpers
+- `vendor` vendor classes and external API helpers (paypal, payu, ups, facebook, g+, etc...)
 
 Creating bootstrap file
 -----------------------
