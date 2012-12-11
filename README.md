@@ -260,6 +260,7 @@ Annotations are split into two types:
   - `@Validator` (not required) 
 
 **`@Connection`**
+
 Tells which connection should be used in given model class, e.g.
 
     @Connection my_connection
@@ -267,6 +268,7 @@ Tells which connection should be used in given model class, e.g.
 Default value is: `default`
 
 **`@Collection`**
+
 If you are using MySQL or other PDO based connection class this means which table should be used
 for persisting your data, e.g.
 
@@ -275,6 +277,7 @@ for persisting your data, e.g.
 This field is required and has no default value
 
 **`@Pk`**
+
 This tells which field should be used in get, save, delete operations, e.g.
 
     @Pk Id
@@ -282,6 +285,7 @@ This tells which field should be used in get, save, delete operations, e.g.
 This field is required and has no default value
 
 **`@Param`**
+
 Used to inform schema that this field is integral part of data used by connection class.
 You need to setup this annotation on object's propery. 
 This annotation has two attributes:
