@@ -17,6 +17,7 @@ Index
 
 [Installation](#installation)
 - [Server Requirements](#server-requirements)
+- [Basics](#Basics)
 - [Creating bootstrap file](#creating-bootstrap-file)
 
 [Routing](#routing)
@@ -35,6 +36,8 @@ Server requirements
 - Curl extension on
 - PDO with MySQL (to make DB working)
 
+Basics
+------
 
 In the repository there are two folders one of them is named `app` and this is example structure
 for your application code.
