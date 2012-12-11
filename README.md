@@ -16,8 +16,8 @@ Index
 -----
 
 [Installation](#installation)
-- [Creating bootstrap file](#creating-bootstrap-file)
 - [Server Requirements](#server-requirements)
+- [Creating bootstrap file](#creating-bootstrap-file)
 
 [Routing](#routing)
 - [Resource](#resource)
