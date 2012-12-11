@@ -134,10 +134,10 @@ $app->addRoute('hello/world', 'app\controller\Hello::world');
 Dynamic routing allows you to dynamically point to resource, lets asume we are willing to handle
 various methods on a one object, so we can build route like:
 ```php
-$app->addRoute('world/{$method}', 'app\controller\World->{$method}');
+$app->addRoute('{$controller}/{$method}', 'app\controller\{$controller}->{$method}');
 ```
 Right now if someone goes to `http://localhost/world/hello` the `app\controller\World->hello` resource
-will be executed.
+will be executed if exists.
 
 
 
