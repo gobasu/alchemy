@@ -39,10 +39,11 @@ need to create HelloWorld class which will be one of controllers for our applica
 end with path similar to this one: /myapp/something/mycontroller/HelloWorld.php, and file body
 have to be:
 
+Example Controller
     <?php
     namespace myapp/something/mycontroller;
-    class HelloWorld extends /alchemy/app/Controller {}
-
-
+    class HelloWorld extends /alchemy/app/Controller
+    {
+    }
 
 The other one is named "alchemy" and this is a framework package.
