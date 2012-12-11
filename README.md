@@ -12,15 +12,29 @@ flow is:
 - load it and fire right method
 - return Response object
 
+Index
+-----
+
+[Installation](#installation)
+- [Creating bootstrap file](#creating-bootstrap-file)
+- [Server Requirements](#server-requirements)
+
+[Routing](#routing)
+- [Resource](#resource)
+- [Route types](#route-types)
+- [Advanced routing](#advanced-routing)
+
+
+Installation
+============
+
 Server requirements
-===================
+-------------------
 
 - PHP 5.4.x or newer.
 - Curl extension on
 - PDO with MySQL (to make DB working)
 
-Installation
-============
 
 In the repository there are two folders one of them is named `app` and this is example structure
 for your application code.
@@ -72,21 +86,31 @@ In order to create your first application point you server's root directory to `
 <?php
 require_once $VALID_PATH_TO . '/alchemy/app/Application.php';
 use alchemy\app\Application;
+
 $app = new Application($PATH_TO_APPLICATION_ROOT);
-//add wildcard route
+
+//add routes here...
 $app->addRoute('*', function(){ 
   echo 'Hello World!';
 });
+
+//run application
+$app->run();
 ```
+
+`$PATH_TO_APPLICATION_ROOT` must be valid dirname pointing to the application root directory (the one that holds whole app's
+direcotry structure)
+
 
 Now if you go to `http://localhost/` url you should see:
 
     Hello World
 
 Routing
--------
+=======
 
-**Resource**
+Resource
+--------
 
 Each route need to point to a specific resource (closure function, class' method, object's method)
 Framework supports three variations of resources
@@ -108,7 +132,8 @@ The difference between using class' method and object's method is when you are u
 framework will automaticaly create an instance of given class and call a method. Otherhand if you use `::` operator
 framework will search for a static method and instead creating an instace it will just call that method
 
-**Types**
+Route Types
+-----------
 
 Alchemy supports to types of routing:
 - static
@@ -139,7 +164,8 @@ $app->addRoute('/{$controller}/{$method}', 'app\controller\{$controller}->{$meth
 Right now if someone goes to `http://localhost/world/hello` the `app\controller\World->hello` resource
 will be executed if exists.
 
-**Advanced routing**
+Advanced routing
+----------------
 
 You can define various resources to be executed by various request types like GET, POST, PUT, DELETE
 Just simply put the request type before URI path, for example:
