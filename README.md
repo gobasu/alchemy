@@ -59,7 +59,7 @@ Framework has been sharded into packages, every package has its own role in fram
 - `http` classes connected with http protocol and request handling
 - `object`
 - `security` acl and validation class
-- `storage` package which role is to focus on persisting data
+- `storage` package which focuses on persisting data
 - `ui` views and views helpers
 - `vendor` vendor classes and external API helpers (paypal, payu, ups, facebook, g+, etc...)
 
