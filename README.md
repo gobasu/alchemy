@@ -13,17 +13,18 @@ flow is:
 - return Response object
 
 Server requirements
--------------------
+===================
 
 - PHP 5.4.x or newer.
 - Curl extension on
 - PDO with MySQL (to make DB working)
 
 Installation
-------------
+============
 
-In the repository there are two folders one of them is named "app" here goes your application code.
-Dir structure should look like this:
+In the repository there are two folders one of them is named "app" and this is example structure
+for your application code.
+Dir structure looks like this:
 - cache
 - controller
 - model
@@ -39,11 +40,9 @@ need to create HelloWorld class which will be one of controllers for our applica
 end with path similar to this one: /myapp/something/mycontroller/HelloWorld.php, and file body
 have to be:
 
-Example Controller
     <?php
     namespace myapp/something/mycontroller;
     class HelloWorld extends /alchemy/app/Controller
     {
     }
 
-The other one is named "alchemy" and this is a framework package.
