@@ -25,7 +25,6 @@ List of contents
 - [Advanced routing](#advanced-routing)
 
 [Controllers](#controllers)
-- [Controller Example](#controller-example)
 - [Tying route to a controller](#tying-route-to-a-controller)
 - [Getting route parameters](#getting-route-parameters)
 
@@ -201,7 +200,8 @@ class HelloWorld extends Controller
 }
 ```
 
-**Tying route to a controller**
+Tying route to a controller
+---------------------------
 
 Lets assume we want to see the result of `app\controller\HelloWorld->index()` when we go to `http://host/showhello`
 Than all you need it to put in your bootstrap file after creating instance of `alchemy\app\Application` following
@@ -210,7 +210,8 @@ line of code
 $app->addRoute('/showhello', 'app\controller\HelloWorld->index');
 ```
 
-**Getting route parameters**
+Getting route parameters
+------------------------
 
 Sometimes you need route that can provide some additional info for resource (like id). 
 Lets assume we have following url `http://host/item/get/12`
