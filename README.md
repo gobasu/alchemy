@@ -33,6 +33,7 @@ List of contents
 - [Setting up database connection](#setting-up-database-connection)
 - [Getting item by pk](#getting-item-by-pk)
 - [Updating and creating model](#updating-and-creating-model)
+- [Simple search API](#simple-search-api)
 
 Setup
 =====
@@ -425,5 +426,102 @@ try {
   //handle error when object is not saved
 }
 ```
+
+Simple search API
+-----------------
+
+Alchemy provides simple search api through `Model::findOne()` and `Model::findAll()`
+class' methods.
+All you need to do is to put the query array, where array's key is the fieldName and
+value is the searched value in DB. *Framework supports only simple search queries which
+means all query terms must be met*
+
+Let's assume we want to find all products in `product` table where `productLine` = `Motorcycles`
+
+```php
+$collection = \app\model\Product::findAll(array('productLine' => 'Motorcycles'));
+echo $collection[0]->productName;//will display the first item product name
+```
+
+**Sorting example**
+If you need to sort your simple search query you have to pass the second argument
+to the `Model::findOne` or `Model::findAll` function, e.g
+
+```php
+$collection = \app\model\Product::findAll(array('productLine' => 'Motorcycles'), array('buyPrice' => 1);
+echo $collection[0]->productName;//will display the first item product name
+```
+
+The query tells find all records in table `products` where `productLine => 'Motorcycles'` and sort
+results in ascending order by column `buyPrice`
+
+Custom queries
+--------------
+
+Of course simple search API will not satisfy your needs. To build custom query you should
+define class's method in desired model and use the connection class for this. Please consider
+followin example
+
+```php
+<?php
+namespace app\model;
+use alchemy\storage\db\Model;
+/**
+ * Product
+ *
+ * @Connection default
+ * @Collection products
+ * @Pk productCode
+ */
+
+class Product extends Model
+{
+    /**
+     * Our custom query which will search for all products from
+     * motorcycle's line
+     */
+    public static function getMotorcycles()
+    {
+        $schema = self::getSchema();
+        $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
+        $sql = 'SELECT ' . $fieldList . '
+            FROM ' . $schema->getCollectionName() . '
+            WHERE productLine = "Motorcycles"';
+
+        return self::getConnection()->query($sql, $schema);
+    }
+
+    /**
+     * @Param(type=number, required=true)
+     */
+    protected $productCode;
+
+    /**
+     * @Param(type=string, required=false)
+     */
+    protected $productName;
+
+    /**
+     * @Param(type=date)
+     */
+    protected $productLine;
+
+    /**
+     * @Param(type=number)
+     */
+    protected $buyPrice = 0.00;
+}
+```
+
+As you noticed we use method `self::getSchema()`. This function returns schema object
+generated for our model please see the [`alchemy\storage\db\ISchema`](https://github.com/dkraczkowski/alchemy/blob/master/alchemy/storage/db/ISchema.php).
+
+Gennerally `alchemy\storage\db\connection\MySQL` extends [`\PDO`](http://php.net/pdo) class so you
+should be familiar witch this one. The one difference is that `PDO->query` function is overridden
+and accepts 3 parameters:
+- `string` sql
+- `alchemy\storage\db\ISchema` object
+- `array` bind data (not required)
+and returns set of model classes if where find otherwise empty array will be returned
 
 
