@@ -36,21 +36,35 @@ class Role
         return $this;
     }
 
+    /**
+     * @param $resource
+     * @return Role
+     */
     public function deny($resource)
     {
         $resource = strtolower($resource);
-        $resource = explode('.', $resource);
+        if ($resource == '*') {
+            $resource = array('*','*');
+        } else {
+            $resource = explode('.', $resource);
+        }
+
         $controller = $resource[0];
-        $action = $resource[1] ? $resource[1] : '*';
+        $action = isset($resource[1]) ? $resource[1] : '*';
         if (!isset($this->restrictions[$controller])) {
             $this->restrictions[$controller] = array();
             $this->restrictions[$controller]['*'] = false;
+            $this->restrictions[$controller]['?'] = false;
         }
         $this->restrictions[$controller][$action] = false;
 
         return $this;
     }
 
+    /**
+     * @param $resource
+     * @return mixed
+     */
     public function hasAccess($resource)
     {
         $resource = explode('.', $resource);

@@ -82,7 +82,6 @@ class Application extends EventDispatcher
             ob_start();
             $this->addListener('alchemy\app\event\OnBeforeResourceCall', array($this, '_executeResource'));
             $this->dispatch(new OnBeforeResourceCall($this));
-
             Controller::_unload();
         } catch (\Exception $e) {
             if (!$this->dispatch(new OnError($e))) {
@@ -107,7 +106,6 @@ class Application extends EventDispatcher
             } else {
                 $object = new $className;
             }
-
             $response = call_user_func(array($object, $functionName), $this->route->getParameters());
         } else {
             $response = call_user_func(array($resource, 'call'), $this->route->getParameters());

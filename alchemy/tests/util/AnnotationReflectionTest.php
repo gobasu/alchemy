@@ -34,10 +34,6 @@ class AnnotationReflectionTest extends PHPUnit_Framework_TestCase
     {
         $annotation = new AnnotationReflection('SampleAnnotatedClass');
         $propertyAnnotation = $annotation->getFromProperty('sampleVar');
-
-        print_r($propertyAnnotation);
-
-
         $this->assertArrayHasKey('Param', $propertyAnnotation);
         $this->assertEquals($propertyAnnotation['Param']['type'], 'enum');
         $this->assertEquals($propertyAnnotation['Param']['enum'], 'AVAIBLE, NOT_AVAIBLE, REMOVED');
@@ -45,11 +41,6 @@ class AnnotationReflectionTest extends PHPUnit_Framework_TestCase
 
         $nullAnnotation = $annotation->getFromProperty('noDocCommentVar');
         $this->assertNull($nullAnnotation);
-
-    }
-
-    public function testGetFromMethod()
-    {
 
     }
 

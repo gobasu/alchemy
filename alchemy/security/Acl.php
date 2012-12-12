@@ -30,6 +30,15 @@ class Acl
     }
 
     /**
+     * Gets attached roles
+     * @return array
+     */
+    public static function getAttachedRoles()
+    {
+        return self::$attachedRoles;
+    }
+
+    /**
      * Removes role from current user's role list
      * @param $name previously defined role name
      */
@@ -87,20 +96,14 @@ class Acl
         return $access;
     }
 
+    /**
+     * Remove all attached roles except default one
+     */
     public static function removeAllRoles()
     {
         self::$attachedRoles = array();
         self::$cache = array();
-    }
-
-    public static function setUser($object)
-    {
-        self::$userObject = $object;
-    }
-
-    public static function getUser()
-    {
-        return self::$userObject;
+        self::addRole(self::ACL_DEFAULT);
     }
 
     /**
@@ -114,17 +117,17 @@ class Acl
 
     public static function setup()
     {
-        $acl = \alchemy\storage\Session::get('acl');
+        $acl = Session::get('acl');
         self::$attachedRoles = &$acl['user_roles'];
         self::$cache = &$acl['cache'];
-        self::$userObject = &$acl['user_object'];
-        //echo '<pre>';
 
         if (!count(self::$attachedRoles))
         {
             self::$attachedRoles = array();
             //define default role if not defined
-            if (!self::roleExists(self::ACL_DEFAULT)) self::defineRole(self::ACL_DEFAULT)->allow('*');
+            if (!self::roleExists(self::ACL_DEFAULT)) {
+                self::defineRole(self::ACL_DEFAULT)->deny('*');
+            }
 
             self::addRole(self::ACL_DEFAULT);
         }
@@ -132,11 +135,9 @@ class Acl
         if (!self::$cache) self::$cache = array();
     }
 
-    const ACL_DEFAULT = 'AclDefaultRole';
+    const ACL_DEFAULT = 'DefaultRole';
 
     private static $attachedRoles = array();
     private static $definedRoles = array();
-    private static $userObject = null;
     private static $cache = array();
-
 }
