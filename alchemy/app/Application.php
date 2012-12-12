@@ -62,7 +62,7 @@ class Application extends EventDispatcher
      * Unloads all loaded controllers of the end of execution
      *
      */
-    public function run()
+    public function run($mode = self::MODE_DEVELOPMENT)
     {
         $request = Request::getGlobal();
 
@@ -76,12 +76,19 @@ class Application extends EventDispatcher
             return;
         }
         $this->route = $match;
-        //add execute listener
-        ob_start();
-        $this->addListener('alchemy\app\event\OnBeforeResourceCall', array($this, '_executeResource'));
-        $this->dispatch(new OnBeforeResourceCall($this));
 
-        Controller::_unload();
+        try {
+            //add execute listener
+            ob_start();
+            $this->addListener('alchemy\app\event\OnBeforeResourceCall', array($this, '_executeResource'));
+            $this->dispatch(new OnBeforeResourceCall($this));
+
+            Controller::_unload();
+        } catch (\Exception $e) {
+            if (!$this->dispatch(new OnError($e))) {
+                throw $e;
+            }
+        }
     }
 
     /**
@@ -152,10 +159,15 @@ class Application extends EventDispatcher
      */
     private $resource;
 
+    private $mode = 1;
+
     /**
      * @var \alchemy\http\router\Route
      */
     private $route;
+
+    const MODE_DEVELOPMENT = 1;
+    const MODE_PRODUCTION = 2;
 
     const VERSION = '0.9.2';
 }

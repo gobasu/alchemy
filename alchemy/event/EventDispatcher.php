@@ -75,12 +75,15 @@ class EventDispatcher
      * Dispatch event supports bubbling and propaging
      *
      * @param Event $event
+     * @return boolean false if no listeners were executed otherwise true
      */
     public function dispatch(Event $event)
     {
         $className = get_class($event);
         $list = class_parents($className);
+
         array_unshift($list, $className);
+        $listenerExist = false;
 
         foreach ($list as $eventClass) {
             if (!$event->_isBubbling()) {
@@ -91,11 +94,13 @@ class EventDispatcher
             }
             foreach ($this->listeners[$eventClass] as $listener) {
                 $listener->call($event);
+                $listenerExist = true;
                 if (!$event->_isPropagating()) {
                     break 2;
                 }
             }
         }
+        return $listenerExist;
     }
 
     /**
