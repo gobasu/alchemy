@@ -34,6 +34,7 @@ List of contents
 - [Getting item by pk](#getting-item-by-pk)
 - [Updating and creating model](#updating-and-creating-model)
 - [Simple search API](#simple-search-api)
+- [Custom queries](#custom-queries)
 
 Setup
 =====
