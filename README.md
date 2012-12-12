@@ -357,9 +357,11 @@ class Product extends Model
 Setting up database connection
 ------------------------------
 
-Right now alchemy supports only MySQL connections. To setup connection to MySQL
-database you should use `alchemy\storage\db` and proper connection class in your
-bootstrap file. Example below:
+Right now alchemy supports only MySQL connections. If you need use other database
+than MySQL you can always do it by yourself by implementing `alchemy\storage\db\IConnection`.
+
+To setup connection to MySQL database you should use `alchemy\storage\DB` class and proper connection
+class in your bootstrap file (or configuration you you've created one). Example below:
 
 ```php
 <?php
@@ -369,14 +371,14 @@ use alchemy\storage\DB;
 use alchemy\storage\db\connection\MySQL;
 
 //setup connection here
-DB::add(new MySQL('{host}','{username}','{password}','{dbname}'));
+DB::add(new MySQL('{host}','{username}','{password}','{dbname}'), $connectionName = DB::DEFAULT_NAME);
 
 $app = new Application($PATH_TO_APPLICATION_ROOT);
 //add routes here...
 $app->run();
 ```
-If you need use other database than MySQL you can always do it by yourself by
-implementing `alchemy\storage\db\IConnection`
+
+`$connectionName` allows you to use in your application multiple connections in one application.
 
 Getting item by pk
 ------------------
