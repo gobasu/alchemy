@@ -30,6 +30,8 @@ List of contents
 [Models](#models)
 - [Annotation system](#annotation-system)
 - [Example model](#example-model)
+- [Setting up database connection](#setting-up-database-connection)
+- [Getting item by pk](#getting-item-by-pk)
 
 Setup
 =====
