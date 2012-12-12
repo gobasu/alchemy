@@ -298,6 +298,54 @@ Example:
     
 Example model
 -------------
+Lets assume we have got sql table `product`:
+<pre>
++-------------+-------------+-------------+-------+
+| productCode | productName | productLine | price |
++-------------+-------------+-------------+-------+
+|             table data goes here                |
++-------------------------------------------------+
+</pre>
 
+Our model will look similar to:
+```php
+<?php
+namespace app\model;
+use alchemy\storage\db\Model;
+/**
+ * Simple product model
+ * Below we will set required annotations
+ * Our sql table is 'product' so @Collection must
+ * be set to 'produt' and @Pk to 'productCode'
+ *
+ * We will not set any @Connection here we just use 
+ * default one
+ *
+ * @Collection products
+ * @Pk productCode
+ */
 
+class Product extends Model
+{
+    /**
+     * @Param(type=number)
+     */
+    protected $productCode;
+
+    /**
+     * @Param(type=string)
+     */
+    protected $productName;
+
+    /**
+     * @Param(type=string)
+     */
+    protected $productLine;
+
+    /**
+     * @Param(type=number)
+     */
+    protected $buyPrice = 0.00;
+}
+```
 
