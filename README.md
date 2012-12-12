@@ -28,6 +28,9 @@ List of contents
 - [Tying route to a controller](#tying-route-to-a-controller)
 - [Getting route parameters](#getting-route-parameters)
 
+[Models](#models)
+- [Annotation system](#annotation-system)
+- [Example model](#example-model)
 
 Setup
 =====
