@@ -354,3 +354,47 @@ class Product extends Model
 }
 ```
 
+Setting up database connection
+------------------------------
+
+Right now alchemy supports only MySQL connections. To setup connection to MySQL
+database you should use `alchemy\storage\db` and proper connection class in your
+bootstrap file. Example below:
+
+```php
+<?php
+require_once $VALID_PATH_TO . '/alchemy/app/Application.php';
+use alchemy\app\Application;
+use alchemy\storage\DB;
+use alchemy\storage\db\connection\MySQL;
+
+//setup connection here
+DB::add(new MySQL('{host}','{username}','{password}','{dbname}'));
+
+$app = new Application($PATH_TO_APPLICATION_ROOT);
+//add routes here...
+$app->run();
+```
+If you need use other database than MySQL you can always do it by yourself by
+implementing `alchemy\storage\db\IConnection`
+
+Getting item by pk
+------------------
+
+To simply get item from storage by pk just use `Model::get()` function, e.g.
+
+```php
+<?php
+namespace app\controller;
+use alchemy\app\Controller;
+use app\model\Product;
+class DBExample extends Controller
+{
+    public function index()
+    {
+        $item = Product::get('{id here}');
+        // now if item exists you will get instance of a app\model\Product
+    }
+}
+```
+
