@@ -518,11 +518,12 @@ As you noticed we use method `self::getSchema()`. This function returns schema o
 generated for our model please see the [`alchemy\storage\db\ISchema`](https://github.com/dkraczkowski/alchemy/blob/master/alchemy/storage/db/ISchema.php).
 
 Gennerally `alchemy\storage\db\connection\MySQL` extends [`\PDO`](http://php.net/pdo) class so you
-should be familiar witch this one. The one difference is that `PDO->query` function is overridden
-and accepts 3 parameters:
+are propably familiar with this one already. The one difference is that `PDO->query` function is overridden
+and returns set of model classes if query find something otherwise empty array will be returned
+`alchemy\storage\db\connection\MySQL->query` accepts 3 parameters:
 - `string` sql
 - `alchemy\storage\db\ISchema` object
 - `array` bind data (not required)
-and returns set of model classes if where find otherwise empty array will be returned
+
 
 
