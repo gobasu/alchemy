@@ -307,6 +307,8 @@ Lets assume we have got sql table `product`:
 +-------------------------------------------------+
 </pre>
 
+Example database you can grab from [here](http://www.mysqltutorial.org/_sites/mysqltutorial.org/DownloadHandler.ashx?pg=b98d7eb2-72ba-4a90-9d91-d80c81c2e6dc&section=66d3abc9-1984-4ae0-96e1-ab685cce002c&file=sampledatabase.zip)
+
 Our model will look similar to:
 ```php
 <?php
@@ -328,7 +330,7 @@ use alchemy\storage\db\Model;
 class Product extends Model
 {
     /**
-     * @Param(type=number)
+     * @Param(type=string)
      */
     protected $productCode;
 
