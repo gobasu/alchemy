@@ -7,8 +7,7 @@ gives you the way to build your application faster than writing from scratch.
 What differs this framework from others:
 - It does not trying force on you to use predefined dir structure you may not like or don't want to have.
 - It does not mixing framework files with your application files
-- Requires no configuration
-- Say no to intricate configurations and setups
+- Say no to intricate configurations and setups, alchemy requires no configuration
 
 
 List of contents
