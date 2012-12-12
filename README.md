@@ -32,6 +32,7 @@ List of contents
 - [Example model](#example-model)
 - [Setting up database connection](#setting-up-database-connection)
 - [Getting item by pk](#getting-item-by-pk)
+- [Updating and creating model](#updating-and-creating-model)
 
 Setup
 =====
@@ -388,17 +389,41 @@ Getting item by pk
 To simply get item from storage by pk just use `Model::get()` function, e.g.
 
 ```php
-<?php
-namespace app\controller;
-use alchemy\app\Controller;
-use app\model\Product;
-class DBExample extends Controller
-{
-    public function index()
-    {
-        $item = Product::get('{id here}');
-        // now if item exists you will get instance of a app\model\Product
-    }
+$item = app\model\Product::get('{id here}');
+// now if item exists you will get instance of a app\model\Product
+
+```
+
+Updating and creating model
+---------------------------
+
+To update or create item in database use `Model->save` method,
+Updating record example below:
+```php
+$item = app\model\Product::get('{id here}');
+try {
+    $item->productLine = 'Motorcycles';
+    $item->save();
+} catch (\Exception $e) {
+    //handle error when object is not saved
 }
 ```
+
+When creating new item in database make sure you have set in mysql
+autoincrement and primary key on field marked as @Pk, otherwise you have
+to provide a pk value, e.g.
+
+```php
+$item = new app\model\Product('AP-123');
+$item->productLine = 'Motorcycles';
+$item->productName = 'HB-123';
+$item->buyPrice = 1120.12;
+
+try {
+    $item->save();
+} catch (\Exception $e) {
+  //handle error when object is not saved
+}
+```
+
 
