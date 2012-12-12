@@ -25,7 +25,9 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         $dsn = 'mysql:dbname=' . $db . ';host=' . $host;
         parent::__construct($dsn, $user, $password, array(
             \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'',
-            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_PERSISTENT => true // use persistent on
+
         ));
     }
 
