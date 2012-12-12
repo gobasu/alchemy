@@ -247,12 +247,13 @@ therefore collection methods like aggregating data should be defined as class me
 be defined as a object's methods in the same class. 
 
 For every model's class framework dynamically creates schema class based on annotations used in model.
-The framework uses its own annotation system specially desinged for this purpouse. 
 
 Annotation system
 -----------------
+Annotations provide data about a program that is not part of the program itself. 
+They have no direct effect on the operation of the code they annotate. 
 
-Annotations are split into two types:
+Model annotations are split into two types:
 - class's annotations 
   - `@Connection` (not required, defaul value is 'default')
   - `@Collection` (required)
