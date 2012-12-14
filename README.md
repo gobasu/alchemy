@@ -42,7 +42,7 @@ Setup
 Server requirements
 -------------------
 
-- PHP 5.4.x or newer.
+- PHP 5.3.x or newer.
 - Curl extension on
 - PDO with MySQL (to make DB working)
 
