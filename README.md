@@ -447,7 +447,7 @@ echo $collection[0]->productName;//will display the first item product name
 Of course you can also use `>` `<` `>=` `<=` operators in your query as well as array value to match
 one of the predefined values, e.g.
 
-``php
+```php
 $collection = Product::findAll(array(
     'productLine' => array('Trucks and Buses', 'Planes'),
     'buyPrice <=' => 31
