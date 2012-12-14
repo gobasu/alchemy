@@ -10,7 +10,7 @@ final class Loader
     public static function setup()
     {
         self::register(function($className){
-            $path = self::getPathForFrameworkClass($className);
+            $path = Loader::getPathForFrameworkClass($className);
             if (is_readable($path)) {
                 require_once $path;
             }
