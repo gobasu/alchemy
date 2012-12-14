@@ -543,5 +543,85 @@ instead `{{` & `}}` default tags are set to `<%` `%>`. And template dir is defau
 You can simply change it to anything you want by passing argument to `alchemy\ui\View` class' constructor.
 More detailed info about mustashe can be found [here](https://github.com/bobthecow/mustache.php/wiki)
 
+Event system explained
+======================
+
+`alchemy\app\Application`, `alchemy\app\Controller`, `alchemy\storage\db\Model` extends `alchemy\event\EventDispatcher`.
+The `alchemy\event\EventDispatcher` is a implementation of observer pattern. It allows you to take actions when event
+is dispatched by given object as well as defining your own events.
+
+To define a event class you must extend `alchemy\event\Event` class and give it a meaningfull name. Let's assume 
+we want to dispatch an event meaning that item was added to cart, e.g.
+```php
+<?php
+namespace app\event;
+use alchemy\event\Event;
+class OnAddToCart extends Event
+{}
+```
+Now lets create a Cart model class:
+```php
+<?php
+namespace app\model;
+use alchemy\storage\db\Model;
+use alchemy\event\Event;
+/**
+ * Very simple cart class implementation
+ */
+class Cart extends Model
+{
+    public function __construct($sessionId = null)
+    {
+        $this->addListener('alchemy\storage\db\event\OnGet', array($this, 'onLoad'));
+        $this->addListener('alchemy\storage\db\event\OnSave', array($this, 'onSave'));
+        parent::__construct($sessionId);
+    }
+    public function addToCart($itemId, $count)
+    {
+        if (!isset($this->cartData[$itemId])) {
+            $this->cartData[$itemId] = array(
+                'itemId'    => $itemId,
+                'count'     => 0,
+            );
+        }
+
+        $this->cartData[$itemId]['count'] += $count;
+        $this->dispatch(new \app\event\OnAddToCart($this));
+    }
+
+    public function removeFromCart($itemId)
+    {
+        unset($this->cartData[$itemId]);
+    }
+
+    public function updateCart($itemId, $count)
+    {
+        $this->cartData[$itemId]['count'] = $count;
+    }
+
+    public function onLoad(Event $e)
+    {
+        $this->cartData = json_decode($this->cartData, true);
+    }
+    public function onSave(Event $e)
+    {
+        $this->cartData = json_encode($this->cartData);
+    }
+
+    protected $sessionKey;
+    protected $cartData;
+}
+```
+
+
+As you can see I am using here some builded in framework's events to encode/decode cart data to json when it is needed. 
+`$this->addListener('alchemy\storage\db\event\OnGet', array($this, 'onLoad'));` This line you can simply interpret as:
+when record will be get from storage run `app\model\Cart->onLoad` method.
+Now going back to our custom event, to dispatch it I've used `alchemy\storage\db\Model->dispatch` function which atually
+does two things:
+- dispatches an event in object scope
+- pass an event to global event hub (this is helpfull for plugins)
+
+If you don't need make a plugins or other functinallities wich will use your custom event just call parent's dispatch method.
 
 
