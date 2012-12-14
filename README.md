@@ -444,6 +444,16 @@ $collection = \app\model\Product::findAll(array('productLine' => 'Motorcycles'))
 echo $collection[0]->productName;//will display the first item product name
 ```
 
+Of course you can also use `>` `<` `>=` `<=` operators in your query as well as array value to match
+one of the predefined values, e.g.
+
+``php
+$collection = Product::findAll(array(
+    'productLine' => array('Trucks and Buses', 'Planes'),
+    'buyPrice <=' => 31
+));
+```
+
 **Sorting example**
 If you need to sort your simple search query you have to pass the second argument
 to the `Model::findOne` or `Model::findAll` function, e.g
