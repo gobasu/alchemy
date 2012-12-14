@@ -183,16 +183,53 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         return current($this->query($sql, $schema, $query));
     }
 
-    private function generateFindSQL(ISchema $schema, array $query, array $sort = null, $limit = null)
+    private function generateFindSQL(ISchema $schema, array &$query, array $sort = null, $limit = null)
     {
         $where = array();
+        $bind = array();
         $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
         foreach ($query as $key => $value) {
-            $where[] = '`' . $key . '` = :' . $key;
+            $key = trim($key);
+            $operator = '=';
+            $sign = substr($key, -1);
+            switch ($sign) {
+                case '=':
+                    $sign = substr($key, -2);
+                    if ($sign == '>=' || $sign == '<=') {
+                        $operator = $sign;
+                        $key = trim(substr($key, 0, -2));
+                    } else {
+                        $key = trim(substr($key, 0, -1));
+                    }
+                    break;
+                case '>':
+                case '<':
+                    $operator = $sign;
+                    $key = trim(substr($key, 0, -1));
+                    break;
+                default:
+                    break;
+            }
+
+            if (is_array($value)) {
+                //escape values
+                foreach ($value as &$v) {
+                    if (is_string($v)) {
+                        $v = $this->quote($v);
+                    }
+                }
+
+                $where[] = '`' . $key . '` IN (' . implode(',', $value) . ') ';
+                continue;
+            }
+
+            $bind[$key] = $value;
+
+            $where[] = '`' . $key . '` ' . $operator . ' :' . $key;
         }
+        $query = $bind;
         $where = implode(' AND ', $where);
         $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
-
         if ($sort) {
             $sql .= ' ORDER BY ';
             foreach ($sort as $field => $direction) {
