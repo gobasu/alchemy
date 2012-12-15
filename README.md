@@ -36,6 +36,8 @@ List of contents
 - [Simple search API](#simple-search-api)
 - [Custom queries](#custom-queries)
 
+**[Views](#views)**
+
 **[Event system](#event-system)**
 - [Dispatching a custom event](#dispatching-a-custom-event)
 - [Attaching listeners](#attaching-listeners)
