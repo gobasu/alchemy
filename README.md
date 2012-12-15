@@ -40,6 +40,7 @@ List of contents
 - [Dispatching a custom event](#dispatching-a-custom-event)
 - [Attaching listeners](#attaching-listeners)
 - [About listeners](#about-listeners)
+- [Framework events](#framework-events)
 
 Setup
 =====
@@ -675,8 +676,21 @@ Listeners simply are php's callables, e.g.
 
 In my examples I've used closures as event hanlders, you are not limited only to closures use whatever 
 is a callable object.
-
 You can also attach multiple different listeners to a desired event.
 
+Framework events
+----------------
+
+Here is the list of major framework's events:
+- `alchemy\app\event\OnUndefinedResource` no valid resource found (no route defined for uri currently in browser)
+- `alchemy\app\event\OnBeforeResourceCall` dispatched when application found right resource and is going to run it
+- `alchemy\app\event\OnAfterResourceCall` dispatched when resource was executed successfully
+- `alchemy\app\event\OnError` dispatched when resource was executed with uncatched exceptions (you can use it to build your own error pages)
+- `alchemy\app\event\OnShutdown` dispatched when application is going to finish the execution
+- `alchemy\storage\db\event\DBEvent` dispatched every time record was deleted, added, got or updated
+- `alchemy\storage\db\event\OnGet` dispatched when record was get from database
+- `alchemy\storage\db\event\OnSave` dispatched when there was a try to save a record to database
+- `alchemy\storage\db\event\OnPersists` dispatched when record was successfully saved to database
+- `alchemy\storage\db\event\OnDelete` dispatched when record was delete from database
 
 
