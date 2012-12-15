@@ -13,21 +13,21 @@ What differs this framework from others:
 List of contents
 ----------------
 
-[Setup](#setup)
+**[Setup](#setup)**
 - [Server Requirements](#server-requirements)
 - [Basics](#basics)
 - [Creating bootstrap file](#creating-bootstrap-file)
 
-[Routing](#routing)
+**[Routing](#routing)**
 - [Resource](#resource)
 - [Route types](#route-types)
 - [Advanced routing](#advanced-routing)
 
-[Controllers](#controllers)
+**[Controllers](#controllers)**
 - [Tying route to a controller](#tying-route-to-a-controller)
 - [Getting route parameters](#getting-route-parameters)
 
-[Models](#models)
+**[Models](#models)**
 - [Annotation system](#annotation-system)
 - [Example model](#example-model)
 - [Setting up database connection](#setting-up-database-connection)
@@ -36,7 +36,7 @@ List of contents
 - [Simple search API](#simple-search-api)
 - [Custom queries](#custom-queries)
 
-[Event system](#event-system)
+**[Event system](#event-system)**
 - [Dispatching a custom event](#dispatching-a-custom-event)
 - [Attaching listeners](#attaching-listeners)
 - [About listeners](#about-listeners)
