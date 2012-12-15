@@ -2,6 +2,7 @@
 namespace alchemy\storage\db;
 use alchemy\storage\DB;
 use alchemy\app\Loader;
+use alchemy\event\EventDispatcher;
 
 class ModelException extends \Exception {}
 /**
@@ -26,7 +27,7 @@ class ModelException extends \Exception {}
  *
  * @author: lunereaper
  */
-abstract class Model
+abstract class Model extends EventDispatcher
 {
     /**
      * Construct new Model with given PK
@@ -65,10 +66,6 @@ abstract class Model
         }
         return self::$schemaList[$class] = SchemaBuilder::getSchema($class);
     }
-
-    public function onSave()  {}
-    public function onPersist() {}
-    public function onDelete() {}
 
     /**
      * @param $pk
@@ -169,23 +166,21 @@ abstract class Model
 
     public function save()
     {
-        $this->onSave();
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
-
+        parent::dispatch(new event\OnSave($this));
         $connection->save($this);
-        $this->onPersist();
         $this->applyChanges();
+        parent::dispatch(new event\OnPersists($this));
         return true;
 
     }
 
     public function delete()
     {
-        $this->onDelete();
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
-
+        parent::dispatch(new event\OnDelete($this));
         $connection->delete($this);
     }
 
@@ -198,10 +193,7 @@ abstract class Model
     {
         $schema = self::getSchema();
         $serialized = array();
-        foreach ($schema as $field)
-        {
 
-        }
         return $serialized;
     }
 
@@ -227,6 +219,17 @@ abstract class Model
     public function isChanged()
     {
         return $this->isChanged;
+    }
+
+    /**
+     * Dispatches an event to EventHub
+     *
+     * @param \alchemy\event\Event $e
+     */
+    public function dispatch(\alchemy\event\Event $e)
+    {
+        \alchemy\event\EventHub::dispatch($e);
+        parent::dispatch($e);
     }
 
     protected $forceSave = false;

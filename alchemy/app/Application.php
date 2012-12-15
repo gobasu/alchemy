@@ -16,6 +16,7 @@ use alchemy\app\event\OnUndefinedResource;
 use alchemy\app\event\OnBeforeResourceCall;
 use alchemy\app\event\OnAfterResourceCall;
 use alchemy\app\event\OnError;
+use alchemy\app\event\OnShutdown;
 use alchemy\app\Controller;
 use alchemy\http\Request;
 use alchemy\http\Response;
@@ -32,6 +33,7 @@ class Application extends EventDispatcher
      */
     public function __construct($appDir)
     {
+        \alchemy\event\EventHub::initialize();
         if (!is_dir($appDir)) {
             throw new ApplicationInvalidDirnameException('Application dir does not exists');
         }
@@ -85,9 +87,11 @@ class Application extends EventDispatcher
             Controller::_unload();
         } catch (\Exception $e) {
             if (!$this->dispatch(new OnError($e))) {
+                $this->dispatch(new OnShutdown($this));
                 throw $e;
             }
         }
+        $this->dispatch(new OnShutdown($this));
     }
 
     /**

@@ -111,6 +111,7 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
 
         while($r = $query->fetchObject($schema->getModelClass())) {
             $set[$r->getPK()] = $r;
+            $r->dispatch(new \alchemy\storage\db\event\OnGet($r));
         }
 
         return $set;
@@ -141,7 +142,9 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         $query = $this->prepare($sql);
         $query->bindValue(':pk', $pkValue);
         $query->execute();
-        return $query->fetchObject($model);
+        $model = $query->fetchObject($model);
+        $model->dispatch(new \alchemy\storage\db\event\OnGet($model));
+        return $model;
     }
 
     /**
