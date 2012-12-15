@@ -672,7 +672,8 @@ Listeners simply are php's callables, e.g.
 - `array('Class', 'method')`
 - `'functionname'`
 - `closures`
-In my examples I've used closure function as a event hanlders, you are not limited only to closures use whatever 
+
+In my examples I've used closures as event hanlders, you are not limited only to closures use whatever 
 is a callable object.
 
 You can also attach multiple different listeners to a desired event.
