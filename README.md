@@ -13,21 +13,21 @@ What differs this framework from others:
 List of contents
 ----------------
 
-[Setup](#setup)
+**[Setup](#setup)**
 - [Server Requirements](#server-requirements)
 - [Basics](#basics)
 - [Creating bootstrap file](#creating-bootstrap-file)
 
-[Routing](#routing)
+**[Routing](#routing)**
 - [Resource](#resource)
 - [Route types](#route-types)
 - [Advanced routing](#advanced-routing)
 
-[Controllers](#controllers)
+**[Controllers](#controllers)**
 - [Tying route to a controller](#tying-route-to-a-controller)
 - [Getting route parameters](#getting-route-parameters)
 
-[Models](#models)
+**[Models](#models)**
 - [Annotation system](#annotation-system)
 - [Example model](#example-model)
 - [Setting up database connection](#setting-up-database-connection)
@@ -35,6 +35,14 @@ List of contents
 - [Updating and creating model](#updating-and-creating-model)
 - [Simple search API](#simple-search-api)
 - [Custom queries](#custom-queries)
+
+**[Views](#views)**
+
+**[Event system](#event-system)**
+- [Dispatching a custom event](#dispatching-a-custom-event)
+- [Attaching listeners](#attaching-listeners)
+- [About listeners](#about-listeners)
+- [Framework events](#framework-events)
 
 Setup
 =====
@@ -543,12 +551,16 @@ instead `{{` & `}}` default tags are set to `<%` `%>`. And template dir is defau
 You can simply change it to anything you want by passing argument to `alchemy\ui\View` class' constructor.
 More detailed info about mustashe can be found [here](https://github.com/bobthecow/mustache.php/wiki)
 
-Event system explained
-======================
+Event system
+============
 
 `alchemy\app\Application`, `alchemy\app\Controller`, `alchemy\storage\db\Model` extends `alchemy\event\EventDispatcher`.
 The `alchemy\event\EventDispatcher` is a implementation of observer pattern. It allows you to take actions when event
-is dispatched by given object as well as defining your own events.
+is dispatched by given object as well as defining your own events. To get familiar with the framework's event system 
+I recommand you to visit [event package](http://github.com/dkraczkowski/alchemy/tree/master/alchemy/event)
+
+Dispatching a custom event
+--------------------------
 
 To define a event class you must extend `alchemy\event\Event` class and give it a meaningfull name. Let's assume 
 we want to dispatch an event meaning that item was added to cart, e.g.
@@ -556,10 +568,10 @@ we want to dispatch an event meaning that item was added to cart, e.g.
 <?php
 namespace app\event;
 use alchemy\event\Event;
-class OnAddToCart extends Event
-{}
+class OnAddToCart extends Event {}
 ```
-Now lets create a Cart model class:
+
+Now lets build our Cart model class:
 ```php
 <?php
 namespace app\model;
@@ -586,7 +598,15 @@ class Cart extends Model
         }
 
         $this->cartData[$itemId]['count'] += $count;
+        $this->lastInsertedItem = $itemId;
+        
+        //here is a dispatching event method
         $this->dispatch(new \app\event\OnAddToCart($this));
+    }
+    
+    public function getLastInsertedItemId()
+    {
+        return $this->lastInsertedItem;
     }
 
     public function removeFromCart($itemId)
@@ -607,21 +627,72 @@ class Cart extends Model
     {
         $this->cartData = json_encode($this->cartData);
     }
-
+    protectes $lastInsertedItem;
     protected $sessionKey;
     protected $cartData;
 }
 ```
+As you can see to dispatch ane event you need to use `$this->dispatch` method which accepts one parameter of `alchemy\event\Event` instance.
+I have also used in the example some builded in framework's events to encode/decode cart data to json when it is needed. 
+We will revisit framework events later on.
 
-
-As you can see I am using here some builded in framework's events to encode/decode cart data to json when it is needed. 
-`$this->addListener('alchemy\storage\db\event\OnGet', array($this, 'onLoad'));` This line you can simply interpret as:
-when record will be get from storage run `app\model\Cart->onLoad` method.
-Now going back to our custom event, to dispatch it I've used `alchemy\storage\db\Model->dispatch` function which atually
-does two things:
+The `dispatch` function does two things:
 - dispatches an event in object scope
 - pass an event to global event hub (this is helpfull for plugins)
 
-If you don't need make a plugins or other functinallities wich will use your custom event just call parent's dispatch method.
+Attaching listeners
+-------------------
+
+You can attach listeners strict to an object or to the `alchemy\event\EventHub`. 
+
+Attaching listener to an object:
+```php
+$cart = Cart::get($sessionId);
+$cart->addListener('app\event\OnAddToCart', function($event){
+  $id = $event->getCallee()->getLastInsertedItemId();
+  echo 'Added to cart item with id:' . $id;
+});
+```
+
+Attaching listener to EventHub:
+```php
+alchemy\event\EventHub::addListener('app\event\OnAddToCart', function($event){
+  $id = $event->getCallee()->getLastInsertedItemId();
+  echo 'Added to cart item with id:' . $id;
+});
+```
+
+`alchemy\event\EventHub` is global event center- here goes all events dispatched by your controllers/models, so you can
+simply extend/pluginize your application just by using this special class. 
+
+You should also be aware of dispatching to many events from your controllers/models because it can influent on your application robustness.
+
+About listeners
+---------------
+
+Listeners simply are php's callables, e.g.
+- `array($object, 'method')`
+- `array('Class', 'method')`
+- `'functionname'`
+- `closures`
+
+In my examples I've used closures as event hanlders, you are not limited only to closures use whatever 
+is a callable object.
+You can also attach multiple different listeners to a desired event.
+
+Framework events
+----------------
+
+Here is the list of major framework's events:
+- `alchemy\app\event\OnUndefinedResource` no valid resource found (no route defined for uri currently in browser)
+- `alchemy\app\event\OnBeforeResourceCall` dispatched when application found right resource and is going to run it
+- `alchemy\app\event\OnAfterResourceCall` dispatched when resource was executed successfully
+- `alchemy\app\event\OnError` dispatched when resource was executed with uncatched exceptions (you can use it to build your own error pages)
+- `alchemy\app\event\OnShutdown` dispatched when application is going to finish the execution
+- `alchemy\storage\db\event\DBEvent` dispatched every time record was deleted, added, got or updated
+- `alchemy\storage\db\event\OnGet` dispatched when record was get from database
+- `alchemy\storage\db\event\OnSave` dispatched when there was a try to save a record to database
+- `alchemy\storage\db\event\OnPersists` dispatched when record was successfully saved to database
+- `alchemy\storage\db\event\OnDelete` dispatched when record was delete from database
 
 
