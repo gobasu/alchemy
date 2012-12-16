@@ -80,6 +80,8 @@ class Application
             EventHub::dispatch(new OnError($e));
             if ($this->onErrorHandler && $this->onErrorHandler->isCallable()) { //is app error handler registered
                 $this->onErrorHandler->call($e);
+                EventHub::dispatch(new OnShutdown($this));
+                return false;
             } else {
                 throw $e;
             }
