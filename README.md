@@ -44,6 +44,15 @@ List of contents
 - [About listeners](#about-listeners)
 - [Framework events](#framework-events)
 
+**[Acl]**
+Check `alchemy\security\Acl` class, detailed doc will appear here later
+
+**[Session handling]**
+Check `alchemy\storage\Session` class, detailed doc will appear here later
+
+**[Image manipulation]**
+Check `alchemy\file\Image` class, detailed doc will appear here later
+
 **[Miscellaneous](#miscellaneous)**
 
 Setup
