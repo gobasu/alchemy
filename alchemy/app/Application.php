@@ -114,7 +114,7 @@ class Application extends EventDispatcher
         } else {
             $response = call_user_func(array($resource, 'call'), $this->route->getParameters());
         }
-        $this->dispatch(new OnAfterResourceCall($this));
+
         $contents = trim(ob_get_contents());
         ob_end_clean();
 
@@ -132,6 +132,7 @@ class Application extends EventDispatcher
             $this->dispatch(new OnError($this));
             throw new ApplicationException('Not a valid response type of ' . $responseType);
         }
+        $this->dispatch(new OnAfterResourceCall($this));
 
         echo $response;
     }

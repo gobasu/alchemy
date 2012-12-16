@@ -43,12 +43,34 @@ abstract class Model extends EventDispatcher
         $this->{self::getSchema()->getPKProperty()->getName()} = $pkValue;
     }
 
+    /**
+     * Override this method if you need
+     * Called everytime when framework is trying to put model
+     * to the database
+     */
     public function onSave() {}
+
+    /**
+     * Override this method if you need
+     * Called everytime when model have been saved to database
+     */
     public function onPersists() {}
+
+    /**
+     * Override this method if you need
+     * Called everytime when model was purged from db
+     */
     public function onDelete() {}
+
+    /**
+     * Override this method if you need
+     * Called when record was fetched from DB
+     */
     public function onGet() {}
 
     /**
+     * Gets model's connection
+     *
      * @return IConnection|\PDO
      */
     protected static function getConnection()
@@ -73,6 +95,8 @@ abstract class Model extends EventDispatcher
     }
 
     /**
+     * Gets data corresponding to given PK from current connection
+     *
      * @param $pk
      * @return Model
      */
@@ -85,11 +109,21 @@ abstract class Model extends EventDispatcher
         return $connection->get($modelName, $pk);
     }
 
+    /**
+     * Gets model's PK value
+     *
+     * @return mixed
+     */
     public function getPK()
     {
         return $this->{self::getSchema()->getPKProperty()->getName()};
     }
 
+    /**
+     * Set model's PK value
+     *
+     * @param $value
+     */
     private function setPK($value)
     {
         $this->{self::getSchema()->getPKProperty()->getName()} = $value;
@@ -160,6 +194,12 @@ abstract class Model extends EventDispatcher
 
     }
 
+    /**
+     * Gets model's property
+     *
+     * @param $name
+     * @return mixed
+     */
     public function __get($name)
     {
         if (isset($this->changes[$name])) {
@@ -169,6 +209,11 @@ abstract class Model extends EventDispatcher
         return $this->{$name};
     }
 
+    /**
+     * Persists model to database
+     *
+     * @return bool
+     */
     public function save()
     {
         $schema = self::getSchema();
@@ -181,6 +226,9 @@ abstract class Model extends EventDispatcher
 
     }
 
+    /**
+     * Purges model from database
+     */
     public function delete()
     {
         $schema = self::getSchema();
@@ -189,6 +237,9 @@ abstract class Model extends EventDispatcher
         $connection->delete($this);
     }
 
+    /**
+     * Forces the model persisting even if no changes were applied to model
+     */
     public function forceSave()
     {
         $this->forceSave = true;
