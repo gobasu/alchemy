@@ -15,6 +15,8 @@ Tests were run at machine:
 - Core 2 Duo 2.4 GHz
 - 8GB RAM
 - 120 GB SSD Intel
+- PHP 5.4.4 + APC 
+- XHProf
 
 All values are average after 10 runs. More results will appear- stay tuned.
 
