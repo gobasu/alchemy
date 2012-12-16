@@ -11,6 +11,11 @@ What differs this framework from others:
 
 Performance notes
 -----------------
+Test were run at machine:
+- Core 2 Duo 2.4 GHz
+- 8GB RAM
+- 120 GB SSD Intel
+
 All values are average after 10 runs. More results will appear- stay tuned.
 
 **Simple hello world page**
