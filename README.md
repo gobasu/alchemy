@@ -8,6 +8,8 @@ What differs this framework from others:
 - It does not trying force on you to use predefined dir structure you may not like or don't want to have.
 - It does not mixing framework files with your application files
 - Say no to intricate configurations and setups, alchemy requires no configuration
+- Fast (on C2D 2.4Ghz + 4GB RAM, hello world takes: 9,243 microsecs and 351,920 bytes of memory, for comparsion the laravel
+framework to do the same takes 125,782 microsecs and 1,385,640 bytes of memory- xhprof info)
 
 
 List of contents
