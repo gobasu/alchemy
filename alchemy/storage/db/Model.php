@@ -43,6 +43,11 @@ abstract class Model extends EventDispatcher
         $this->{self::getSchema()->getPKProperty()->getName()} = $pkValue;
     }
 
+    public function onSave() {}
+    public function onPersists() {}
+    public function onDelete() {}
+    public function onGet() {}
+
     /**
      * @return IConnection|\PDO
      */
@@ -168,10 +173,10 @@ abstract class Model extends EventDispatcher
     {
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
-        parent::dispatch(new event\OnSave($this));
+        $this->onSave();
         $connection->save($this);
         $this->applyChanges();
-        parent::dispatch(new event\OnPersists($this));
+        $this->onPersists();
         return true;
 
     }
@@ -180,7 +185,7 @@ abstract class Model extends EventDispatcher
     {
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
-        parent::dispatch(new event\OnDelete($this));
+        $this->onDelete();
         $connection->delete($this);
     }
 
