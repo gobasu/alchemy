@@ -584,8 +584,6 @@ class Cart extends Model
 {
     public function __construct($sessionId = null)
     {
-        $this->addListener('alchemy\storage\db\event\OnGet', array($this, 'onLoad'));
-        $this->addListener('alchemy\storage\db\event\OnSave', array($this, 'onSave'));
         parent::__construct($sessionId);
     }
     public function addToCart($itemId, $count)
@@ -618,12 +616,17 @@ class Cart extends Model
     {
         $this->cartData[$itemId]['count'] = $count;
     }
-
-    public function onLoad(Event $e)
+    /**
+     * Called when object is get from db
+     */
+    public function onGet()
     {
         $this->cartData = json_decode($this->cartData, true);
     }
-    public function onSave(Event $e)
+    /**
+     * Called when framework is trying to save object to DB
+     */
+    public function onSave()
     {
         $this->cartData = json_encode($this->cartData);
     }
@@ -633,7 +636,7 @@ class Cart extends Model
 }
 ```
 As you can see to dispatch ane event you need to use `$this->dispatch` method which accepts one parameter of `alchemy\event\Event` instance.
-I have also used in the example some builded in framework's events to encode/decode cart data to json when it is needed. 
+I have also used in the example some builded in model's methods to encode/decode cart data to json when it is needed. 
 We will revisit framework events later on.
 
 The `dispatch` function does two things:
@@ -689,10 +692,5 @@ Here is the list of major framework's events:
 - `alchemy\app\event\OnAfterResourceCall` dispatched when resource was executed successfully
 - `alchemy\app\event\OnError` dispatched when resource was executed with uncatched exceptions (you can use it to build your own error pages)
 - `alchemy\app\event\OnShutdown` dispatched when application is going to finish the execution
-- `alchemy\storage\db\event\DBEvent` dispatched every time record was deleted, added, got or updated
-- `alchemy\storage\db\event\OnGet` dispatched when record was get from database
-- `alchemy\storage\db\event\OnSave` dispatched when there was a try to save a record to database
-- `alchemy\storage\db\event\OnPersists` dispatched when record was successfully saved to database
-- `alchemy\storage\db\event\OnDelete` dispatched when record was delete from database
 
 
