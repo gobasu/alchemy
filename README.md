@@ -11,7 +11,7 @@ What differs this framework from others:
 
 Performance notes
 -----------------
-Test were run at machine:
+Tests were run at machine:
 - Core 2 Duo 2.4 GHz
 - 8GB RAM
 - 120 GB SSD Intel
