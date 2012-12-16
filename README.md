@@ -44,6 +44,8 @@ List of contents
 - [About listeners](#about-listeners)
 - [Framework events](#framework-events)
 
+**[Miscellaneous](#miscellaneous)**
+
 Setup
 =====
 
@@ -687,10 +689,40 @@ Framework events
 ----------------
 
 Here is the list of major framework's events:
-- `alchemy\app\event\OnUndefinedResource` no valid resource found (no route defined for uri currently in browser)
-- `alchemy\app\event\OnBeforeResourceCall` dispatched when application found right resource and is going to run it
-- `alchemy\app\event\OnAfterResourceCall` dispatched when resource was executed successfully
 - `alchemy\app\event\OnError` dispatched when resource was executed with uncatched exceptions (you can use it to build your own error pages)
 - `alchemy\app\event\OnShutdown` dispatched when application is going to finish the execution
 
+Miscellaneous
+=============
 
+Custom error handling
+---------------------
+
+If you need to build 404 page or custom page when error occurs in your application you can use `Application->onError`
+method in you bootstrap file and pass a callable parameter.
+
+```php
+<?php
+require_once $VALID_PATH_TO . '/alchemy/app/Application.php';
+use alchemy\app\Application;
+
+$app = new Application($PATH_TO_APPLICATION_ROOT);
+/**
+ * You can use here all callable resource, eg
+ * Controller->method
+ * Controller::method
+ * array($object,'method')
+ * array('Class','method')
+ * closure
+ */
+$app->onError(function(\Exception $e){
+    echo '404';
+});
+//add routes here...
+$app->addRoute('*', function(){
+  echo 'Hello World!';
+});
+
+//run application
+$app->run();
+```
