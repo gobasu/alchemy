@@ -44,7 +44,6 @@ class Application
         define('AL_APP_CACHE_DIR', $cacheDir);
 
         Loader::register(function($className){
-            //ommit first namespace element and replace \ with /
             $path = Loader::getPathForApplicationClass($className);
             if (is_readable($path)) {
                 require_once $path;
@@ -52,7 +51,6 @@ class Application
         });
 
         $this->router = new Router();
-
     }
 
     public function onError($callable)
@@ -176,7 +174,9 @@ class Application
      */
     private $resource;
 
-    private $mode = 1;
+    private $mode = self::MODE_DEVELOPMENT;
+
+    protected static $instance;
 
     /**
      * @var \alchemy\http\router\Route
