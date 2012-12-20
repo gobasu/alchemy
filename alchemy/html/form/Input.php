@@ -88,6 +88,7 @@ abstract class Input
 
     public function setValue($value)
     {
+        $value = htmlentities($value);
         $this->value = $value;
         $this->attributes['value'] = $value;
     }
@@ -163,7 +164,9 @@ abstract class Input
 
     protected function attributesToString($exclude = array())
     {
-        if (!is_array($exclude)) $exclude = array($exclude);
+        if (!is_array($exclude)) {
+            $exclude = array($exclude);
+        }
         $string = '';
         foreach ($this->attributes as $attr => $value) {
             if (in_array($attr, $exclude)) continue;
