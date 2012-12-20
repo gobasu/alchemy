@@ -72,6 +72,7 @@ class Route
                 $regex = '([^\/]+?)';
             }
             $route->_registerParam($match[1]);
+            unset($route);
             return $regex;
         }, $pattern);
         
