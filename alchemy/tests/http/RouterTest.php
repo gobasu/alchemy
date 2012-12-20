@@ -12,11 +12,10 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $router->addResource('POST item/edit/{$id}', 'b');
         $router->addResource('POST post/edit/{$id}', 'b');
         $router->addResource('PUT post/edit/{$i}', 'd');
-        
-        
+
         $route = $router->getRoute();
         $resource = $router->getResource();
-        
+
         $this->assertEquals($route->getPattern(), 'post/edit/{$id}');
         $this->assertEquals($route->id, '2');
         $this->assertEquals($resource->getFunctionName(), 'b');

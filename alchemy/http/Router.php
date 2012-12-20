@@ -78,7 +78,7 @@ class Router
             if (!isset(self::$validRequestMethods[$method])) {
                 throw new RouterInvalidRequestMethodException(sprintf('Method `%s` is not a valid request method', $route[0]));
             }
-            $path = substr($route, $pos);
+            $path = substr($route, $pos + 1);
         }
 
         $this->routes[$method][$path] = $resource;
