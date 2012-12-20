@@ -18,6 +18,7 @@ use alchemy\app\Controller;
 use alchemy\http\Request;
 use alchemy\http\Response;
 use alchemy\app\Loader;
+use alchemy\storage\Session;
 
 class ApplicationException extends \Exception {}
 class ApplicationInvalidDirnameException extends ApplicationException {}
@@ -66,6 +67,7 @@ class Application
      */
     public function run($mode = self::MODE_DEVELOPMENT)
     {
+        Session::start();
         $request = Request::getGlobal();
 
         $this->router->setRequestMethod($request->getMethod());
