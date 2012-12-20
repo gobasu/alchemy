@@ -38,7 +38,7 @@ class Validator
      * $options should be an list array
      *
      */
-    public static function validate($input, $validator, $options = null)
+    public static function validate($input, $validator, array $options = null)
     {
         switch ($validator)
         {
@@ -56,23 +56,23 @@ class Validator
             }
             case self::VALIDATE_EMAIL:
             {
-                return self::email($input, $options);
+                return self::email($input);
             }
             case self::VALIDATE_IP:
             {
-                return self::ip($input, $options);
+                return self::ip($input);
             }
             case self::VALIDATE_URL:
             {
-                return self::url($input, $options);
+                return self::url($input);
             }
             case self::VALIDATE_REGEXP:
             {
-                return self::regexp($input, $options);
+                return self::regexp($input, $options['regex']);
             }
             case self::VALIDATE_CREDITCARD:
             {
-                return self::creditCard($input, $options);
+                return self::creditCard($input, $options['type']);
             }
         }
     }
@@ -232,7 +232,6 @@ class Validator
     public function regexp($value, $regexp)
     {
 
-        //return filter_var($value, FILTER_VALIDATE_REGEXP, array())
         return preg_match('#' . $regexp . '#', $value) ? true : false;
     }
 

@@ -79,7 +79,7 @@ class Session
 
     /**
      *
-     * @param type $name
+     * @param $name
      * @return SessionNamespace
      */
     public static function &get($name)
