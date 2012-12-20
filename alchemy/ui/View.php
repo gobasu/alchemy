@@ -8,7 +8,13 @@ require_once AL_CORE_DIR . '/vendor/Mustache/Autoloader.php';
  */
 class View extends \Mustache_Engine
 {
-    public function __construct($dirname = 'view')
+    /**
+     * Constructor
+     *
+     * @param string $dirname relative path to your application folder pointing to views folder
+     * @param string $partial relative path to you views folder pointing to partial views
+     */
+    public function __construct($dirname = 'view', $partial = 'partials')
     {
         $config = array(
             'template_class_prefix' => '__AlchemyTplClass',
@@ -20,8 +26,9 @@ class View extends \Mustache_Engine
             'charset'               => 'UTF-8'
         );
 
-        if (is_dir(AL_APP_DIR . '/' . $dirname . '/common')) {
-            $config['partials_loader'] = new \Mustache_Loader_FilesystemLoader(AL_APP_DIR . '/' . $dirname . '/common');
+        $partials = AL_APP_DIR . DIRECTORY_SEPARATOR . $dirname . DIRECTORY_SEPARATOR . $partial;
+        if (is_dir($partials)) {
+            $config['partials_loader'] = new \Mustache_Loader_FilesystemLoader($partials);
         }
 
         parent::__construct($config);
