@@ -36,11 +36,10 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         if (!$model->isChanged()) {
             return;
         }
-        $pk = $model->getPK();
-        if ($pk) {
-            $this->update($model);
-        } else {
+        if ($model->isNew()) {
             $this->insert($model);
+        } else {
+            $this->update($model);
         }
     }
 
