@@ -8,9 +8,8 @@ class AclTest extends PHPUnit_Framework_TestCase
 {
     public function testSetup()
     {
-        Acl::setup();
         $this->assertTrue(Acl::hasRole(Acl::ACL_DEFAULT));
-        $this->assertFalse(Acl::hasAccess('Some.action'));
+        $this->assertFalse(Acl::isAllowed('Some.action'));
     }
 
 
@@ -28,35 +27,35 @@ class AclTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue(Acl::hasRole(self::TEST_ROLE));
 
-        $this->assertTrue(Acl::hasAccess('Some.action'));
-        $this->assertTrue(Acl::hasAccess('Some.*'));
-        $this->assertTrue(Acl::hasAccess('*.action'));
-        $this->assertTrue(Acl::hasAccess('*'));
+        $this->assertTrue(Acl::isAllowed('Some.action'));
+        $this->assertTrue(Acl::isAllowed('Some.*'));
+        $this->assertTrue(Acl::isAllowed('*.action'));
+        $this->assertTrue(Acl::isAllowed('*'));
     }
 
     public function testRemoveRole()
     {
-        $this->assertTrue(Acl::hasAccess('Some.action'));
-        $this->assertTrue(Acl::hasAccess('Some.*'));
-        $this->assertTrue(Acl::hasAccess('*.action'));
-        $this->assertTrue(Acl::hasAccess('*'));
+        $this->assertTrue(Acl::isAllowed('Some.action'));
+        $this->assertTrue(Acl::isAllowed('Some.*'));
+        $this->assertTrue(Acl::isAllowed('*.action'));
+        $this->assertTrue(Acl::isAllowed('*'));
 
         Acl::removeRole(self::TEST_ROLE);
 
         $this->assertTrue(Acl::hasRole(Acl::ACL_DEFAULT));
         $this->assertFalse(Acl::hasRole(self::TEST_ROLE));
-        $this->assertFalse(Acl::hasAccess('Some.action'));
-        $this->assertFalse(Acl::hasAccess('Some.*'));
-        $this->assertFalse(Acl::hasAccess('*.action'));
-        $this->assertFalse(Acl::hasAccess('*'));
+        $this->assertFalse(Acl::isAllowed('Some.action'));
+        $this->assertFalse(Acl::isAllowed('Some.*'));
+        $this->assertFalse(Acl::isAllowed('*.action'));
+        $this->assertFalse(Acl::isAllowed('*'));
     }
 
     public function testRemoveAllRoles()
     {
         Acl::addRole(self::TEST_ROLE);
-        Acl::removeAllRoles();
+        Acl::forget();
 
-        $roles = Acl::getAttachedRoles();
+        $roles = Acl::getRoles();
         $this->assertTrue(isset($roles[Acl::ACL_DEFAULT]));
         $this->assertEquals(count($roles), 1);
     }
