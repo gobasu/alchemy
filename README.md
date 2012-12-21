@@ -89,7 +89,7 @@ Check `alchemy\storage\Session` class, detailed doc will appear here later
 - [Defining roles](#defining-roles)
 - [Assigning roles](#assigning-roles)
 - [Removing roles](#removing-roles)
-- [Checking user's roles](#checking-user-s-roles)
+- [Checking user's roles](#checking-users-roles)
 
 
 **[Image manipulation]**
