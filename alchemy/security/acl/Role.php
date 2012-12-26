@@ -17,7 +17,6 @@ class Role
      */
     public function allow($resource)
     {
-        $resource = strtolower($resource);
         if ($resource == '*') {
             $resource = array('*','*');
         } else {
@@ -42,7 +41,6 @@ class Role
      */
     public function deny($resource)
     {
-        $resource = strtolower($resource);
         if ($resource == '*') {
             $resource = array('*','*');
         } else {
@@ -69,8 +67,6 @@ class Role
     {
         $resource = explode('.', $resource);
         $resource[1] = isset($resource[1]) ? $resource[1] : '*';
-
-
 
         if (!isset($this->restrictions[$resource[0]])) {
             return $this->restrictions['*']['*'];

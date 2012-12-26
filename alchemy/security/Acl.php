@@ -86,7 +86,9 @@ class Acl
         foreach (self::$attachedRoles as $role)
         {
             $role = self::$definedRoles[$role];
-            if (!$role->hasAccess($resource)) continue;
+            if (!$role->hasAccess($resource)) {
+                continue;
+            }
             $access = true;
             break;
         }

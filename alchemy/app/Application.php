@@ -59,6 +59,11 @@ class Application
         $this->onErrorHandler = new Resource($callable);
     }
 
+    public function onStartup($callable)
+    {
+        $this->onStartupHandler = new Resource($callable);
+    }
+
     /**
      * Runs application, handles request from global scope and translate them to fire up
      * right controller and method within the controller.
@@ -74,6 +79,9 @@ class Application
         $this->router->setURI($request->getURI());
         $match = $this->router->getRoute();
         $this->resource = $this->router->getResource();
+        if ($this->onStartupHandler && $this->onStartupHandler->isCallable()) {
+            $this->onStartupHandler->call();
+        }
 
         if (!$match || !$this->resource->isCallable()) {
             $e = new ApplicationException('No callable resource to run');
@@ -167,23 +175,28 @@ class Application
     protected $onErrorHandler;
 
     /**
+     * @var \alchemy\app\Resource
+     */
+    protected $onStartupHandler;
+
+    /**
      * @var \alchemy\http\Router
      */
-    private $router;
+    protected $router;
 
     /**
      * @var \alchemy\app\Resource
      */
-    private $resource;
+    protected $resource;
 
-    private $mode = self::MODE_DEVELOPMENT;
+    protected $mode = self::MODE_DEVELOPMENT;
 
     protected static $instance;
 
     /**
      * @var \alchemy\http\router\Route
      */
-    private $route;
+    protected $route;
 
     const MODE_DEVELOPMENT = 1;
     const MODE_PRODUCTION = 2;

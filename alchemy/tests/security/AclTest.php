@@ -50,7 +50,7 @@ class AclTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(Acl::isAllowed('*'));
     }
 
-    public function testRemoveAllRoles()
+    public function testForget()
     {
         Acl::addRole(self::TEST_ROLE);
         Acl::forget();
@@ -59,6 +59,18 @@ class AclTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(isset($roles[Acl::ACL_DEFAULT]));
         $this->assertEquals(count($roles), 1);
     }
+
+    public function testDeny()
+    {
+        Acl::defineRole(self::TEST_ROLE)->allow('Some.action');
+        Acl::addRole(self::TEST_ROLE);
+        $this->assertTrue(Acl::isAllowed('Some.action'));
+        $this->assertFalse(Acl::isAllowed('Some.other'));
+        $this->assertFalse(Acl::isAllowed('Another.*'));
+        $this->assertFalse(Acl::isAllowed('Another.other'));
+
+    }
+
 
     const TEST_ROLE = 'MyTestRole';
 }

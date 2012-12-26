@@ -17,6 +17,62 @@ class Headers implements \Iterator, \ArrayAccess
     }
 
     /**
+     * Parses Accept-* headers to more useful format and sorts result by q, e.g
+     * text/html;level=2;q=0.4, text/html;level=1, text/*;q=0.3
+     * will be turned into :
+     * [0] => Array (
+     *      [type] => text/html
+     *      [level] => 1
+     *      [q] => 1
+     *  )
+     * [1] => Array (
+     *      [type] => text/html
+     *      [level] => 2
+     *      [q] => 0.4
+     * )
+     * [2] => Array (
+     *      [type] => text/*
+     *      [q] => 0.3
+     * )
+     *
+     * @param string $accept
+     * @return array
+     */
+    public static function parseAccept($accept)
+    {
+        $data = array();
+        $item = 0;
+        $accept = explode(',', $accept);
+        foreach ($accept as $info)
+        {
+            $data[$item++] = array();
+
+            $current = &$data[key($data)];
+            $info = explode(';', $info);
+            $current['type'] = trim($info[0]);
+            array_shift($info);
+            foreach ($info as $i) {
+                $i = explode('=', $i);
+                $current[trim($i[0])] = trim($i[1]);
+            }
+            if (!isset($current['q'])) {
+                $current['q'] = 1;
+            }
+            next($data);
+        }
+
+        //sort by q
+        usort($data, function($a, $b){
+            if ($a['q'] == $b['q']) {
+                return 0;
+            }
+            return ($a['q'] < $b['q']) ? 1 : -1;
+        });
+
+        return $data;
+    }
+
+    /**
      * Avoids from caching
      */
     public function avoidCacheControl()

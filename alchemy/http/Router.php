@@ -21,6 +21,15 @@ class Router
     }
 
     /**
+     * Forces router to reprocess matching route everytime when
+     * getResource or getRoute is called
+     */
+    public function setForceMode()
+    {
+        $this->forceMode = true;
+    }
+
+    /**
      * Gets current resource
      *
      * @return \alchemy\app\Resource
@@ -86,7 +95,7 @@ class Router
 
     private function process()
     {
-        if ($this->currentRoute && $this->currentResource) {
+        if (!$this->forceMode && $this->currentRoute && $this->currentResource) {
             return true;
         }
 
@@ -170,6 +179,8 @@ class Router
      * @var \alchemy\app\Resource
      */
     private $currentResource;
+
+    private $forceMode = false;
 
     /**
      *

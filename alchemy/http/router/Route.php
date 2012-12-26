@@ -24,6 +24,11 @@ class Route
         
         return $this->params[$param];
     }
+
+    public static function setSeparator($separator = '/')
+    {
+        self::$separator = $separator;
+    }
     
     public function getPattern()
     {
@@ -60,10 +65,11 @@ class Route
     
     private function parseUrlPattern($pattern)
     {
-        $pattern = rtrim($pattern, '/');
+        $separator = self::$separator;
+        $pattern = rtrim($pattern, $separator);
         $this->pattern = $pattern;
         //sanitize / signs
-        $pattern = str_replace('/', '\/', $pattern);
+        $pattern = str_replace($separator, '\\' . $separator, $pattern);
         $route = $this;
         $pattern = preg_replace_callback('#' . self::PATTERN_REGEX . '#', function($match) use ($route) {
             if (isset($match[2])) {
@@ -103,8 +109,10 @@ class Route
      * @var array
      */
     private $params = array();
+
+    protected static $separator = '/';
     
     const WILD_CARD = '*';
-    const PATTERN_REGEX = '\{\$([a-z0-9\-]+)(\:[^\/]+)?\}';
+    const PATTERN_REGEX = '\{\$([a-z0-9\-]+)[\\\]?(\:[^\/]+)?\}';
     
 }
