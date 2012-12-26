@@ -118,19 +118,21 @@ class I18n
      */
     public function acceptFromHTTP()
     {
-        $langList = Headers::parseAccept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-        foreach ($langList as $lang) {
-            $lang = explode('-', $lang['type']);
-            if ($lang[1]) {
-                $lang = strtolower($lang[0]) . '_' . strtoupper($lang[1]);
-            } else {
-                $lang = strtolower($lang[0]);
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $langList = Headers::parseAccept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+            foreach ($langList as $lang) {
+                $lang = explode('-', $lang['type']);
+                if ($lang[1]) {
+                    $lang = strtolower($lang[0]) . '_' . strtoupper($lang[1]);
+                } else {
+                    $lang = strtolower($lang[0]);
+                }
+                if (!$this->isLanguageAvailable($lang)) {
+                    continue;
+                }
+                $this->setPHPEnvironment($lang);
+                return textdomain($this->currentDomain);
             }
-            if (!$this->isLanguageAvailable($lang)) {
-                continue;
-            }
-            $this->setPHPEnvironment($lang);
-            return textdomain($this->currentDomain);
         }
         $this->setPHPEnvironment($this->defaultLanguage);
         return textdomain($this->currentDomain);
