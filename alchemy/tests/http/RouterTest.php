@@ -38,4 +38,22 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('TestResource', $resource->getClassName());
         $this->assertEquals('a', $resource->getFunctionName());
     }
+
+    public function testSetSeparator()
+    {
+        \alchemy\http\router\Route::setSeparator(':');
+        
+        $router = new Router();
+        $router->setURI('sample:separator');
+        $router->addResource('{$resource}:{$action}', '{$resource}->{$action}');
+
+        $resource = $router->getResource();
+
+        $this->assertEquals($resource->getClassName(), 'sample');
+        $this->assertEquals($resource->getFunctionName(), 'separator');
+
+        \alchemy\http\router\Route::setSeparator('/');
+    }
+
+
 }
