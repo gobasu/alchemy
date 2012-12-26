@@ -91,6 +91,7 @@ Check `alchemy\storage\Session` class, detailed doc will appear here later
 - [Removing roles](#removing-roles)
 - [Checking user's roles](#checking-users-roles)
 
+**[I18n](#i18n)**
 
 **[Image manipulation]**
 Check `alchemy\file\Image` class, detailed doc will appear here later
@@ -787,6 +788,55 @@ Checking user's roles
 
 If you need to know wich roles are assigned to user use `alchemy\security\Acl::getRoles()`
 
+I18n
+====
+
+You can simply implement i18n in your application with a little assist of alchemy's util tool.
+
+Setting up the utility tool (*nix only environments)
+--------------------------
+
+To setup utility tool create link in you application dir, and run `locale:generate` eg
+```
+cd /path/to/your/application
+ln -s /full/path/to/alchemy/dir/alchemy ./alchemy
+./alchemy
+                           Welcome to alchemy util toolset                      
+                           ===============================                      
+Command list:
+  - application:create [name]   creates bootstrap application in current working directory
+	- locale:generate             generates locale's template for current working directory
+
+locale:generate
+Are you sure you want to generate locale for application from current directory? [yes/no]y
+Generating template...
+...
+Choose save file for locale template or hit enter [locale/template/locale.pot]
+Locale template file saved!
+quit
+```
+
+Now use poedit or other gettext catalog editor to edit the template file and save it eg. `locale\en\LC_MESSAGES\messages.po`
+Poedit will authomatically create `*.mo` file.
+
+The last thing you need to do is to create `alchemy\util\I18n` instance in your bootstrap file, eg
+
+```php
+<?php
+require_once realpath(dirname(__FILE__) . '/../../alchemy/app/Application.php');
+
+use alchemy\app\Application;
+
+$app = new Application(realpath(dirname(__FILE__) . '/../'));
+//important create instance after new Application
+$i18n = new \alchemy\util\I18n();
+$i18n->setLanguage('en');
+
+$app->addRoute('*', 'example\controller\HelloWorld->sayHello'); //default route
+$app->run();
+```
+
+For more check the `alchemy\util\I18n` class
 
 Miscellaneous
 =============
