@@ -92,6 +92,8 @@ Check `alchemy\storage\Session` class, detailed doc will appear here later
 - [Checking user's roles](#checking-users-roles)
 
 **[I18n](#i18n)**
+- [Accepting language from client headers](#accepting-language-from-client-headers)
+- [Creating language's aliases](#creating-languages-aliases)
 
 **[Image manipulation]**
 Check `alchemy\file\Image` class, detailed doc will appear here later
@@ -836,7 +838,32 @@ $app->addRoute('*', 'example\controller\HelloWorld->sayHello'); //default route
 $app->run();
 ```
 
-For more check the `alchemy\util\I18n` class
+Accepting language from client headers
+-----------------------------------
+
+If you need to automatically use language for user basing on client headers use `\alchemy\util\I18n::acceptFromHTTP` method, eg
+```php
+$i18n = new \alchemy\util\I18n();
+$i18n->acceptFromHTTP();
+```
+
+Creating language's aliases
+-------------------------
+
+Using language based on client headers may force you to copy translations,eg. 
+Let's assume you've got an `en` language support but browser headers are following
+```
+en-gb, en-us;q=0.7
+```
+
+So instead copying existing translation to `en_GB` or `en_US` dirs you can just use `\alchemy\util\I18n::addAlias($aliasName, $languageCode)`
+
+```php
+$i18n = new \alchemy\util\I18n();
+$i18n->addAlias('en_GB', 'en');
+$i18n->addAlias('en_US', 'en');
+$i18n->acceptFromHTTP();
+```
 
 Miscellaneous
 =============
