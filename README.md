@@ -793,6 +793,7 @@ If you need to know wich roles are assigned to user use `alchemy\security\Acl::g
 I18n
 ====
 
+If you are not familiar with gettext I highly recommand you to read the [o'reilly article](http://onlamp.com/pub/a/php/2002/06/13/php.html) about gettext and php
 You can simply implement i18n in your application with a little assist of alchemy's util tool.
 
 Setting up the utility tool (*nix only environments)
