@@ -96,7 +96,7 @@ List of contents
 - [Accepting language from client headers](#accepting-language-from-client-headers)
 - [Creating language's aliases](#creating-languages-aliases)
 
-**[Image manipulation]**(#image-manipulation)
+**[Image manipulation](#image-manipulation)**
 
 **[Miscellaneous](#miscellaneous)**
 
