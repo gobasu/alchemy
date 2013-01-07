@@ -935,8 +935,8 @@ $i18n->acceptFromHTTP();
 Image Manipulation
 ==================
 
-Creating image handler class
-----------------------------
+Creating image object
+---------------------
 ```php
 $img = new alchemy\file\Image($path, $preserveTransparency = true);
 ```
