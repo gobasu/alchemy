@@ -9,93 +9,28 @@ What differs this framework from others:
 - It does not mixing framework files with your application files
 - Say no to intricate configurations and setups, alchemy requires no configuration
 
-Performance notes
------------------
-Tests were run at machine:
-- Core 2 Duo 2.4 GHz
-- 8GB RAM
-- 120 GB SSD Intel
-- PHP 5.4.4 + APC 
-- XHProf
-
-All values are average after 10 runs. More results will appear- stay tuned.
-
-**Simple hello world page**
-
-<pre>
-+==============+==========+============+
-|   Framework  | time[ms] | mem[bytes] |
-+==============+==========+============+
-|    alchemy   |  11,370  |  286,304   |
-+--------------+----------+------------+
-|     slim     |  23,125  |  449,280   |
-+--------------+----------+------------+
-| code igniter |  24,966  |  486,760   |
-+--------------+----------+------------+
-|     cake     |  818,488 | 2,943,936  |
-+--------------+----------+------------+
-|    laravel   |  99,838  | 1,385,688  |
-+--------------+----------+------------+
-</pre>
-
-**Hello world with database handling**
-
-**Page with acl usage**
-
-**Plugin handling**
-
-**Custom errorpage**
-
-
 
 List of contents
 ----------------
 
-**[Setup](#setup)**
-- [Server Requirements](#server-requirements)
-- [Basics](#basics)
-- [Creating bootstrap file](#creating-bootstrap-file)
+**[Setup](/dkraczkowski/alchemy/blob/master/docs/Setup.md)**
 
-**[Routing](#routing)**
-- [Resource](#resource)
-- [Route types](#route-types)
-- [Advanced routing](#advanced-routing)
+**[Routing](/dkraczkowski/alchemy/blob/master/docs/Routing.md)**
 
-**[Controllers](#controllers)**
-- [Tying route to a controller](#tying-route-to-a-controller)
-- [Getting route parameters](#getting-route-parameters)
+**[Controllers](/dkraczkowski/alchemy/blob/master/docs/Controllers.md)**
 
-**[Models](#models)**
-- [Annotation system](#annotation-system)
-- [Example model](#example-model)
-- [Setting up database connection](#setting-up-database-connection)
-- [Getting item by pk](#getting-item-by-pk)
-- [Updating and creating model](#updating-and-creating-model)
-- [Simple search API](#simple-search-api)
-- [Custom queries](#custom-queries)
+**[Models](/dkraczkowski/alchemy/blob/master/docs/Models.md)**
 
-**[Views](#views)**
+**[Views](/dkraczkowski/alchemy/blob/master/docs/Views.md)**
 
-**[Event system](#event-system)**
-- [Dispatching a custom event](#dispatching-a-custom-event)
-- [Attaching listeners](#attaching-listeners)
-- [About listeners](#about-listeners)
-- [Framework events](#framework-events)
+**[Events](/dkraczkowski/alchemy/blob/master/docs/Events.md)**
 
-**[Session](#session)**
-- [Using namespace](#using-namespace)
-- [Custom session handler](#custom-session-handler)
+**[Session](/dkraczkowski/alchemy/blob/master/docs/Session.md)**
 
-**[Acl](#acl)**
-- [Defining roles](#defining-roles)
-- [Assigning roles](#assigning-roles)
-- [Removing roles](#removing-roles)
-- [Checking user's roles](#checking-users-roles)
+**[Acl](/dkraczkowski/alchemy/blob/master/docs/Acl.md)**
 
-**[I18n](#i18n)**
-- [Accepting language from client headers](#accepting-language-from-client-headers)
-- [Creating language's aliases](#creating-languages-aliases)
+**[I18n](/dkraczkowski/alchemy/blob/master/docs/I18n.md)**
 
-**[Image manipulation](#image-manipulation)**
+**[Image manipulation](dkraczkowski/alchemy/blob/master/docs/ImageManipulation.md)**
 
-**[Other](#other)**
+**[Other](/dkraczkowski/alchemy/blob/master/docs/Other.md)**
