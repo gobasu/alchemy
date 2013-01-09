@@ -12,7 +12,7 @@ class Acl
      * @param $name role name
      * @return Role
      */
-    public static function defineRole($name)
+    public static function defineRole($name = Acl::ACL_DEFAULT)
     {
         return self::$definedRoles[$name] = new Role();
     }
@@ -33,7 +33,7 @@ class Acl
      * Gets attached roles
      * @return array
      */
-    public static function getAttachedRoles()
+    public static function getRoles()
     {
         return self::$attachedRoles;
     }
@@ -77,7 +77,7 @@ class Acl
      * Checks whatever user has access to passed resource
      * @return bool
      */
-    public static function hasAccess($resource)
+    public static function isAllowed($resource)
     {
         //if (key_exists($key, self::$cache)) return self::$cache[$key];
 
@@ -86,8 +86,9 @@ class Acl
         foreach (self::$attachedRoles as $role)
         {
             $role = self::$definedRoles[$role];
-            //var_dump($role);
-            if (!$role->hasAccess($resource)) continue;
+            if (!$role->hasAccess($resource)) {
+                continue;
+            }
             $access = true;
             break;
         }
@@ -99,24 +100,20 @@ class Acl
     /**
      * Remove all attached roles except default one
      */
-    public static function removeAllRoles()
+    public static function forget()
     {
         self::$attachedRoles = array();
         self::$cache = array();
         self::addRole(self::ACL_DEFAULT);
     }
 
-    /**
-     *
-     * @return Role
-     */
-    public static function defineDefaultRole()
-    {
-        return self::defineRole(self::ACL_DEFAULT);
-    }
-
     public static function setup()
     {
+        /**
+         * define default role and deny for all,
+         * can be overriten by Acl::defineRole()->...
+         */
+        self::defineRole()->deny('*');
         $acl = Session::get('acl');
         self::$attachedRoles = &$acl['user_roles'];
         self::$cache = &$acl['cache'];
@@ -124,11 +121,6 @@ class Acl
         if (!count(self::$attachedRoles))
         {
             self::$attachedRoles = array();
-            //define default role if not defined
-            if (!self::roleExists(self::ACL_DEFAULT)) {
-                self::defineRole(self::ACL_DEFAULT)->deny('*');
-            }
-
             self::addRole(self::ACL_DEFAULT);
         }
 
@@ -141,3 +133,9 @@ class Acl
     private static $definedRoles = array();
     private static $cache = array();
 }
+
+/**
+ * @side-efect
+ * When loaded Acl is automatically setup
+ */
+Acl::setup();

@@ -11,19 +11,18 @@ require_once AL_CORE_DIR . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '
 Loader::setup();
 
 use alchemy\http\Router;
-use alchemy\event\EventDispatcher;
-use alchemy\app\event\OnUndefinedResource;
-use alchemy\app\event\OnBeforeResourceCall;
-use alchemy\app\event\OnAfterResourceCall;
+use alchemy\event\EventHub;
 use alchemy\app\event\OnError;
+use alchemy\app\event\OnShutdown;
 use alchemy\app\Controller;
 use alchemy\http\Request;
 use alchemy\http\Response;
 use alchemy\app\Loader;
+use alchemy\storage\Session;
 
 class ApplicationException extends \Exception {}
 class ApplicationInvalidDirnameException extends ApplicationException {}
-class Application extends EventDispatcher
+class Application
 {
     /**
      * Constructor
@@ -32,6 +31,7 @@ class Application extends EventDispatcher
      */
     public function __construct($appDir)
     {
+        \alchemy\event\EventHub::initialize();
         if (!is_dir($appDir)) {
             throw new ApplicationInvalidDirnameException('Application dir does not exists');
         }
@@ -45,7 +45,6 @@ class Application extends EventDispatcher
         define('AL_APP_CACHE_DIR', $cacheDir);
 
         Loader::register(function($className){
-            //ommit first namespace element and replace \ with /
             $path = Loader::getPathForApplicationClass($className);
             if (is_readable($path)) {
                 require_once $path;
@@ -53,7 +52,16 @@ class Application extends EventDispatcher
         });
 
         $this->router = new Router();
+    }
 
+    public function onError($callable)
+    {
+        $this->onErrorHandler = new Resource($callable);
+    }
+
+    public function onStartup($callable)
+    {
+        $this->onStartupHandler = new Resource($callable);
     }
 
     /**
@@ -64,37 +72,52 @@ class Application extends EventDispatcher
      */
     public function run($mode = self::MODE_DEVELOPMENT)
     {
+        Session::start();
         $request = Request::getGlobal();
 
         $this->router->setRequestMethod($request->getMethod());
         $this->router->setURI($request->getURI());
         $match = $this->router->getRoute();
         $this->resource = $this->router->getResource();
+        if ($this->onStartupHandler && $this->onStartupHandler->isCallable()) {
+            $this->onStartupHandler->call();
+        }
 
         if (!$match || !$this->resource->isCallable()) {
-            $this->dispatch(new OnUndefinedResource($this));
-            return;
+            $e = new ApplicationException('No callable resource to run');
+            EventHub::dispatch(new OnError($e));
+            if ($this->onErrorHandler && $this->onErrorHandler->isCallable()) { //is app error handler registered
+                $this->onErrorHandler->call($e);
+                EventHub::dispatch(new OnShutdown($this));
+                return false;
+            } else {
+                throw $e;
+            }
         }
         $this->route = $match;
 
         try {
             //add execute listener
             ob_start();
-            $this->addListener('alchemy\app\event\OnBeforeResourceCall', array($this, '_executeResource'));
-            $this->dispatch(new OnBeforeResourceCall($this));
+            $this->executeResource();
             Controller::_unload();
+
         } catch (\Exception $e) {
-            if (!$this->dispatch(new OnError($e))) {
+            EventHub::dispatch(new OnError($e));
+            if ($this->onErrorHandler && $this->onErrorHandler->isCallable()) { //is app error handler registered
+                $this->onErrorHandler->call($e);
+            } else {
                 throw $e;
             }
         }
+        EventHub::dispatch(new OnShutdown($this));
     }
 
     /**
      * Executes resource found in run method
      * DO NOT CALL IT EXTERNALLY
      */
-    public function _executeResource()
+    protected function executeResource()
     {
         $resource = $this->resource;
         $className = $resource->getClassName();
@@ -110,7 +133,7 @@ class Application extends EventDispatcher
         } else {
             $response = call_user_func(array($resource, 'call'), $this->route->getParameters());
         }
-        $this->dispatch(new OnAfterResourceCall($this));
+
         $contents = trim(ob_get_contents());
         ob_end_clean();
 
@@ -125,7 +148,6 @@ class Application extends EventDispatcher
             $response = new Response('');
         } else {
             $responseType = get_class($response);
-            $this->dispatch(new OnError($this));
             throw new ApplicationException('Not a valid response type of ' . $responseType);
         }
 
@@ -148,24 +170,36 @@ class Application extends EventDispatcher
     }
 
     /**
-     * @var \alchemy\http\Router
+     * @var \alchemy\app\Resource
      */
-    private $router;
+    protected $onErrorHandler;
 
     /**
      * @var \alchemy\app\Resource
      */
-    private $resource;
+    protected $onStartupHandler;
 
-    private $mode = 1;
+    /**
+     * @var \alchemy\http\Router
+     */
+    protected $router;
+
+    /**
+     * @var \alchemy\app\Resource
+     */
+    protected $resource;
+
+    protected $mode = self::MODE_DEVELOPMENT;
+
+    protected static $instance;
 
     /**
      * @var \alchemy\http\router\Route
      */
-    private $route;
+    protected $route;
 
     const MODE_DEVELOPMENT = 1;
     const MODE_PRODUCTION = 2;
 
-    const VERSION = '0.9.2';
+    const VERSION = '0.9.3';
 }

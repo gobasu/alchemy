@@ -2,6 +2,7 @@
 namespace alchemy\storage\db;
 use alchemy\storage\DB;
 use alchemy\app\Loader;
+use alchemy\event\EventDispatcher;
 
 class ModelException extends \Exception {}
 /**
@@ -26,30 +27,8 @@ class ModelException extends \Exception {}
  *
  * @author: lunereaper
  */
-abstract class Model
+abstract class Model extends EventDispatcher
 {
-    /**
-     * Construct new Model with given PK
-     *
-     * @param mixed $pkValue id or pk value
-     */
-    public function __construct($pkValue = null)
-    {
-        if ($pkValue === null) {
-            return;
-        }
-
-        $this->{self::getSchema()->getPKProperty()->getName()} = $pkValue;
-    }
-
-    /**
-     * @return IConnection|\PDO
-     */
-    protected static function getConnection()
-    {
-        $schema = self::getSchema();
-        return DB::get($schema->getConnectionName());
-    }
 
     /**
      * Gets schema object corresponding to given model class
@@ -66,11 +45,9 @@ abstract class Model
         return self::$schemaList[$class] = SchemaBuilder::getSchema($class);
     }
 
-    public function onSave()  {}
-    public function onPersist() {}
-    public function onDelete() {}
-
     /**
+     * Gets data corresponding to given PK from current connection
+     *
      * @param $pk
      * @return Model
      */
@@ -81,16 +58,6 @@ abstract class Model
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
         return $connection->get($modelName, $pk);
-    }
-
-    public function getPK()
-    {
-        return $this->{self::getSchema()->getPKProperty()->getName()};
-    }
-
-    private function setPK($value)
-    {
-        $this->{self::getSchema()->getPKProperty()->getName()} = $value;
     }
 
     /**
@@ -121,6 +88,20 @@ abstract class Model
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
         return $connection->findAll($schema, $query, $sort);
+    }
+
+    /**
+     * Construct new Model with given PK
+     *
+     * @param mixed $pkValue id or pk value
+     */
+    public function __construct($pkValue = null)
+    {
+        if ($pkValue === null) {
+            return;
+        }
+
+        $this->{self::getSchema()->getPKProperty()->getName()} = $pkValue;
     }
 
     /**
@@ -158,6 +139,12 @@ abstract class Model
 
     }
 
+    /**
+     * Gets model's property
+     *
+     * @param $name
+     * @return mixed
+     */
     public function __get($name)
     {
         if (isset($this->changes[$name])) {
@@ -167,40 +154,116 @@ abstract class Model
         return $this->{$name};
     }
 
+    /**
+     * Override this method if you need
+     * Called everytime when framework is trying to put model
+     * to the database
+     */
+    public function onSave()
+    {}
+
+    /**
+     * Override this method if you need
+     * Called everytime when model have been saved to database
+     */
+    public function onPersists()
+    {}
+
+    /**
+     * Override this method if you need
+     * Called everytime when model was purged from db
+     */
+    public function onDelete()
+    {}
+
+    /**
+     * Override this method if you need
+     * Called when record was fetched from DB
+     */
+    public function onGet()
+    {}
+
+    public function isNew()
+    {
+        return $this->getPK() == null ? true : false;
+    }
+
+    public function isChanged()
+    {
+        return $this->isChanged;
+    }
+
+    /**
+     * Gets model's PK value
+     *
+     * @return mixed
+     */
+    public function getPK()
+    {
+        return $this->{self::getSchema()->getPKProperty()->getName()};
+    }
+
+    /**
+     * Set model's PK value
+     *
+     * @param $value
+     */
+    private function setPK($value)
+    {
+        $this->{self::getSchema()->getPKProperty()->getName()} = $value;
+    }
+
+    /**
+     * Persists model to database
+     *
+     * @return bool
+     */
     public function save()
     {
-        $this->onSave();
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
-
+        $this->onSave();
         $connection->save($this);
-        $this->onPersist();
         $this->applyChanges();
+        $this->onPersists();
         return true;
 
     }
 
+    /**
+     * Purges model from database
+     */
     public function delete()
     {
-        $this->onDelete();
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
-
+        $this->onDelete();
         $connection->delete($this);
     }
 
+    /**
+     * Forces the model persisting even if no changes were applied to model
+     */
     public function forceSave()
     {
         $this->forceSave = true;
+        $this->isChanged = true;
     }
 
+    /**
+     * Returns serialized model to an assoc. array (key -> value)
+     * @return array
+     */
     public function serialize()
     {
         $schema = self::getSchema();
         $serialized = array();
-        foreach ($schema as $field)
-        {
-
+        foreach ($schema as $name => $property) {
+            if (isset($this->changes[$name])) {
+                $serialized[$name] = $this->changes[$name];
+            } else {
+                $serialized[$name] = $this->{$name};
+            }
         }
         return $serialized;
     }
@@ -215,6 +278,28 @@ abstract class Model
 
     }
 
+    /**
+     * Dispatches an event to EventHub
+     *
+     * @param \alchemy\event\Event $e
+     */
+    public function dispatch(\alchemy\event\Event $e)
+    {
+        \alchemy\event\EventHub::dispatch($e);
+        parent::dispatch($e);
+    }
+
+    /**
+     * Gets model's connection
+     *
+     * @return IConnection|\PDO
+     */
+    protected static function getConnection()
+    {
+        $schema = self::getSchema();
+        return DB::get($schema->getConnectionName());
+    }
+
     private function applyChanges()
     {
         foreach ($this->changes as $key => $value) {
@@ -222,11 +307,6 @@ abstract class Model
         }
         $this->changes = array();
         $this->isChanged = false;
-    }
-
-    public function isChanged()
-    {
-        return $this->isChanged;
     }
 
     protected $forceSave = false;

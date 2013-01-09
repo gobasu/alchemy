@@ -1,6 +1,9 @@
 <?php
 namespace alchemy\http\router;
-
+/**
+ * Route class
+ * Handles and parses application's route regex information
+ */
 class Route 
 {
     public function __construct($pattern)
@@ -21,6 +24,11 @@ class Route
         
         return $this->params[$param];
     }
+
+    public static function setSeparator($separator = '/')
+    {
+        self::$separator = $separator;
+    }
     
     public function getPattern()
     {
@@ -33,7 +41,7 @@ class Route
     }
     
     /**
-     * Checks whetever route match given uri
+     * Checks whatever route match given uri
      * 
      * @param string $uri 
      * @return true if uri match route's pattern
@@ -57,27 +65,39 @@ class Route
     
     private function parseUrlPattern($pattern)
     {
-        $pattern = rtrim($pattern, '/');
+        $separator = self::$separator;
+        $pattern = rtrim($pattern, $separator);
         $this->pattern = $pattern;
         //sanitize / signs
-        $pattern = str_replace('/', '\/', $pattern);
+        $pattern = str_replace($separator, '\\' . $separator, $pattern);
         $route = $this;
         $pattern = preg_replace_callback('#' . self::PATTERN_REGEX . '#', function($match) use ($route) {
-            $route->_registerParam($match[0], $match[1]);
-            return '([^\/]+?)';
+            if (isset($match[2])) {
+                $regex = '(' . substr($match[2],1) . ')';
+            } else {
+                $regex = '([^\/]+?)';
+            }
+            $route->_registerParam($match[1]);
+            unset($route);
+            return $regex;
         }, $pattern);
         
         $this->regex = '^' . $pattern . '\/?$';
     }
-    
-    public function _registerParam($paramVariable, $paramName)
+
+    /**
+     * Registers param within the route
+     *
+     * @param $paramName
+     */
+    public function _registerParam($paramName)
     {
         $this->params[$paramName] = null;
     }
     
     
     /**
-     * Url pattern coresponding to given resource
+     * Url pattern
      * @var string
      */
     private $regex;
@@ -89,8 +109,10 @@ class Route
      * @var array
      */
     private $params = array();
+
+    protected static $separator = '/';
     
     const WILD_CARD = '*';
-    const PATTERN_REGEX = '\{\$([a-z0-9\-]+)\}';
+    const PATTERN_REGEX = '\{\$([a-z0-9\-]+)[\\\]?(\:[^\/]+)?\}';
     
 }

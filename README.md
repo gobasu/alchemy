@@ -9,25 +9,63 @@ What differs this framework from others:
 - It does not mixing framework files with your application files
 - Say no to intricate configurations and setups, alchemy requires no configuration
 
+Performance notes
+-----------------
+Tests were run at machine:
+- Core 2 Duo 2.4 GHz
+- 8GB RAM
+- 120 GB SSD Intel
+- PHP 5.4.4 + APC 
+- XHProf
+
+All values are average after 10 runs. More results will appear- stay tuned.
+
+**Simple hello world page**
+
+<pre>
++==============+==========+============+
+|   Framework  | time[ms] | mem[bytes] |
++==============+==========+============+
+|    alchemy   |  11,370  |  286,304   |
++--------------+----------+------------+
+|     slim     |  23,125  |  449,280   |
++--------------+----------+------------+
+| code igniter |  24,966  |  486,760   |
++--------------+----------+------------+
+|     cake     |  818,488 | 2,943,936  |
++--------------+----------+------------+
+|    laravel   |  99,838  | 1,385,688  |
++--------------+----------+------------+
+</pre>
+
+**Hello world with database handling**
+
+**Page with acl usage**
+
+**Plugin handling**
+
+**Custom errorpage**
+
+
 
 List of contents
 ----------------
 
-[Setup](#setup)
+**[Setup](#setup)**
 - [Server Requirements](#server-requirements)
 - [Basics](#basics)
 - [Creating bootstrap file](#creating-bootstrap-file)
 
-[Routing](#routing)
+**[Routing](#routing)**
 - [Resource](#resource)
 - [Route types](#route-types)
 - [Advanced routing](#advanced-routing)
 
-[Controllers](#controllers)
+**[Controllers](#controllers)**
 - [Tying route to a controller](#tying-route-to-a-controller)
 - [Getting route parameters](#getting-route-parameters)
 
-[Models](#models)
+**[Models](#models)**
 - [Annotation system](#annotation-system)
 - [Example model](#example-model)
 - [Setting up database connection](#setting-up-database-connection)
@@ -36,13 +74,39 @@ List of contents
 - [Simple search API](#simple-search-api)
 - [Custom queries](#custom-queries)
 
+**[Views](#views)**
+
+**[Event system](#event-system)**
+- [Dispatching a custom event](#dispatching-a-custom-event)
+- [Attaching listeners](#attaching-listeners)
+- [About listeners](#about-listeners)
+- [Framework events](#framework-events)
+
+**[Session](#session)**
+- [Using namespace](#using-namespace)
+- [Custom session handler](#custom-session-handler)
+
+**[Acl](#acl)**
+- [Defining roles](#defining-roles)
+- [Assigning roles](#assigning-roles)
+- [Removing roles](#removing-roles)
+- [Checking user's roles](#checking-users-roles)
+
+**[I18n](#i18n)**
+- [Accepting language from client headers](#accepting-language-from-client-headers)
+- [Creating language's aliases](#creating-languages-aliases)
+
+**[Image manipulation](#image-manipulation)**
+
+**[Miscellaneous](#miscellaneous)**
+
 Setup
 =====
 
 Server requirements
 -------------------
 
-- PHP 5.4.x or newer.
+- PHP 5.3.x or newer.
 - Curl extension on
 - PDO with MySQL (to make DB working)
 
@@ -444,6 +508,16 @@ $collection = \app\model\Product::findAll(array('productLine' => 'Motorcycles'))
 echo $collection[0]->productName;//will display the first item product name
 ```
 
+Of course you can also use `>` `<` `>=` `<=` operators in your query as well as array value to match
+one of the predefined values, e.g.
+
+```php
+$collection = Product::findAll(array(
+    'productLine' => array('Trucks and Buses', 'Planes'),
+    'buyPrice <=' => 31
+));
+```
+
 **Sorting example**
 If you need to sort your simple search query you have to pass the second argument
 to the `Model::findOne` or `Model::findAll` function, e.g
@@ -525,5 +599,440 @@ and returns set of model classes if query find something otherwise empty array w
 - `alchemy\storage\db\ISchema` object
 - `array` bind data (not required)
 
+Views
+=====
+
+Alchemy for views uses [mustashe](#https://github.com/bobthecow/mustache.php) templating system. With small changes
+instead `{{` & `}}` default tags are set to `<%` `%>`. And template dir is default set to `$PATH_TO_APPLICATION_ROOT/view`.
+You can simply change it to anything you want by passing argument to `alchemy\ui\View` class' constructor.
+More detailed info about mustashe can be found [here](https://github.com/bobthecow/mustache.php/wiki)
+
+Event system
+============
+
+`alchemy\app\Application`, `alchemy\app\Controller`, `alchemy\storage\db\Model` extends `alchemy\event\EventDispatcher`.
+The `alchemy\event\EventDispatcher` is a implementation of observer pattern. It allows you to take actions when event
+is dispatched by given object as well as defining your own events. To get familiar with the framework's event system 
+I recommand you to visit [event package](http://github.com/dkraczkowski/alchemy/tree/master/alchemy/event)
+
+Dispatching a custom event
+--------------------------
+
+To define a event class you must extend `alchemy\event\Event` class and give it a meaningfull name. Let's assume 
+we want to dispatch an event meaning that item was added to cart, e.g.
+```php
+<?php
+namespace app\event;
+use alchemy\event\Event;
+class OnAddToCart extends Event {}
+```
+
+Now lets build our Cart model class:
+```php
+<?php
+namespace app\model;
+use alchemy\storage\db\Model;
+use alchemy\event\Event;
+/**
+ * Very simple cart class implementation
+ */
+class Cart extends Model
+{
+    public function __construct($sessionId = null)
+    {
+        parent::__construct($sessionId);
+    }
+    public function addToCart($itemId, $count)
+    {
+        if (!isset($this->cartData[$itemId])) {
+            $this->cartData[$itemId] = array(
+                'itemId'    => $itemId,
+                'count'     => 0,
+            );
+        }
+
+        $this->cartData[$itemId]['count'] += $count;
+        $this->lastInsertedItem = $itemId;
+        
+        //here is a dispatching event method
+        $this->dispatch(new \app\event\OnAddToCart($this));
+    }
+    
+    public function getLastInsertedItemId()
+    {
+        return $this->lastInsertedItem;
+    }
+
+    public function removeFromCart($itemId)
+    {
+        unset($this->cartData[$itemId]);
+    }
+
+    public function updateCart($itemId, $count)
+    {
+        $this->cartData[$itemId]['count'] = $count;
+    }
+    /**
+     * Called when object is get from db
+     */
+    public function onGet()
+    {
+        $this->cartData = json_decode($this->cartData, true);
+    }
+    /**
+     * Called when framework is trying to save object to DB
+     */
+    public function onSave()
+    {
+        $this->cartData = json_encode($this->cartData);
+    }
+    protectes $lastInsertedItem;
+    protected $sessionKey;
+    protected $cartData;
+}
+```
+As you can see to dispatch ane event you need to use `$this->dispatch` method which accepts one parameter of `alchemy\event\Event` instance.
+I have also used in the example some builded in model's methods to encode/decode cart data to json when it is needed. 
+We will revisit framework events later on.
+
+The `dispatch` function does two things:
+- dispatches an event in object scope
+- pass an event to global event hub (this is helpfull for plugins)
+
+Attaching listeners
+-------------------
+
+You can attach listeners strict to an object or to the `alchemy\event\EventHub`. 
+
+Attaching listener to an object:
+```php
+$cart = Cart::get($sessionId);
+$cart->addListener('app\event\OnAddToCart', function($event){
+  $id = $event->getCallee()->getLastInsertedItemId();
+  echo 'Added to cart item with id:' . $id;
+});
+```
+
+Attaching listener to EventHub:
+```php
+alchemy\event\EventHub::addListener('app\event\OnAddToCart', function($event){
+  $id = $event->getCallee()->getLastInsertedItemId();
+  echo 'Added to cart item with id:' . $id;
+});
+```
+
+`alchemy\event\EventHub` is global event center- here goes all events dispatched by your controllers/models, so you can
+simply extend/pluginize your application just by using this special class. 
+
+You should also be aware of dispatching to many events from your controllers/models because it can influent on your application robustness.
+
+About listeners
+---------------
+
+Listeners simply are php's callables, e.g.
+- `array($object, 'method')`
+- `array('Class', 'method')`
+- `'functionname'`
+- `closures`
+
+In my examples I've used closures as event hanlders, you are not limited only to closures use whatever 
+is a callable object.
+You can also attach multiple different listeners to a desired event.
+
+Framework events
+----------------
+
+Here is the list of major framework's events:
+- `alchemy\app\event\OnError` dispatched when resource was executed with uncatched exceptions (you can use it to build your own error pages)
+- `alchemy\app\event\OnShutdown` dispatched when application is going to finish the execution
+
+Session
+=======
+
+###Starting session
+
+If you are using `alchemy\app\Application::run` session will be started automatically for you otherwise to start using the
+session you have to call:
+```php
+alchemy\storage\Session::start();
+```
+
+###Destroying session
+
+```php
+alchemy\storage\Session::destroy();
+```
+
+Using namespace
+---------------
+
+Alchemy's session is based on namespaces so before start using the session you need to get namespace. If namespace does not
+exists session class will create it for you otherwise the existing one will be returned.
+
+###Getting/creating namespace
+
+```php
+$namespace = alchemy\storage\Session::get('myNamespace');
+$namespace->a++;//will increase the counter
+$namespace['a']++;//you can also use a namespace like an array
+echo $namespace->a;
+```
+
+###Setting expiration for the namespace
+
+```php
+$namespace = alchemy\storage\Session::get('myNamespace');
+$namespace->setExpiration(10);//will expire in 10 seconds of idle
+```
+
+###Checking for expired session
+
+```php
+$namespace = alchemy\storage\Session::get('myNamespace');
+
+//checks if session is expired
+if ($namespace->isExpired()) {
+    echo 'Session expired';
+}
+$namespace->setExpiration(10);
+```
+*Use `alchemy\storage\session\SessionNamespace->isExpired()` before `alchemy\storage\SessionNamespace->setExpiration()`
+because `setExpiration()` will renew the session namespace expiration date.
+
+Custom session handler
+----------------------
+
+If you would like to implement your own session handler please check the `alchemy\storage\session\IHander` for the implementation and before `Session::start()` call the
+`alchemy\storage\Session::setHandler()` to use your custom session handler.
+
+```php
+alchemy\storage\Session::setHandler(new MyCustomSessionHandler());
+```
 
 
+Acl
+===
+
+Acl is a library which helps you simplify doing the multi-level authorization.
+All you need is:
+- define your system roles
+- assign role to user
+- check if user is allowed to access given resource
+
+Defining roles
+--------------
+
+To define a role we will use `alchemy\security\Acl::defineRole($name)`, e.g.:
+```php
+Acl::defineRole('root')->allow('*'); //allow everything
+Acl::defineRole('user')->allow('account.login'); //allow onlylogging in
+Acl::defineRole('logged_in')->allow('account.*')->allow('history.*');
+```
+
+To define default role which will be assigned to user by default, use `alchemy\secutiry\Acl::defineRole()`, e.g.:
+```php
+Acl::defineRole()->allow('account.login');
+```
+
+Assigning roles
+---------------
+
+To assign role to user you must first define the role, and than use `alchemy\security\Acl::addRole($name)`, e.g.:
+
+```php
+Acl::addRole('user');
+Acl::addRole('logged_in');
+```
+
+Removing roles
+--------------
+
+To remove one role use `alchemy\security\Acl::removeRole()`, to remove all roles use `alchemy\security\Acl::forget()`
+
+Checking user's roles
+-------------------
+
+If you need to know wich roles are assigned to user use `alchemy\security\Acl::getRoles()`
+
+I18n
+====
+
+*If you are not familiar with gettext I highly recommand you to read the [o'reilly article](http://onlamp.com/pub/a/php/2002/06/13/php.html) about gettext and php.*
+
+
+You can simply implement i18n in your application with a little assist of alchemy's util tool.
+
+Setting up the utility tool (*nix only environments)
+--------------------------
+
+To setup utility tool create link in you application dir, and run `locale:generate` eg
+```
+cd /path/to/your/application
+ln -s /full/path/to/alchemy/dir/alchemy ./alchemy
+./alchemy
+                           Welcome to alchemy util toolset                      
+                           ===============================                      
+Command list:
+  - application:create [name]   creates bootstrap application in current working directory
+	- locale:generate             generates locale's template for current working directory
+
+locale:generate
+Are you sure you want to generate locale for application from current directory? [yes/no]y
+Generating template...
+...
+Choose save file for locale template or hit enter [locale/template/locale.pot]
+Locale template file saved!
+quit
+```
+
+Now use poedit or other gettext catalog editor to edit the template file and save it eg. `locale\en\LC_MESSAGES\messages.po`
+Poedit will authomatically create `*.mo` file.
+
+The last thing you need to do is to create `alchemy\util\I18n` instance in your bootstrap file, eg
+
+```php
+<?php
+require_once realpath(dirname(__FILE__) . '/../../alchemy/app/Application.php');
+
+use alchemy\app\Application;
+
+$app = new Application(realpath(dirname(__FILE__) . '/../'));
+//important create instance after new Application
+$i18n = new \alchemy\util\I18n();
+$i18n->setLanguage('en');
+
+$app->addRoute('*', 'example\controller\HelloWorld->sayHello'); //default route
+$app->run();
+```
+
+Accepting language from client headers
+-----------------------------------
+
+If you need to automatically use language for user basing on client headers use `\alchemy\util\I18n::acceptFromHTTP` method, eg
+```php
+$i18n = new \alchemy\util\I18n();
+$i18n->acceptFromHTTP();
+```
+
+Creating language's aliases
+-------------------------
+
+Using language based on client headers may force you to copy translations,eg. 
+Let's assume you've got an `en` language support but browser headers are following
+```
+en-gb, en-us;q=0.7
+```
+
+So instead copying existing translation to `en_GB` or `en_US` dirs you can just use `\alchemy\util\I18n::addAlias($aliasName, $languageCode)`
+
+```php
+$i18n = new \alchemy\util\I18n();
+$i18n->addAlias('en_GB', 'en');
+$i18n->addAlias('en_US', 'en');
+$i18n->acceptFromHTTP();
+```
+
+Image Manipulation
+==================
+
+Creating image object
+---------------------
+```php
+$img = new alchemy\file\Image($path, $preserveTransparency = true);
+```
+Parameters:
+- *$path* image path
+- *$preserveTransparency* tells if png/gif images should preserve their transparency
+
+Getting width/height
+--------------------
+```php
+$img->getWidth();
+$img->getHeight();
+```
+
+Resizing
+--------
+```php
+$img->resize($width, $height, $type = alchemy\file\Image::RESIZE_MAXIMAL);
+```
+Parameters:
+- *$width* new image width
+- *$height* new image height
+- *$type* tells whatever image should use this values as minimal values `alchemy\file\Image::RESIZE_MINIMAL` or maximal `alchemy\file\Image::RESIZE_MAXIMAL`
+
+Resizing only by `$height`
+```php
+$img->resize(null, 100);
+```
+
+Cropping image
+--------------
+```php
+$img->crop($startX, $startY, $width, $height);
+```
+Parameters:
+- *$startX* x position to start from
+- *$startY* y position to start from
+- *$width* new image width
+- *$height* new image height
+
+Cropping image from center
+```php
+$img->cropFromCenter($width, $height);
+```
+Parameters:
+- *$width* new image width
+- *$height* new image height
+
+Rotating image
+--------------
+```php
+$img->rotate($rotate = 'CW');
+```
+Parameters:
+- *$rotate* can be `CW`(clock wise) or `CCW`(counter clock wise)
+
+Saving file
+-----------
+```php
+$img->save($compression = 100, $file = null);
+```
+Parameters:
+- *$compression* 1-100 (higher - better)
+- *$file* (not required) if passed will save as new file otherwise will try to override existing file
+
+Miscellaneous
+=============
+
+Custom error handling
+---------------------
+
+If you need to build 404 page or custom page when error occurs in your application you can use `Application->onError`
+method in you bootstrap file and pass a callable parameter.
+
+```php
+<?php
+require_once $VALID_PATH_TO . '/alchemy/app/Application.php';
+use alchemy\app\Application;
+
+$app = new Application($PATH_TO_APPLICATION_ROOT);
+/**
+ * You can use here all callable resource, eg
+ * Controller->method
+ * Controller::method
+ * array($object,'method')
+ * array('Class','method')
+ * closure
+ */
+$app->onError(function(\Exception $e){
+    echo '404';
+});
+//add routes here...
+$app->addRoute('*', function(){
+  echo 'Hello World!';
+});
+
+//run application
+$app->run();
+```

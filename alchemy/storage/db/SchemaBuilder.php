@@ -24,7 +24,7 @@ class SchemaBuilder
     {
         $schemaBuilder = new SchemaBuilder($className);
         $path = Loader::getPathForApplicationClass($className);
-        $schemaPath = AL_APP_CACHE_DIR . '/' . sha1($path) . '.php';
+        $schemaPath = AL_APP_CACHE_DIR . '/' . sha1($path);
 
         if (is_readable($schemaPath)) {
             if (filemtime($schemaPath) >= filemtime(Loader::getPathForApplicationClass($className))) {
