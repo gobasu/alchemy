@@ -1,6 +1,5 @@
 <?php
-set_include_path(dirname(__FILE__) . '/../' . PATH_SEPARATOR . get_include_path());
-require_once 'app/Application.php';
+require_once '../src/alchemy/app/Application.php';
 
 //test functions and classes
 function a()
