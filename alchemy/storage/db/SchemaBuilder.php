@@ -68,6 +68,7 @@ class SchemaBuilder
         $namespace = implode('\\', array_slice($className,0, -1));
         $className = array_slice($className, -1);
 
+        //get Collection name or use class name
         if (isset($classAnnotations[self::ANNOTATION_COLLECTION])) {
             $collectionName = $classAnnotations[self::ANNOTATION_COLLECTION];
         } else {

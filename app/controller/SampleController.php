@@ -11,7 +11,8 @@ class SampleController extends Controller
 {
     public function index()
     {
-        return new Response("This is deafult page");
+        $view = new \alchemy\ui\View();
+        echo $view->render('default', array());
     }
     public function bye($params = array())
     {
