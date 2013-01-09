@@ -1,0 +1,25 @@
+{
+    "name": "alchemy/alchemy",
+    "description" : "Fast and clean PHP micro framework",
+    "keywords" : ["micro framework", "php", "framework"],
+    "homepage": "http://alchemyframework.org",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.0",
+        "ext-curl": "*",
+        "ext-pdo": "*"
+
+    },
+    "autoload": {
+        "files": ["src/alchemy/app/Application.php"]
+    },
+    "authors": [
+        {
+            "name": "Dawid Kraczkowski",
+            "email": "dawid.kraczkowski@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "version" : "0.9.3-RC1"
+
+}

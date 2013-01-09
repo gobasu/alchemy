@@ -82,8 +82,9 @@ List of contents
 - [About listeners](#about-listeners)
 - [Framework events](#framework-events)
 
-**[Session handling]**
-Check `alchemy\storage\Session` class, detailed doc will appear here later
+**[Session](#session)**
+- [Using namespace](#using-namespace)
+- [Custom session handler](#custom-session-handler)
 
 **[Acl](#acl)**
 - [Defining roles](#defining-roles)
@@ -92,9 +93,10 @@ Check `alchemy\storage\Session` class, detailed doc will appear here later
 - [Checking user's roles](#checking-users-roles)
 
 **[I18n](#i18n)**
+- [Accepting language from client headers](#accepting-language-from-client-headers)
+- [Creating language's aliases](#creating-languages-aliases)
 
-**[Image manipulation]**
-Check `alchemy\file\Image` class, detailed doc will appear here later
+**[Image manipulation](#image-manipulation)**
 
 **[Miscellaneous](#miscellaneous)**
 
@@ -744,6 +746,70 @@ Here is the list of major framework's events:
 - `alchemy\app\event\OnError` dispatched when resource was executed with uncatched exceptions (you can use it to build your own error pages)
 - `alchemy\app\event\OnShutdown` dispatched when application is going to finish the execution
 
+Session
+=======
+
+###Starting session
+
+If you are using `alchemy\app\Application::run` session will be started automatically for you otherwise to start using the
+session you have to call:
+```php
+alchemy\storage\Session::start();
+```
+
+###Destroying session
+
+```php
+alchemy\storage\Session::destroy();
+```
+
+Using namespace
+---------------
+
+Alchemy's session is based on namespaces so before start using the session you need to get namespace. If namespace does not
+exists session class will create it for you otherwise the existing one will be returned.
+
+###Getting/creating namespace
+
+```php
+$namespace = alchemy\storage\Session::get('myNamespace');
+$namespace->a++;//will increase the counter
+$namespace['a']++;//you can also use a namespace like an array
+echo $namespace->a;
+```
+
+###Setting expiration for the namespace
+
+```php
+$namespace = alchemy\storage\Session::get('myNamespace');
+$namespace->setExpiration(10);//will expire in 10 seconds of idle
+```
+
+###Checking for expired session
+
+```php
+$namespace = alchemy\storage\Session::get('myNamespace');
+
+//checks if session is expired
+if ($namespace->isExpired()) {
+    echo 'Session expired';
+}
+$namespace->setExpiration(10);
+```
+*Use `alchemy\storage\session\SessionNamespace->isExpired()` before `alchemy\storage\SessionNamespace->setExpiration()`
+because `setExpiration()` will renew the session namespace expiration date.
+
+Custom session handler
+----------------------
+
+If you would like to implement your own session handler please check the `alchemy\storage\session\IHander` for the implementation and before `Session::start()` call the
+`alchemy\storage\Session::setHandler()` to use your custom session handler.
+
+```php
+alchemy\storage\Session::setHandler(new MyCustomSessionHandler());
+```
+
+
 Acl
 ===
 
@@ -791,6 +857,9 @@ If you need to know wich roles are assigned to user use `alchemy\security\Acl::g
 I18n
 ====
 
+*If you are not familiar with gettext I highly recommand you to read the [o'reilly article](http://onlamp.com/pub/a/php/2002/06/13/php.html) about gettext and php.*
+
+
 You can simply implement i18n in your application with a little assist of alchemy's util tool.
 
 Setting up the utility tool (*nix only environments)
@@ -836,7 +905,102 @@ $app->addRoute('*', 'example\controller\HelloWorld->sayHello'); //default route
 $app->run();
 ```
 
-For more check the `alchemy\util\I18n` class
+Accepting language from client headers
+-----------------------------------
+
+If you need to automatically use language for user basing on client headers use `\alchemy\util\I18n::acceptFromHTTP` method, eg
+```php
+$i18n = new \alchemy\util\I18n();
+$i18n->acceptFromHTTP();
+```
+
+Creating language's aliases
+-------------------------
+
+Using language based on client headers may force you to copy translations,eg. 
+Let's assume you've got an `en` language support but browser headers are following
+```
+en-gb, en-us;q=0.7
+```
+
+So instead copying existing translation to `en_GB` or `en_US` dirs you can just use `\alchemy\util\I18n::addAlias($aliasName, $languageCode)`
+
+```php
+$i18n = new \alchemy\util\I18n();
+$i18n->addAlias('en_GB', 'en');
+$i18n->addAlias('en_US', 'en');
+$i18n->acceptFromHTTP();
+```
+
+Image Manipulation
+==================
+
+Creating image object
+---------------------
+```php
+$img = new alchemy\file\Image($path, $preserveTransparency = true);
+```
+Parameters:
+- *$path* image path
+- *$preserveTransparency* tells if png/gif images should preserve their transparency
+
+Getting width/height
+--------------------
+```php
+$img->getWidth();
+$img->getHeight();
+```
+
+Resizing
+--------
+```php
+$img->resize($width, $height, $type = alchemy\file\Image::RESIZE_MAXIMAL);
+```
+Parameters:
+- *$width* new image width
+- *$height* new image height
+- *$type* tells whatever image should use this values as minimal values `alchemy\file\Image::RESIZE_MINIMAL` or maximal `alchemy\file\Image::RESIZE_MAXIMAL`
+
+Resizing only by `$height`
+```php
+$img->resize(null, 100);
+```
+
+Cropping image
+--------------
+```php
+$img->crop($startX, $startY, $width, $height);
+```
+Parameters:
+- *$startX* x position to start from
+- *$startY* y position to start from
+- *$width* new image width
+- *$height* new image height
+
+Cropping image from center
+```php
+$img->cropFromCenter($width, $height);
+```
+Parameters:
+- *$width* new image width
+- *$height* new image height
+
+Rotating image
+--------------
+```php
+$img->rotate($rotate = 'CW');
+```
+Parameters:
+- *$rotate* can be `CW`(clock wise) or `CCW`(counter clock wise)
+
+Saving file
+-----------
+```php
+$img->save($compression = 100, $file = null);
+```
+Parameters:
+- *$compression* 1-100 (higher - better)
+- *$file* (not required) if passed will save as new file otherwise will try to override existing file
 
 Miscellaneous
 =============

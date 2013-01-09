@@ -3,3 +3,4 @@
 /app/cache/*
 /app/public/index.php
 /app
+/app/view/default.html
