@@ -78,8 +78,9 @@ class SessionNamespace implements \ArrayAccess, \Countable
 
     public function __wakeup()
     {
-        if ($this->isExpired()) $this->data = array();
-        if ($this->expirationTime) $this->expireAt = time() + $this->expirationTime;
+        if ($this->isExpired()) {
+            $this->data = array();
+        }
     }
 
     protected $data = array();

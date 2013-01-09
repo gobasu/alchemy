@@ -9,6 +9,7 @@ class HelloWorld extends Controller
 {
     public function sayHello()
     {
-        echo 'Hello World!';
+        echo _('Hello World!');
+        echo _('Goodbye world!');
     }
 }

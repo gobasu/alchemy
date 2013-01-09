@@ -103,6 +103,7 @@ class I18n
      */
     public function setLanguage($lang)
     {
+        $lang = $this->getLangForAlias($lang);
         if ($this->isLanguageAvailable($lang)) {
             $this->setPHPEnvironment($lang);
         }
@@ -127,6 +128,7 @@ class I18n
                 } else {
                     $lang = strtolower($lang[0]);
                 }
+                $lang = $this->getLangForAlias($lang);
                 if (!$this->isLanguageAvailable($lang)) {
                     continue;
                 }
@@ -136,6 +138,25 @@ class I18n
         }
         $this->setPHPEnvironment($this->defaultLanguage);
         return textdomain($this->currentDomain);
+    }
+
+    /**
+     * Adds alias to existing language or alias
+     * @param string $alias
+     * @param string $lang
+     */
+    public function addAlias($alias, $lang)
+    {
+        if (isset($this->aliases[$lang])) {
+            $this->aliases[$alias] = &$this->aliases[$lang];
+        } else {
+            $this->aliases[$alias] = $lang;
+        }
+    }
+
+    public function getLangForAlias($alias)
+    {
+        return isset($this->aliases[$alias]) ? $this->aliases[$alias] : $alias;
     }
 
     /**
@@ -159,6 +180,7 @@ class I18n
         putenv("LANGUAGE=$lang");
         setlocale(LC_ALL, $lang . '.' . $this->encoding);
         setlocale(LC_NUMERIC, 'C');
+        $this->currentLanguage = $lang;
 
     }
 
@@ -218,7 +240,9 @@ class I18n
     );
 
     protected $defaultLanguage = 'en';
+    protected $currentLanguage;
     protected $currentDomain = 'messages';
     protected $registeredDomains = array();
     protected $encoding = 'UTF-8';
+    protected $aliases = array();
 }
