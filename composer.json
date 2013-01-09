@@ -1,5 +1,7 @@
 {
     "name": "alchemy/alchemy",
+    "description" : "Fast and clean PHP micro",
+    "keywords" : ["micro framework", "php", "framework"],
     "homepage": "http://alchemyframework.org",
     "license": "MIT",
     "require": {
