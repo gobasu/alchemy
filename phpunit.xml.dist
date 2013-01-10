@@ -10,16 +10,8 @@
          syntaxCheck="false"
          bootstrap="tests/bootstrap.php">
     <testsuites>
-        <testsuite name="Alchemy test suit">
-            <directory>./tests</directory>
+        <testsuite name="Alchemy Test Suit">
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
-
-    <filter>
-        <whitelist>
-            <directory>./src</directory>
-            <directory>./example</directory>
-            <directory>./docs</directory>
-        </whitelist>
-    </filter>
 </phpunit>

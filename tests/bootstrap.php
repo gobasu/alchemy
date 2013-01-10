@@ -1,5 +1,5 @@
 <?php
-require_once '../src/alchemy/app/Application.php';
+require_once realpath('../src/alchemy/app/Application.php');
 
 //test functions and classes
 function a()
