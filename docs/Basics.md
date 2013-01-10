@@ -36,8 +36,8 @@ Of course you can use totally different order but you should follow some convent
 - Every file containing class which should be loaded dynamically **must have** the same name as the class.
 - The namespace of given class must be corresponding to the dirname.
 
-Example bootstrap file
-----------------------
+Example hello world application
+-------------------------------
 
 ```php
 <?php
