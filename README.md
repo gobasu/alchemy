@@ -1,5 +1,6 @@
 Alchemy framework
 =================
+[![Build Status](https://travis-ci.org/dkraczkowski/alchemy.png)](https://travis-ci.org/dkraczkowski/alchemy)
 
 Fast and clean PHP micro framework to build not only websites. Alchemy focus to be simple and yet
 gives you the way to build your application faster than writing from scratch. 
