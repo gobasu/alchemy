@@ -1,11 +1,13 @@
 Routing
 =======
+Router allows you to redirect url that match the route's expression to desired application's resource (method, closure and so).
+All routes should be defined in your bootstrap file or configuration where `alchemy\app\Application` instance is avaible.
 
 Resource
 --------
 
 Each route need to point to a specific resource (closure function, class' method, object's method)
-Framework supports three variations of resources
+Framework supports three variations of resources:
 - closures, eg:
 
         $app->addRoute('*', function(){
@@ -20,48 +22,32 @@ Framework supports three variations of resources
 
         $app->addRoute('*', 'your\controller\MyController->index');
 
-The difference between using class' method and object's method is when you are using operator `->`
-framework will automaticaly create an instance of given class and call a method. Otherhand if you use `::` operator
-framework will search for a static method and instead creating an instace it will just call that method
+The difference between using class' method (`->`) and object's method (`::`) is when using `->`
+framework will automaticaly create an instance of given class otherwise it will just call the method.
 
-Route Types
------------
+Basic routing example
+---------------------
 
-Alchemy supports to types of routing:
-- static
-- dynamic
-
-Static routing means you point given uri to desired resource;
-
-- Closure example:
 ```php
-$app->addRoute('hello/world', function(){
-    echo 'Hello World!';
-});
-```
-- Object's method example
-```php
-$app->addRoute('hello/world', 'app\controller\Hello->world');
-```
-- Class' method example
-```php
-$app->addRoute('hello/world', 'app\controller\Hello::world');
-```
+use alchemy\app\Application;
+$app = new Application($appDir);
+$app->addRoute('hello/world', 'controller\Hello::worldMethod');
+```  
 
-Dynamic routing allows you to dynamically point to resource, lets asume we are willing to handle
-various methods on a one object, so we can build route like:
+Dynamic routing example
+-----------------------
 ```php
+use alchemy\app\Application;
+$app = new Application($appDir);
 $app->addRoute('/{$controller}/{$method}', 'app\controller\{$controller}->{$method}');
 ```
-Right now if someone goes to `http://localhost/world/hello` the `app\controller\World->hello` resource
-will be executed if exists.
 
-Advanced routing
-----------------
+Using different HTTP methods
+----------------------------
 
-You can define various resources to be executed by various request types like GET, POST, PUT, DELETE
-Just simply put the request type before URI path, for example:
 ```php
+use alchemy\app\Application;
+$app = new Application($appDir);
 $app->addRoute('GET /{$controller}/{$method}', 'app\controller\{$controller}->{$method}');
 $app->addRoute('POST /{$controller}/{$method}', 'app\controller\PostHandler->{$controller}{$method}');
 ```
