@@ -1,8 +1,9 @@
-Alchemy framework
-=================
+
+![Alchemy Logo](https://raw.github.com/dkraczkowski/alchemy/master/docs/alchemy_black_180.png)
+
 [![Build Status](https://travis-ci.org/dkraczkowski/alchemy.png)](https://travis-ci.org/dkraczkowski/alchemy)
 
-Fast and clean PHP framework to build not only websites. Alchemy focus to be fast, simple and yet
+Alchemy framework is fast and clean PHP framework to build not only websites. Alchemy focus to be fast, simple and yet
 gives you the way to build your application faster than writing from scratch. 
 
 What differs this framework from others:
