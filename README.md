@@ -53,7 +53,7 @@ how to manage groups and their permisssions.
 
 Internationalization extension to make your gettext usage simpler
 
-**[Image manipulation](dkraczkowski/alchemy/blob/master/docs/ImageManipulation.md)**
+**[Image manipulation](/dkraczkowski/alchemy/blob/master/docs/ImageManipulation.md)**
 
 Image manipulation library explained
 
