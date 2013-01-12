@@ -34,7 +34,7 @@ class View extends \Mustache_Engine
      * @param string $dirname relative path to your application folder pointing to views folder
      * @param string $partial relative path to you views folder pointing to partial views
      */
-    public function __construct($dirname = 'view', $partial = 'partials')
+    public function __construct($dirname = 'view', $partial = 'shared')
     {
         $config = array(
             'template_class_prefix' => '__AlchemyTplClass',

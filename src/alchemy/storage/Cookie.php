@@ -48,6 +48,7 @@ class Cookie
         if ($expiration) {
             $expiration = time() + $expiration;
         }
+        $_COOKIE[$name] = $value;
         if (!is_array($value)) {
             setcookie($name, $value, $expiration, '/');
             return;

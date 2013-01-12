@@ -161,7 +161,7 @@ class I18n
             $langList = Headers::parseAccept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
             foreach ($langList as $lang) {
                 $lang = explode('-', $lang['type']);
-                if ($lang[1]) {
+                if (isset($lang[1])) {
                     $lang = strtolower($lang[0]) . '_' . strtoupper($lang[1]);
                 } else {
                     $lang = strtolower($lang[0]);
