@@ -65,7 +65,6 @@ class I18n
         if (defined('AL_APP_DIR')) {
             $path = AL_APP_DIR . '/' . $path;
         }
-
         if (!is_dir($path)) {
             throw new I18nException('Could not add domain: `' . $path . '` does not exists');
         }
@@ -134,6 +133,25 @@ class I18n
     }
 
     /**
+     * Accepts user language from cookies if cookie not set
+     * accepts from http
+     *
+     * @param $name cookie name
+     * @return true if cookie found or false
+     */
+    public function acceptFromCookies($name = 'userLanguage')
+    {
+        $userLanguage = isset($_COOKIE[$name]) ? $_COOKIE[$name] : false;
+        if (!$userLanguage) {
+            $this->acceptFromHTTP();
+            return false;
+        }
+
+        $this->setLanguage($userLanguage);
+        return true;
+    }
+
+    /**
      * Sets language to one accepted by client
      * If none will be available default will be used
      */
@@ -155,6 +173,9 @@ class I18n
                 $this->setPHPEnvironment($lang);
                 return textdomain($this->currentDomain);
             }
+        }
+        if (!$this->isLanguageAvailable($this->defaultLanguage)) {
+            throw new I18nException('Default language is not avaible');
         }
         $this->setPHPEnvironment($this->defaultLanguage);
         return textdomain($this->currentDomain);
