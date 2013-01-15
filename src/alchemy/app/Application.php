@@ -45,17 +45,53 @@ class ApplicationInvalidDirnameException extends ApplicationException {}
 class Application
 {
     /**
-     * Constructor
-     * 
-     * @param string $appDir dir where you application files lies
+     * Creates new application
+     *
+     * @return Application
      */
-    public function __construct($appDir)
+    public static function instance()
+    {
+        if (self::$instance instanceof Application) {
+            return self::$instance;
+        }
+        return self::$instance = new Application();
+    }
+
+    /**
+     * Constructor
+     */
+    protected function __construct()
     {
         \alchemy\event\EventHub::initialize();
-        if (!is_dir($appDir)) {
+
+        $this->router = new Router();
+    }
+
+    /**
+     * Adds route to handler resource
+     * @see alchemy\http\Router::addResource
+     *
+     * @param $route    uri pattern to given resource
+     *                  for example GET /posts/{$id}
+     * @param $handler
+     */
+    public function addRoute($route, $handler)
+    {
+        $this->router->addResource($route, $handler);
+    }
+
+    /**
+     * Sets application's root directory
+     *
+     * @param $dir
+     * @throws ApplicationInvalidDirnameException
+     */
+    public function setApplicationDir($dir)
+    {
+        if (!is_dir($dir)) {
             throw new ApplicationInvalidDirnameException('Application dir does not exists');
         }
-        define('AL_APP_DIR', $appDir);
+        define('AL_APP_DIR', $dir);
 
         $cacheDir =  AL_APP_DIR . '/cache';
         if (!is_writable($cacheDir)) {
@@ -70,8 +106,29 @@ class Application
                 require_once $path;
             }
         });
+    }
 
-        $this->router = new Router();
+    /**
+     * Sets directory for config loading
+     *
+     * @param $name
+     * @throws ApplicationInvalidDirnameException if dir does not exists
+     * @return true if dir was set otherwise false
+     */
+    public function setConfigDir($name)
+    {
+        //prevent changing dir after config is loaded
+        if ($this->configLoader instanceof \alchemy\app\util\Config && $this->configLoader->isLoaded()) {
+            return false;
+        }
+
+        $directory = AL_APP_DIR . '/' . $name;
+        if (!is_dir($directory)) {
+            throw new ApplicationInvalidDirnameException('Config dir `' . $directory . '` does not exist');
+        }
+
+        $this->configLoader = new \alchemy\app\util\Config($directory);
+        return true;
     }
 
     public function onError($callable)
@@ -85,6 +142,35 @@ class Application
     }
 
     /**
+     * Gets config data if config dir was set
+     */
+    public function getConfig()
+    {
+        if ($this->configLoader && $this->configLoader instanceof \alchemy\app\util\Config) {
+            if (!$this->configLoader->isLoaded()) {
+                $this->configLoader->load();
+            }
+        } else {
+            return false;
+        }
+
+        return $this->configLoader->getConfig();
+    }
+
+    /**
+     * Gets config constant if config dir was set
+     * @param string $name
+     */
+    public function get($name)
+    {
+        if ($this->getConfig() === false) {
+            return null;
+        }
+
+        return $this->configLoader->get($name);
+    }
+
+    /**
      * Runs application, handles request from global scope and translate them to fire up
      * right controller and method within the controller.
      * Unloads all loaded controllers of the end of execution
@@ -92,6 +178,11 @@ class Application
      */
     public function run($mode = self::MODE_DEVELOPMENT)
     {
+        if (!defined('AL_APP_DIR')) {
+            throw new ApplicationException('Application dir has not been set. Please use Application::setApplicationDir before use Application::run');
+        }
+        $this->getConfig();
+
         Session::start();
         $request = Request::getGlobal();
 
@@ -104,7 +195,7 @@ class Application
         }
 
         if (!$match || !$this->resource->isCallable()) {
-            $e = new ApplicationException('No callable resource to run');
+            $e = new ApplicationException('No callable resource found');
             EventHub::dispatch(new OnError($e));
             if ($this->onErrorHandler && $this->onErrorHandler->isCallable()) { //is app error handler registered
                 $this->onErrorHandler->call($e);
@@ -135,7 +226,6 @@ class Application
 
     /**
      * Executes resource found in run method
-     * DO NOT CALL IT EXTERNALLY
      */
     protected function executeResource()
     {
@@ -174,21 +264,6 @@ class Application
         echo $response;
     }
 
-
-
-    /**
-     * Adds route to handler resource
-     * @see alchemy\http\Router::addResource
-     *
-     * @param $route    uri pattern to given resource
-     *                  for example GET /posts/{$id}
-     * @param $handler
-     */
-    public function addRoute($route, $handler)
-    {
-        $this->router->addResource($route, $handler);
-    }
-
     /**
      * @var \alchemy\app\Resource
      */
@@ -209,8 +284,16 @@ class Application
      */
     protected $resource;
 
+    /**
+     * @var \alchemy\app\util\Config
+     */
+    protected $configLoader;
+
     protected $mode = self::MODE_DEVELOPMENT;
 
+    /**
+     * @var Application
+     */
     protected static $instance;
 
     /**
@@ -221,5 +304,5 @@ class Application
     const MODE_DEVELOPMENT = 1;
     const MODE_PRODUCTION = 2;
 
-    const VERSION = '0.9.3';
+    const VERSION = '0.9.4';
 }

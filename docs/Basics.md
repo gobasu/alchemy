@@ -44,7 +44,8 @@ Example hello world application
 require_once PATH_TO . '/alchemy/app/Application.php';
 use alchemy\app\Application;
 
-$app = new Application($PATH_TO_APPLICATION_ROOT);
+$app = Application::instance();
+$app->setApplicationDir($PATH_TO_APPLICATION_ROOT);
 
 //add routes here...
 $app->addRoute('*', function(){

@@ -9,6 +9,7 @@ require_once realpath(dirname(__FILE__) . '/../../src/alchemy/app/Application.ph
 
 use alchemy\app\Application;
 
-$app = new Application(realpath(dirname(__FILE__) . '/../'));
+$app = Application::instance();
+$app->setApplicationDir(realpath(dirname(__FILE__) . '/../'));
 $app->addRoute('*', 'example\controller\HelloWorld->sayHello'); //default route
 $app->run();
