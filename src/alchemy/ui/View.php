@@ -43,14 +43,19 @@ class View extends \Mustache_Engine
             'escape'                => function($value) {
                 return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
             },
-            'charset'               => 'UTF-8'
+            'charset'               => 'UTF-8',
+            'helpers'               => array(
+                'i18n'  => function ($text) {
+                    return 'asasas' . $text;
+                }
+            )
         );
 
         $partials = AL_APP_DIR . DIRECTORY_SEPARATOR . $dirname . DIRECTORY_SEPARATOR . $partial;
         if (is_dir($partials)) {
             $config['partials_loader'] = new \Mustache_Loader_FilesystemLoader($partials);
         }
-
+        $this->setHelpers(\alchemy\app\Application::instance()->getConfig());
         parent::__construct($config);
     }
 }

@@ -1,4 +1,7 @@
 <?php
+/**
+ *
+ */
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath("../src/")));
 require_once 'src/alchemy/app/Application.php';
 
