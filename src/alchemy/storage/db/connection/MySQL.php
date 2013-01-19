@@ -6,7 +6,7 @@ use alchemy\storage\db\ISchema;
 class MySQLException extends \PDOException {}
 
 /**
- * MySQL
+ * MySQL Connection
  *
  */
 
@@ -97,7 +97,15 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         }
     }
 
-    public function query($sql, ISchema $schema, array $data = null)
+    /**
+     * Performs custom query
+     *
+     * @param string $sql query
+     * @param array $data values to fetch
+     * @param \alchemy\storage\db\ISchema $schema schema which should be used for fetching
+     * @return array
+     */
+    public function query($sql, array $data = null, ISchema $schema = null)
     {
         $query = $this->prepare($sql);
         if ($data) {
@@ -106,13 +114,18 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
             }
         }
         $query->execute();
-        $set = array();
 
+        //no schema so fetch assoc
+        if (!$schema) {
+            return $query->fetchAll(\PDO::FETCH_ASSOC);
+        }
+
+        //fetch with schema
+        $set = array();
         while($r = $query->fetchObject($schema->getModelClass())) {
             $set[$r->getPK()] = $r;
             $r->onGet();
         }
-
         return $set;
     }
 
