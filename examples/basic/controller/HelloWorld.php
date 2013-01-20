@@ -1,5 +1,5 @@
 <?php
-namespace app\controller;
+namespace basic\controller;
 use alchemy\app\Controller;
 /**
  * HelloWorld Controller

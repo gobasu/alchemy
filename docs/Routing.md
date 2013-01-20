@@ -30,7 +30,8 @@ Basic routing example
 
 ```php
 use alchemy\app\Application;
-$app = new Application($appDir);
+$app = Application::instance();
+$app->setApplicationDir($PATH_TO_APPLICATION_ROOT);
 $app->addRoute('hello/world', 'controller\Hello::worldMethod');
 ```  
 
@@ -38,7 +39,8 @@ Dynamic routing example
 -----------------------
 ```php
 use alchemy\app\Application;
-$app = new Application($appDir);
+$app = Application::instance();
+$app->setApplicationDir($PATH_TO_APPLICATION_ROOT);
 $app->addRoute('/{$controller}/{$method}', 'app\controller\{$controller}->{$method}');
 ```
 
@@ -47,7 +49,8 @@ Using different HTTP methods
 
 ```php
 use alchemy\app\Application;
-$app = new Application($appDir);
+$app = Application::instance();
+$app->setApplicationDir($PATH_TO_APPLICATION_ROOT);
 $app->addRoute('GET /{$controller}/{$method}', 'app\controller\{$controller}->{$method}');
 $app->addRoute('POST /{$controller}/{$method}', 'app\controller\PostHandler->{$controller}{$method}');
 ```

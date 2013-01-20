@@ -12,7 +12,8 @@ method in you bootstrap file and pass a callable parameter.
 require_once $VALID_PATH_TO . '/alchemy/app/Application.php';
 use alchemy\app\Application;
 
-$app = new Application($PATH_TO_APPLICATION_ROOT);
+$app = Application::instance();
+$app->setApplicationDir($PATH_TO_APPLICATION_ROOT);
 /**
  * You can use here all callable resource, eg
  * Controller->method

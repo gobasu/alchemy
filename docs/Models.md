@@ -183,8 +183,8 @@ try {
 }
 ```
 
-Simple search API
------------------
+Simple SQL search API
+---------------------
 
 Alchemy provides simple search api through `Model::findOne()` and `Model::findAll()`
 class' methods.
@@ -226,7 +226,7 @@ Custom queries
 
 Of course simple search API will not satisfy your needs. To build custom query you should
 define class's method in desired model and use the connection class for this. Please consider
-followin example
+followin example:
 
 ```php
 <?php
@@ -279,13 +279,10 @@ class Product extends Model
 }
 ```
 
-As you noticed we use method `self::getSchema()`. This function returns schema object
-generated for our model please see the [`alchemy\storage\db\ISchema`](https://github.com/dkraczkowski/alchemy/blob/master/alchemy/storage/db/ISchema.php).
-
-Gennerally `alchemy\storage\db\connection\MySQL` extends [`\PDO`](http://php.net/pdo) class so you
-are propably familiar with this one already. The one difference is that `PDO->query` function is overridden
-and returns set of model classes if query find something otherwise empty array will be returned
-`alchemy\storage\db\connection\MySQL->query` accepts 3 parameters:
+`self::getConnection()->query()` is actually `alchemy\storage\db\connection\MySQL->query` which accepts 3 parameters:
 - `string` sql
-- `alchemy\storage\db\ISchema` object
 - `array` bind data (not required)
+- `alchemy\storage\db\ISchema` object (not required)
+
+As you noticed we use method `self::getSchema()`. This function returns generated schema object of database's table
+for more please see the [`alchemy\storage\db\ISchema`](https://github.com/dkraczkowski/alchemy/blob/master/alchemy/storage/db/ISchema.php).
