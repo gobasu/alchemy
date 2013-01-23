@@ -19,20 +19,44 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace alchemy\html\form;
-class CheckBox extends Input
+
+namespace alchemy\template;
+
+/**
+ * Base view rendering class
+ */
+abstract class View extends \alchemy\event\EventDispatcher
 {
-    public function __construct($label = '', Validator $validator = null)
+    public function __set($name, $value)
     {
-        parent::__construct($label, $validator);
+        $this->vars[$name] = $value;
     }
 
+    public function __get($name)
+    {
+        return isset($this->vars[$name]) ? $this->vars[$name] : null;
+    }
+
+    /**
+     * Used to dump template
+     * @return string
+     */
     public function __toString()
     {
-        return sprintf(self::TEMPLATE, ($this->value == $this->chckValue ? 'checked="checked"' : ''), $this->chckValue, $this->attributesToString('value'));
+        return (string) $this->render();
     }
 
+    /**
+     * Rendering logic goes here
+     *
+     * @return mixed
+     */
+    abstract public function render();
 
-    const TEMPLATE = '<input type="checkbox" %s value="%s" %s />';
-    private $chckValue = 1;
+    /**
+     * View vars
+     * @var array
+     */
+    protected $vars = array();
+
 }

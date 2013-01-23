@@ -109,6 +109,16 @@ class Application
     }
 
     /**
+     * Turns on plugin system and set dir where plugin are
+     *
+     * @param string $dir
+     */
+    public function setPluginDir($dir)
+    {
+        $this->pluginDir = $dir;
+    }
+
+    /**
      * Sets directory for config loading
      *
      * @param $name
@@ -300,6 +310,11 @@ class Application
      * @var \alchemy\http\router\Route
      */
     protected $route;
+
+    /**
+     * @var string
+     */
+    protected $pluginDir;
 
     const MODE_DEVELOPMENT = 1;
     const MODE_PRODUCTION = 2;

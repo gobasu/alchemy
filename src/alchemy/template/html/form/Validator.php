@@ -19,7 +19,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace alchemy\html\form;
+namespace alchemy\template\html\form;
 use alchemy\security\Validator as BaseValidator;
 class ValidatorException extends \Exception {}
 class UnknownValidatorException extends ValidatorException {}

@@ -19,14 +19,13 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace alchemy\html\form;
-
-class Hidden extends Input
+namespace alchemy\template\html\form;
+class TextArea extends Input
 {
     public function __toString()
     {
-        return sprintf(self::TEMPLATE, $this->attributesToString());
+        return sprintf(self::TEMPLATE, $this->attributesToString('value'), htmlentities($this->value));
     }
 
-    const TEMPLATE = '<input type="hidden" %s />';
+    const TEMPLATE = '<textarea %s>%s</textarea>';
 }

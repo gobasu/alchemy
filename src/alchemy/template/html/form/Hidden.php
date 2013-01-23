@@ -19,38 +19,14 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace alchemy\app\plugin;
+namespace alchemy\template\html\form;
 
-class PluginLoaderException extends \Exception {}
-class PluginLoader
+class Hidden extends Input
 {
-    public static function initialize($pluginDir = 'plugin')
+    public function __toString()
     {
-        $fullPluginDir = AL_APP_DIR . DIRECTORY_SEPARATOR . $pluginDir;
-        if (!is_dir($fullPluginDir)) {
-            if (!is_dir($pluginDir)) {
-                throw new PluginLoaderException(sprintf('Plugin directory %s does not exists', $pluginDir));
-            }
-            $fullPluginDir = $pluginDir;
-        }
-        $dirIterator = new \RecursiveDirectoryIterator($fullPluginDir);
-        foreach ($dirIterator as $path)
-        {
-            if ($path->isDir()) continue;
-            //echo $path;
-        }
+        return sprintf(self::TEMPLATE, $this->attributesToString());
     }
-    
-    public static function unload()
-    {
 
-    }
-    
-    public static function registerPlugin(IPlugin $plugin)
-    {
-        
-    }
-    
-    private static $plugins;
-    
+    const TEMPLATE = '<input type="hidden" %s />';
 }

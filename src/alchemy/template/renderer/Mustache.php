@@ -19,14 +19,14 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace alchemy\ui;
+namespace alchemy\template\renderer;
 require_once AL_CORE_DIR . '/vendor/Mustache/Autoloader.php';
 \Mustache_Autoloader::register();
 /**
  * Bridge between Mustache templates and alchemy FW
  * Default tags set to <% %> instead {{ }}
  */
-class View extends \Mustache_Engine
+class Mustache extends \Mustache_Engine
 {
     /**
      * Constructor
