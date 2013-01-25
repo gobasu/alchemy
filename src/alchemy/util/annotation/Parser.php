@@ -21,7 +21,7 @@
  */
 namespace alchemy\util\annotation;
 /**
- * Parser
+ * Annotation Parser
  *
  * @author: lunereaper
  */

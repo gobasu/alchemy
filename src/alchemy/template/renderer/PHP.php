@@ -23,5 +23,16 @@
 namespace alchemy\template\renderer;
 class PHP
 {
+    public function __get($name)
+    {
 
+    }
+    public function __set($name, $value)
+    {
+
+    }
+    public function render($file)
+    {
+
+    }
 }
