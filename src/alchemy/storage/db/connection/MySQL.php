@@ -6,7 +6,7 @@ use alchemy\storage\db\ISchema;
 class MySQLException extends \PDOException {}
 
 /**
- * MySQL Connection
+ * MySQL
  *
  */
 
@@ -97,15 +97,7 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         }
     }
 
-    /**
-     * Performs custom query
-     *
-     * @param string $sql query
-     * @param array $data values to fetch
-     * @param \alchemy\storage\db\ISchema $schema schema which should be used for fetching
-     * @return array
-     */
-    public function query($sql, array $data = null, ISchema $schema = null)
+    public function query($sql, ISchema $schema, array $data = null)
     {
         $query = $this->prepare($sql);
         if ($data) {
@@ -114,18 +106,13 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
             }
         }
         $query->execute();
-
-        //no schema so fetch assoc
-        if (!$schema) {
-            return $query->fetchAll(\PDO::FETCH_ASSOC);
-        }
-
-        //fetch with schema
         $set = array();
+
         while($r = $query->fetchObject($schema->getModelClass())) {
             $set[$r->getPK()] = $r;
             $r->onGet();
         }
+
         return $set;
     }
 
@@ -200,51 +187,57 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
 
     private function generateFindSQL(ISchema $schema, array &$query, array $sort = null, $limit = null)
     {
-        $where = array();
-        $bind = array();
-        $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
-        foreach ($query as $key => $value) {
-            $key = trim($key);
-            $operator = '=';
-            $sign = substr($key, -1);
-            switch ($sign) {
-                case '=':
-                    $sign = substr($key, -2);
-                    if ($sign == '>=' || $sign == '<=') {
-                        $operator = $sign;
-                        $key = trim(substr($key, 0, -2));
-                    } else {
-                        $key = trim(substr($key, 0, -1));
-                    }
-                    break;
-                case '>':
-                case '<':
-                    $operator = $sign;
-                    $key = trim(substr($key, 0, -1));
-                    break;
-                default:
-                    break;
-            }
 
-            if (is_array($value)) {
-                //escape values
-                foreach ($value as &$v) {
-                    if (is_string($v)) {
-                        $v = $this->quote($v);
-                    }
+        $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
+        if ($query)
+        {
+            $where = array();
+            $bind = array();
+            foreach ($query as $key => $value) {
+                $key = trim($key);
+                $operator = '=';
+                $sign = substr($key, -1);
+                switch ($sign) {
+                    case '=':
+                        $sign = substr($key, -2);
+                        if ($sign == '>=' || $sign == '<=') {
+                            $operator = $sign;
+                            $key = trim(substr($key, 0, -2));
+                        } else {
+                            $key = trim(substr($key, 0, -1));
+                        }
+                        break;
+                    case '>':
+                    case '<':
+                        $operator = $sign;
+                        $key = trim(substr($key, 0, -1));
+                        break;
+                    default:
+                        break;
                 }
 
-                $where[] = '`' . $key . '` IN (' . implode(',', $value) . ') ';
-                continue;
+                if (is_array($value)) {
+                    //escape values
+                    foreach ($value as &$v) {
+                        if (is_string($v)) {
+                            $v = $this->quote($v);
+                        }
+                    }
+
+                    $where[] = '`' . $key . '` IN (' . implode(',', $value) . ') ';
+                    continue;
+                }
+
+                $bind[$key] = $value;
+
+                $where[] = '`' . $key . '` ' . $operator . ' :' . $key;
             }
-
-            $bind[$key] = $value;
-
-            $where[] = '`' . $key . '` ' . $operator . ' :' . $key;
+            $query = $bind;
+            $where = implode(' AND ', $where);
+            $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
+        } else {//end if($query)
+            $sql = sprintf(self::EMPTY_FIND_SQL, $fieldList, $schema->getCollectionName());
         }
-        $query = $bind;
-        $where = implode(' AND ', $where);
-        $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
         if ($sort) {
             $sql .= ' ORDER BY ';
             foreach ($sort as $field => $direction) {
@@ -276,5 +269,6 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
     const DELETE_SQL    = 'DELETE FROM `%s` WHERE %s';
     const GET_SQL       = 'SELECT %s FROM `%s` WHERE %s';
     const FIND_SQL      = 'SELECT %s FROM `%s` WHERE %s';
+    const EMPTY_FIND_SQL= 'SELECT %s FROM `%s`';
     const UPDATE_ON_DUPLICATE = 'ON DUPLICATE KEY UPDATE';
 }
