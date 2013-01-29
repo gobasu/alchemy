@@ -63,7 +63,7 @@ class Form implements \Iterator
         if (!$salt) {
             $salt = sha1(time() . mt_rand(1, 1000));
         }
-        $input = new \alchemy\html\form\Hidden();
+        $input = new \alchemy\template\html\form\Hidden();
         $input->setName($salt);
         $input->setValue(1);
 
