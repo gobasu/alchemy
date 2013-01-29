@@ -10,11 +10,17 @@ class HelloWorld extends Controller
 {
     public function sayHello()
     {
-        header('Content-type: text/plain');
-        $update = Customer::findAndModify(array('customerNumber>' => 450), array('+creditLimit' => 50), true);
+        //update some fields
+        $update = Customer::findAndModify(array('customerNumber>' => 450), array('+creditLimit' => 50));
 
+        //get all fields from table
         $data = Customer::findAll();
 
-        print_r($update);
+        //get by pk
+        $customer = Customer::get(103);
+
+        //change propety and save
+        $customer->phone = '111-222-333';
+        $customer->save();
     }
 }

@@ -184,6 +184,17 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         $sql = $this->generateFindSQL($schema, $query, $sort, 1);
         return current($this->query($sql, $schema, $query));
     }
+
+    /**
+     * Finds data matching the query and modifies it
+     *
+     * @param \alchemy\storage\db\ISchema $schema
+     * @param array $query query term
+     * @param array $update specify update fields
+     * @param bool $returnData whatever modified data should be returned
+     * @return array|null
+     * @throws MySQLException
+     */
     public function findAndModify(ISchema $schema, array $query = null, array $update, $returnData = false)
     {
         $where = $this->parseQuery($query);
