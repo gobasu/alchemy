@@ -172,68 +172,66 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
      * @param null $sort
      * @return array
      */
-    public function findAll(ISchema $schema, array $query, array $sort = null)
+    public function findAll(ISchema $schema, array $query = null, array $sort = null)
     {
 
         $sql = $this->generateFindSQL($schema, $query, $sort);
         return $this->query($sql, $schema, $query);
     }
 
-    public function findOne(ISchema $schema, $query, $sort = null)
+    public function findOne(ISchema $schema, array $query = null, array $sort = null)
     {
         $sql = $this->generateFindSQL($schema, $query, $sort, 1);
         return current($this->query($sql, $schema, $query));
     }
+    public function findAndModify(ISchema $schema, array $query = null, array $update, $returnData = false)
+    {
+        $where = $this->parseQuery($query);
+        $updateFields = array();
+        $bind = array();
+        foreach ($update as $field => $value) {
+            switch (substr($field, 0, 1))
+            {
+                case '+':
+                    $field = substr($field, 1);
+                    $updateFields[] = '`' . $field . '` = `' . $field . '` + :' . $field;
+                    break;
+                case '-':
+                    $field = substr($field, 1);
+                    $updateFields[] = '`' . $field . '` = `' . $field . '` - :' . $field;
+                    break;
+                default:
+                    $updateFields[] = '`' . $field . '` = :' . $field;
+                    break;
+            }
+            if (!$schema->propertyExists($field)) {
+                throw new MySQLException($schema->getModelClass() . ' have not got propery `' . $field . '`');
+            }
+            $bind[$field] = $value;
 
-    private function generateFindSQL(ISchema $schema, array &$query, array $sort = null, $limit = null)
+        }
+        $sql = sprintf(self::UPDATE_SQL, $schema->getCollectionName(), implode(',', $updateFields), $where);
+        $bind = array_merge($query, $bind);
+
+        //run command
+        $q = $this->prepare($sql);
+        $q->execute($bind);
+
+        if ($returnData) {
+            $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
+            $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
+            return $this->query($sql, $schema, $query);
+        }
+
+    }
+
+    private function generateFindSQL(ISchema $schema, array &$query = null, array $sort = null, $limit = null)
     {
 
         $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
         if ($query)
         {
-            $where = array();
-            $bind = array();
-            foreach ($query as $key => $value) {
-                $key = trim($key);
-                $operator = '=';
-                $sign = substr($key, -1);
-                switch ($sign) {
-                    case '=':
-                        $sign = substr($key, -2);
-                        if ($sign == '>=' || $sign == '<=') {
-                            $operator = $sign;
-                            $key = trim(substr($key, 0, -2));
-                        } else {
-                            $key = trim(substr($key, 0, -1));
-                        }
-                        break;
-                    case '>':
-                    case '<':
-                        $operator = $sign;
-                        $key = trim(substr($key, 0, -1));
-                        break;
-                    default:
-                        break;
-                }
-
-                if (is_array($value)) {
-                    //escape values
-                    foreach ($value as &$v) {
-                        if (is_string($v)) {
-                            $v = $this->quote($v);
-                        }
-                    }
-
-                    $where[] = '`' . $key . '` IN (' . implode(',', $value) . ') ';
-                    continue;
-                }
-
-                $bind[$key] = $value;
-
-                $where[] = '`' . $key . '` ' . $operator . ' :' . $key;
-            }
-            $query = $bind;
-            $where = implode(' AND ', $where);
+            $where = $this->parseQuery($query);
             $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
         } else {//end if($query)
             $sql = sprintf(self::EMPTY_FIND_SQL, $fieldList, $schema->getCollectionName());
@@ -254,6 +252,58 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         }
 
         return $sql;
+    }
+
+    /**
+     * Parse query array to where sql
+     *
+     * @param array $query
+     * @return string
+     */
+    private function parseQuery(&$query)
+    {
+        foreach ($query as $key => $value) {
+            $key = trim($key);
+            $operator = '=';
+            $sign = substr($key, -1);
+            switch ($sign) {
+                case '=':
+                    $sign = substr($key, -2);
+                    if ($sign == '>=' || $sign == '<=') {
+                        $operator = $sign;
+                        $key = trim(substr($key, 0, -2));
+                    } else {
+                        $key = trim(substr($key, 0, -1));
+                    }
+                    break;
+                case '>':
+                case '<':
+                    $operator = $sign;
+                    $key = trim(substr($key, 0, -1));
+                    break;
+                default:
+                    break;
+            }
+
+            if (is_array($value)) {
+                //escape values
+                foreach ($value as &$v) {
+                    if (is_string($v)) {
+                        $v = $this->quote($v);
+                    }
+                }
+
+                $where[] = '`' . $key . '` IN (' . implode(',', $value) . ') ';
+                continue;
+            }
+
+            $bind[$key] = $value;
+
+            $where[] = '`' . $key . '` ' . $operator . ' :' . $key;
+        }
+        $query = $bind;
+        $where = implode(' AND ', $where);
+        return $where;
     }
 
     private $strictMode = false;

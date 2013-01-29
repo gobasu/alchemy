@@ -87,7 +87,7 @@ abstract class Model extends EventDispatcher
      * @param array $sort
      * @return Model
      */
-    public static function findOne(array $query, array $sort = null)
+    public static function findOne(array $query = array(), array $sort = null)
     {
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
@@ -108,6 +108,13 @@ abstract class Model extends EventDispatcher
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
         return $connection->findAll($schema, $query, $sort);
+    }
+
+    public static function findAndModify(array $query = array(), array $update, $returnData = false)
+    {
+        $schema = self::getSchema();
+        $connection = DB::get($schema->getConnectionName());
+        return $connection->findAndModify($schema, $query, $update, $returnData);
     }
 
     /**
