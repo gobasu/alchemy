@@ -1,4 +1,3 @@
-
 Models
 ======
 
@@ -220,6 +219,20 @@ echo $collection[0]->productName;//will display the first item product name
 
 The query tells find all records in table `products` where `productLine => 'Motorcycles'` and sort
 results in ascending order by column `buyPrice`
+
+Modifying a group of models
+---------------------------
+
+`Model::findAndModify(array $query = null, array $update, $returnData = false)`
+
+  - `$query` simple search query term (may stay empty to update all set)
+  - `$update` array with data what should be updated key=>value pairs
+  - `$returnData` tells whatever modified models should be returned as a result
+
+Increasing/descreasing is also avaible by prepending field name in `$update` array with +/i e.g.
+`Model::findAndModify(null, array('+a', 1));`
+
+Will increase field `a` in all models by one
 
 Custom queries
 --------------
