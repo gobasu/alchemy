@@ -110,7 +110,7 @@ abstract class Model extends EventDispatcher
         return $connection->findAll($schema, $query, $sort);
     }
 
-    public static function findAndModify(array $query = array(), array $update, $returnData = false)
+    public static function findAndModify(array $query = null, array $update, $returnData = false)
     {
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
