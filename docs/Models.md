@@ -236,11 +236,7 @@ Will increase field `a` in all models by one
 
 Custom queries
 --------------
-
-Of course simple search API will not satisfy your needs. To build custom query you should
-define class's method in desired model and use the connection class for this. Please consider
-followin example:
-
+MySQL connection custom query example
 ```php
 <?php
 namespace app\model;
@@ -267,7 +263,13 @@ class Product extends Model
             FROM ' . $schema->getCollectionName() . '
             WHERE productLine = "Motorcycles"';
 
-        return self::getConnection()->query($sql, $schema);
+        return self::query($sql, $schema);
+    }
+
+    public static function removeMotorcycles()
+    {
+        $schema = self::getSchema();
+        self::query('DELETE FROM ' . $schema->getCollectionName() . ' WHERE productLine = "Motorcycles"');
     }
 
     /**
@@ -292,10 +294,5 @@ class Product extends Model
 }
 ```
 
-`self::getConnection()->query()` is actually `alchemy\storage\db\connection\MySQL->query` which accepts 3 parameters:
-- `string` sql
-- `array` bind data (not required)
-- `alchemy\storage\db\ISchema` object (not required)
-
-As you noticed we use method `self::getSchema()`. This function returns generated schema object of database's table
+As you may noticed we've used here method `self::getSchema()`. This function returns generated schema object of database's table
 for more please see the [`alchemy\storage\db\ISchema`](https://github.com/dkraczkowski/alchemy/blob/master/alchemy/storage/db/ISchema.php).
