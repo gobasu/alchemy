@@ -6,6 +6,11 @@ namespace dbusage\model;
  */
 class Customer extends \alchemy\storage\db\Model
 {
+    public static function removeSchmitt()
+    {
+        self::query('DELETE FROM customers WHERE contactLastName = "Schmitt"');
+    }
+
     /**
      * @Param(type=number)
      */

@@ -106,9 +106,16 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
             }
         }
         $query->execute();
+
+        //only select can be fetched
+        if (strtolower(substr($sql, 0, 6)) != 'select') {
+            return;
+        }
+
         $set = array();
         if ($schema) {
             while($r = $query->fetchObject($schema->getModelClass())) {
+                print_r($r);
                 $set[$r->getPK()] = $r;
                 $r->onGet();
             }
@@ -145,7 +152,9 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         $query->bindValue(':pk', $pkValue);
         $query->execute();
         $model = $query->fetchObject($model);
-        $model->onGet();
+        if ($model) {
+            $model->onGet();
+        }
         return $model;
     }
 
