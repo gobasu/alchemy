@@ -97,7 +97,7 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         }
     }
 
-    public function query($sql, ISchema $schema, array $data = null)
+    public function query($sql, ISchema $schema = null, array $data = null)
     {
         $query = $this->prepare($sql);
         if ($data) {
@@ -107,10 +107,13 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         }
         $query->execute();
         $set = array();
-
-        while($r = $query->fetchObject($schema->getModelClass())) {
-            $set[$r->getPK()] = $r;
-            $r->onGet();
+        if ($schema) {
+            while($r = $query->fetchObject($schema->getModelClass())) {
+                $set[$r->getPK()] = $r;
+                $r->onGet();
+            }
+        } else {
+            $set = $query->fetchAll(\PDO::FETCH_ASSOC);
         }
 
         return $set;
@@ -240,13 +243,10 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
     {
 
         $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
-        if ($query)
-        {
-            $where = $this->parseQuery($query);
-            $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
-        } else {//end if($query)
-            $sql = sprintf(self::EMPTY_FIND_SQL, $fieldList, $schema->getCollectionName());
-        }
+
+        $where = $this->parseQuery($query);
+        $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
+
         if ($sort) {
             $sql .= ' ORDER BY ';
             foreach ($sort as $field => $direction) {
@@ -273,6 +273,10 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
      */
     private function parseQuery(&$query)
     {
+        if (!$query)
+        {
+            return ' 1';
+        }
         foreach ($query as $key => $value) {
             $key = trim($key);
             $operator = '=';
@@ -330,6 +334,5 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
     const DELETE_SQL    = 'DELETE FROM `%s` WHERE %s';
     const GET_SQL       = 'SELECT %s FROM `%s` WHERE %s';
     const FIND_SQL      = 'SELECT %s FROM `%s` WHERE %s';
-    const EMPTY_FIND_SQL= 'SELECT %s FROM `%s`';
     const UPDATE_ON_DUPLICATE = 'ON DUPLICATE KEY UPDATE';
 }

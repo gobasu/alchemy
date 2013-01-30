@@ -118,6 +118,20 @@ abstract class Model extends EventDispatcher
     }
 
     /**
+     * Provides interface for custom queries for details
+     * look into used connection class
+     */
+    public static function query(/** mutable **/)
+    {
+        $schema = self::getSchema();
+        $connection = DB::get($schema->getConnectionName());
+        if (!method_exists($connection, 'query')) {
+            throw new ModelException(get_class($connection) . ' does not support custom queries');
+        }
+        call_user_func_array(array($connection, 'query'), func_get_args());
+    }
+
+    /**
      * Construct new Model with given PK
      *
      * @param mixed $pkValue id or pk value
