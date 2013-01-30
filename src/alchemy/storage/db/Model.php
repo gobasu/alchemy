@@ -103,11 +103,11 @@ abstract class Model extends EventDispatcher
      * @see More in coresponding to model IConnection handler
      * @return array
      */
-    public static function findAll(array $query = array(), array $sort = null)
+    public static function find(array $query = array(), array $sort = null)
     {
         $schema = self::getSchema();
         $connection = DB::get($schema->getConnectionName());
-        return $connection->findAll($schema, $query, $sort);
+        return $connection->find($schema, $query, $sort);
     }
 
     public static function findAndModify(array $query = null, array $update, $returnData = false)

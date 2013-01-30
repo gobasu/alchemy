@@ -185,7 +185,7 @@ try {
 Simple SQL search API
 ---------------------
 
-Alchemy provides simple search api through `Model::findOne()` and `Model::findAll()`
+Alchemy provides simple search api through `Model::find()` and `Model::findOne()`
 class' methods.
 All you need to do is to put the query array, where array's key is the fieldName and
 value is the searched value in DB. *Framework supports only simple search queries which
@@ -194,7 +194,7 @@ means all query terms must be met*
 Let's assume we want to find all products in `product` table where `productLine` = `Motorcycles`
 
 ```php
-$collection = \app\model\Product::findAll(array('productLine' => 'Motorcycles'));
+$collection = \app\model\Product::find(array('productLine' => 'Motorcycles'));
 echo $collection[0]->productName;//will display the first item product name
 ```
 
@@ -202,7 +202,7 @@ Of course you can also use `>` `<` `>=` `<=` operators in your query as well as 
 one of the predefined values, e.g.
 
 ```php
-$collection = Product::findAll(array(
+$collection = Product::find(array(
     'productLine' => array('Trucks and Buses', 'Planes'),
     'buyPrice <=' => 31
 ));
@@ -210,10 +210,10 @@ $collection = Product::findAll(array(
 
 **Sorting example**
 If you need to sort your simple search query you have to pass the second argument
-to the `Model::findOne` or `Model::findAll` function, e.g
+to the `Model::findOne` or `Model::find` function, e.g
 
 ```php
-$collection = \app\model\Product::findAll(array('productLine' => 'Motorcycles'), array('buyPrice' => 1);
+$collection = \app\model\Product::find(array('productLine' => 'Motorcycles'), array('buyPrice' => 1);
 echo $collection[0]->productName;//will display the first item product name
 ```
 

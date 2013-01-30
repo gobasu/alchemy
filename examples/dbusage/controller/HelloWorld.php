@@ -10,11 +10,13 @@ class HelloWorld extends Controller
 {
     public function sayHello()
     {
+
+
         //update some fields
-        $update = Customer::findAndModify(array('customerNumber>' => 450), array('+creditLimit' => 50));
+        $data = Customer::findAndModify(array('customerNumber>' => 450), array('+creditLimit' => 50), true);
 
         //get all fields from table
-        $data = Customer::findAll();
+        $data = Customer::find();
 
         //get by pk
         $customer = Customer::get(103);
@@ -22,5 +24,6 @@ class HelloWorld extends Controller
         //change propety and save
         $customer->phone = '111-222-333';
         $customer->save();
+
     }
 }

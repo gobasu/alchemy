@@ -184,7 +184,7 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
      * @param null $sort
      * @return array
      */
-    public function findAll(ISchema $schema, array $query = null, array $sort = null)
+    public function find(ISchema $schema, array $query = null, array $sort = null)
     {
 
         $sql = $this->generateFindSQL($schema, $query, $sort);

@@ -31,7 +31,7 @@ interface IConnection
     public function save(Model $model);
     public function delete(Model $model);
     public function get($modelName, $parameters);
-    public function findAll(ISchema $schema, array $query = null, array $sort = null);
+    public function find(ISchema $schema, array $query = null, array $sort = null);
     public function findOne(ISchema $schema, array $query = null, array $sort = null);
     public function findAndModify(ISchema $schema, array $query = null, array $update, $returnData = false);
 }
