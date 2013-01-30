@@ -34,4 +34,5 @@ interface IConnection
     public function find(ISchema $schema, array $query = null, array $sort = null);
     public function findOne(ISchema $schema, array $query = null, array $sort = null);
     public function findAndModify(ISchema $schema, array $query = null, array $update, $returnData = false);
+    public function findAndRemove(ISchema $schema, array $query = null, $returnData = false);
 }

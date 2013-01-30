@@ -110,6 +110,13 @@ abstract class Model extends EventDispatcher
         return $connection->find($schema, $query, $sort);
     }
 
+    public static function findAndRemove($query, $returnData = false)
+    {
+        $schema = self::getSchema();
+        $connection = DB::get($schema->getConnectionName());
+        return $connection->findAndRemove($schema, $query, $returnData);
+    }
+
     public static function findAndModify(array $query = null, array $update, $returnData = false)
     {
         $schema = self::getSchema();

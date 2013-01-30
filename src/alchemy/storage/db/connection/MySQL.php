@@ -115,7 +115,6 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
         $set = array();
         if ($schema) {
             while($r = $query->fetchObject($schema->getModelClass())) {
-                print_r($r);
                 $set[$r->getPK()] = $r;
                 $r->onGet();
             }
@@ -246,6 +245,23 @@ class MySQL extends \PDO implements \alchemy\storage\db\IConnection
             return $this->query($sql, $schema, $query);
         }
 
+    }
+
+    public function findAndRemove(ISchema $schema, array $query = null, $returnData = false)
+    {
+        $where = $this->parseQuery($query);
+        $data = null;
+        if ($returnData) {
+            $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
+            $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
+            $data = $this->query($sql, $schema, $query);
+        }
+
+        $sql = sprintf(self::DELETE_SQL, $schema->getCollectionName(), $where);
+        $q = $this->prepare($sql);
+        $q->execute($query);
+
+        return $data;
     }
 
     private function generateFindSQL(ISchema $schema, array &$query = null, array $sort = null, $limit = null)

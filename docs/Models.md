@@ -234,6 +234,15 @@ Increasing/descreasing is also avaible by prepending field name in `$update` arr
 
 Will increase field `a` in all models by one
 
+**Removing group of records**
+
+`Model::findAndRemove(array $query, $returnData = false)`
+
+  - `$query` simple search query term (may stay empty to update all set)
+  - `$returnData` tells whatever removed data should be returned as model list
+
+Will remove all records in database matching `$query` and
+
 Custom queries
 --------------
 MySQL connection custom query example
