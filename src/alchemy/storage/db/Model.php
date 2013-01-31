@@ -49,6 +49,35 @@ class ModelException extends \Exception {}
  */
 abstract class Model extends EventDispatcher
 {
+    /**
+     * Construct new Model
+     *
+     * @param string|int|array $data pk value or data
+     */
+    public function __construct($data = null)
+    {
+        if ($data === null) {
+            return;
+        } elseif (is_string($data) || is_numeric($data)) {
+            $this->{self::getSchema()->getPKProperty()->getName()} = $data;
+        } elseif (is_array($data)) {
+            $this->change($data);
+        } else {
+            throw new ModelException('Model::__construct() accepts string|int|array, ' . gettype($data) . ' passed');
+        }
+    }
+
+    /**
+     * Sets multiple parameters in model
+     *
+     * @param array $data
+     */
+    public function change(array $data)
+    {
+        foreach ($data as $property => $value) {
+            $this->__set($property, $value);
+        }
+    }
 
     /**
      * Gets schema object corresponding to given model class
@@ -136,20 +165,6 @@ abstract class Model extends EventDispatcher
             throw new ModelException(get_class($connection) . ' does not support custom queries');
         }
         call_user_func_array(array($connection, 'query'), func_get_args());
-    }
-
-    /**
-     * Construct new Model with given PK
-     *
-     * @param mixed $pkValue id or pk value
-     */
-    public function __construct($pkValue = null)
-    {
-        if ($pkValue === null) {
-            return;
-        }
-
-        $this->{self::getSchema()->getPKProperty()->getName()} = $pkValue;
     }
 
     /**
@@ -287,6 +302,11 @@ abstract class Model extends EventDispatcher
         $connection = DB::get($schema->getConnectionName());
         $this->onDelete();
         $connection->delete($this);
+
+        //set model as fresh one after deletion
+        $this->isChanged = true;
+        $this->changes = $this->serialize();
+        $this->setPK(null);
     }
 
     /**
