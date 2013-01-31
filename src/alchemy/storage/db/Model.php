@@ -61,7 +61,7 @@ abstract class Model extends EventDispatcher
         } elseif (is_string($data) || is_numeric($data)) {
             $this->{self::getSchema()->getPKProperty()->getName()} = $data;
         } elseif (is_array($data)) {
-            $this->change($data);
+            $this->fetch($data);
         } else {
             throw new ModelException('Model::__construct() accepts string|int|array, ' . gettype($data) . ' passed');
         }
@@ -72,7 +72,7 @@ abstract class Model extends EventDispatcher
      *
      * @param array $data
      */
-    public function change(array $data)
+    public function fetch(array $data)
     {
         foreach ($data as $property => $value) {
             $this->__set($property, $value);
