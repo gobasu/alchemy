@@ -116,9 +116,6 @@ class Product extends Model
 Setting up database connection
 ------------------------------
 
-Right now alchemy supports only MySQL connections. If you need use other database
-than MySQL you can always do it by yourself by implementing `alchemy\storage\db\IConnection`.
-
 To setup connection to MySQL database you should use `alchemy\storage\DB` class and proper connection
 class in your bootstrap file (or configuration you you've created one). Example below:
 
@@ -138,6 +135,13 @@ $app->run();
 ```
 
 `$connectionName` allows you to use in your application multiple connections in one application.
+
+Supported Databases
+------------------
+
+  - MySQL ($host, $username, $password, $dbname)
+  - SQLite ($dbpath)
+
 
 Getting item by pk
 ------------------
