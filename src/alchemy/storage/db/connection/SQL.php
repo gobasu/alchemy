@@ -20,7 +20,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
     {
         $query = $this->prepare($sql);
 
-        if (!$query->execute($data)) {
+        if (!($query instanceof \PDOStatement) || !$query->execute($data)) {
             return false;
         }
 

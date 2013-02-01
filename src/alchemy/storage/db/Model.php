@@ -164,7 +164,7 @@ abstract class Model extends EventDispatcher
         if (!method_exists($connection, 'query')) {
             throw new ModelException(get_class($connection) . ' does not support custom queries');
         }
-        call_user_func_array(array($connection, 'query'), func_get_args());
+        return call_user_func_array(array($connection, 'query'), func_get_args());
     }
 
     /**
