@@ -9,6 +9,7 @@ require_once realpath(dirname(__FILE__) . '/../../../src/alchemy/app/Application
 use alchemy\app\Application;
 
 $app = Application::instance();
+//set plugin dir so framework will enable plugins functionality
 $app->setPluginDir('plugins');
 $app->setApplicationDir(realpath(dirname(__FILE__) . '/../'));
 $app->onURL('*', 'pluginexample\controller\Sample->index'); //default route
