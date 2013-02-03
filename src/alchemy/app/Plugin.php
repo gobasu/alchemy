@@ -21,22 +21,33 @@
  */
 namespace alchemy\app;
 use alchemy\event\EventHub;
+use alchemy\event\EventDispatcher;
 abstract class Plugin extends EventDispatcher implements plugin\IPlugin
 {
     public function onLoad() {}
     public function onUnload() {}
-    public function register()
+
+    public function addListener($event, $listener)
     {
-        $methods = get_class_methods(get_called_class());
-        $prefixLength = strlen (self::EVENT_HANDLER_PREFIX);
-        foreach ($methods as $method) {
-            if (substr($method, 0, $prefixLength) != self::EVENT_HANDLER_PREFIX) {
-                continue;
-            }
-            EventHub::addListener(substr($method, $prefixLength), array($this, $method));
-        }
+        EventHub::addListener($event, $listener);
+        parent::addListener($event, $listener);
     }
-    
-    const EVENT_HANDLER_PREFIX = 'handle';
-    
+
+    public function dispatch(\alchemy\event\Event $event)
+    {
+        EventHub::dispatch($event);
+        parent::dispatch($event);
+    }
+
+    /**
+     * Registers plugin
+     */
+    public static function register()
+    {
+        $className = get_called_class();
+        self::$pluginList[$className] = new $className();
+        self::$pluginList[$className]->onLoad();
+    }
+
+    protected static $pluginList = array();
 }

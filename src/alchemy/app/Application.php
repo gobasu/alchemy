@@ -212,6 +212,11 @@ class Application
         }
         $this->getConfig();
 
+        //handle plugins
+        if ($this->pluginDir) {
+            \alchemy\app\plugin\PluginLoader::initialize($this->pluginDir);
+        }
+
         Session::start();
         $request = Request::getGlobal();
 

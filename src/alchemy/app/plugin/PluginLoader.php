@@ -33,24 +33,11 @@ class PluginLoader
             }
             $fullPluginDir = $pluginDir;
         }
-        $dirIterator = new \RecursiveDirectoryIterator($fullPluginDir);
+        $dirIterator = new \DirectoryIterator($fullPluginDir);
         foreach ($dirIterator as $path)
         {
             if ($path->isDir()) continue;
-            //echo $path;
+            include_once $path->getPathname();
         }
     }
-    
-    public static function unload()
-    {
-
-    }
-    
-    public static function registerPlugin(IPlugin $plugin)
-    {
-        
-    }
-    
-    private static $plugins;
-    
 }

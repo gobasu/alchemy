@@ -54,6 +54,7 @@ class EventHub
      */
     public static function addListener($event, $listener)
     {
+
         return self::$dispatcher->addListener($event, $listener);
     }
 

@@ -23,7 +23,7 @@ namespace alchemy\app\plugin;
 
 interface IPlugin
 {
-    public function register();
+    public static function register();
     public function onLoad();
     public function onUnload();
 }
