@@ -181,6 +181,7 @@ class SchemaBuilder
         'float'     => Property::TYPE_NUMBER,
         'number'    => Property::TYPE_NUMBER,
         'date'      => Property::TYPE_DATE,
+        'json'      => Property::TYPE_JSON,
         'enum'      => Property::TYPE_ENUM,
         'bool'      => Property::TYPE_BOOL,
         'boolean'   => Property::TYPE_BOOL,

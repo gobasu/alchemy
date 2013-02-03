@@ -68,16 +68,34 @@ class Application
     }
 
     /**
-     * Adds route to handler resource
+     * Calls handler corresponding to route when matches current
+     * url
+     *
+     * @see alchemy\http\Router::addResource
+     *
+     * @param $route    uri pattern to given resource
+     *                  for example GET /posts/{$id}
+     * @param $handler
+     * @deprecated
+     */
+    public function addRoute($route, $handler)
+    {
+        $this->router->addResource($route, $handler);
+    }
+
+    /**
+     * Calls callback corresponding to route when matches
+     * current url
+     *
      * @see alchemy\http\Router::addResource
      *
      * @param $route    uri pattern to given resource
      *                  for example GET /posts/{$id}
      * @param $handler
      */
-    public function addRoute($route, $handler)
+    public function onURL($route, $callback)
     {
-        $this->router->addResource($route, $handler);
+        $this->router->addResource($route, $callback);
     }
 
     /**
@@ -169,6 +187,7 @@ class Application
 
     /**
      * Gets config constant if config dir was set
+     *
      * @param string $name
      */
     public function get($name)

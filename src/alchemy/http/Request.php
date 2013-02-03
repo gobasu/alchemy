@@ -24,7 +24,7 @@ class RequestException extends \Exception {}
 class Request 
 {
     /**
-     * Gets global request performed to application
+     * Gets global request performed to server
      * @return Request
      */
     public static function getGlobal()
@@ -42,9 +42,27 @@ class Request
                 'Accept-Charset'    => isset($_SERVER['HTTP_ACCEPT_CHARSET']) ? $_SERVER['HTTP_ACCEPT_CHARSET'] : null
             );
 
-            self::$globalRequest = new self($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $_POST, new Headers($headers));
+            //create global request's data
+            $requestData = array();
+            switch ($_SERVER['REQUEST_METHOD']) {
+                case self::METHOD_POST:
+                    $requestData = $_POST;
+                    break;
+                case self::METHOD_PUT:
+                    $requestData = file_get_contents("php://input");
+                    break;
+                case self::METHOD_GET:
+                    $requestData = $_GET;
+                    break;
+                default:
+                    $requestData = $_REQUEST;
+                    break;
+            }
+
+            self::$globalRequest = new self($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $requestData, new Headers($headers));
             //is XHR
             self::$globalRequest->isXHR(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
+
             //is secure
             if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) {
                 self::$globalRequest->isSecure(true);

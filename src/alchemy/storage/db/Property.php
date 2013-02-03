@@ -72,4 +72,5 @@ class Property
     const TYPE_BLOB = 3;
     const TYPE_ENUM = 4;
     const TYPE_DATE = 5;
+    const TYPE_JSON = 6;
 }
