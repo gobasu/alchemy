@@ -48,7 +48,7 @@ $app = Application::instance();
 $app->setApplicationDir($PATH_TO_APPLICATION_ROOT);
 
 //add routes here...
-$app->addRoute('*', function(){
+$app->onURL('*', function(){
   echo 'Hello World!';
 });
 

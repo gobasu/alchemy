@@ -26,7 +26,7 @@ $app->onError(function(\Exception $e){
     echo '404';
 });
 //add routes here...
-$app->addRoute('*', function(){
+$app->onURL('*', function(){
   echo 'Hello World!';
 });
 
