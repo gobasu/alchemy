@@ -129,7 +129,7 @@ class Validator
                 return false;
             }
         } else {
-            foreach ($types as $match) {
+            foreach ($types as $t => $match) {
                 if (preg_match('#^' . $match . '$#', $number)) {
                     return self::luhn($number);
                 }
@@ -172,7 +172,7 @@ class Validator
      * @param array $options
      * @return bool
      */
-    public static function number($value, $options)
+    public static function number($value, $options = array())
     {
         if (!is_numeric($value)) return false;
 
@@ -195,7 +195,7 @@ class Validator
      * @param array $options
      * @return bool
      */
-    public static function string($value, $options)
+    public static function string($value, $options = array())
     {
         if (!is_string($value)) return false;
 
@@ -249,7 +249,7 @@ class Validator
      * @param string $regexp
      * @return bool
      */
-    public function regexp($value, $regexp)
+    public static function regexp($value, $regexp)
     {
 
         return preg_match('#' . $regexp . '#', $value) ? true : false;
@@ -272,7 +272,7 @@ class Validator
      * @param array $options
      * @return bool
      */
-    public function date($value, $options)
+    public static function date($value, $options = array())
     {
         $timestamp = strtotime($value);
 
