@@ -14,7 +14,7 @@ What differs this framework from others:
 List of contents
 ----------------
 
-**[Setup](/dkraczkowski/alchemy/blob/master/docs/Setup.md)**
+**[Setup](/docs/Setup.md)**
 
 How to setup your enviroment to make alchemy framework run on it
 
