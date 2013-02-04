@@ -22,6 +22,7 @@
 namespace alchemy\app;
 use alchemy\event\EventHub;
 use alchemy\event\EventDispatcher;
+use alchemy\app\plugin\PluginLoader;
 abstract class Plugin extends EventDispatcher implements plugin\IPlugin
 {
     public function onLoad() {}
@@ -44,10 +45,6 @@ abstract class Plugin extends EventDispatcher implements plugin\IPlugin
      */
     public static function register()
     {
-        $className = get_called_class();
-        self::$pluginList[$className] = new $className();
-        self::$pluginList[$className]->onLoad();
+        PluginLoader::_register(get_called_class());
     }
-
-    protected static $pluginList = array();
 }

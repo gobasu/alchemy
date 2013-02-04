@@ -38,7 +38,7 @@ Explanation of model system used in alchemy as well as simple search API
 
 **[Events](/dkraczkowski/alchemy/blob/master/docs/Events.md)**
 
-Alchemy's event system purpouse and usage
+**[Plugins](/dkraczkowski/alchemy/blob/master/docs/Plugins.md)**
 
 **[Session](/dkraczkowski/alchemy/blob/master/docs/Session.md)**
 

@@ -47,7 +47,7 @@ class SchemaBuilder
         $schemaPath = AL_APP_CACHE_DIR . '/' . sha1($path);
 
         if (is_readable($schemaPath)) {
-            if (filemtime($schemaPath) >= filemtime(Loader::getPathForApplicationClass($className))) {
+            if (filemtime($schemaPath) >= filemtime($path)) {
                 //get the schema from cache
                 require_once $schemaPath;
                 return $schemaBuilder->getInstance();

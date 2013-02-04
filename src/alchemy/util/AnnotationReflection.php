@@ -24,7 +24,6 @@ use alchemy\util\annotation\Parser;
 /**
  * Annotation
  *
- * @author: lunereaper
  */
 
 final class AnnotationReflection
