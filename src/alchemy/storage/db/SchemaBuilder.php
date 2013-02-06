@@ -57,6 +57,7 @@ class SchemaBuilder
         //build schema
         $schemaBuilder->build();
         $schemaBuilder->save($schemaPath);
+        require_once $schemaPath;
         return $schemaBuilder->getInstance();
     }
 
@@ -150,8 +151,6 @@ class SchemaBuilder
             $collectionName, // set collection name
             $this->className // set model class name
         );
-
-        eval($this->schemaData);
     }
 
     protected function getInstance()
