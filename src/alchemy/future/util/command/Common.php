@@ -21,7 +21,7 @@
  */
 namespace util\command;
 use alchemy\util\CLI;
-use alchemy\app\Console;
+use alchemy\future\util\Console;
 final class Common extends \alchemy\app\Controller
 {
     public static function error($input)

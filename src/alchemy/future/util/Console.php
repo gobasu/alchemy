@@ -19,10 +19,10 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace alchemy\app;
+namespace alchemy\future\util;
 use alchemy\util\CLI;
 
-class Console extends Application
+class Console extends \alchemy\app\Application
 {
     public function __construct($appDir)
     {

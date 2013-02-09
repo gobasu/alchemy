@@ -4,7 +4,7 @@
  * Command line utility for alchemy framework
  */
 require_once __DIR__ . '/app/Application.php';
-$app = new \alchemy\app\Console(__DIR__ . '/app/util');
+$app = new \alchemy\future\util\Console(__DIR__ . '/future/util');
 //$app->addRoute('generate:{$what}', )
 $app->addRoute('locale:{$func:.*}', 'util\command\Locale::{$func}');
 $app->addRoute('help', 'util\command\Common::help');
