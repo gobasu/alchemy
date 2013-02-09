@@ -46,7 +46,7 @@ class SchemaBuilder
         $path = Loader::getPathForApplicationClass($className);
         $schemaPath = AL_APP_CACHE_DIR . '/' . sha1($path);
 
-        if (is_readable($schemaPath)) {
+        if (is_readable($schemaPath) && self::$cache) {
             if (filemtime($schemaPath) >= filemtime($path)) {
                 //get the schema from cache
                 require_once $schemaPath;
@@ -61,6 +61,10 @@ class SchemaBuilder
         return $schemaBuilder->getInstance();
     }
 
+    public static function disableCache()
+    {
+        self::$cache = false;
+    }
 
     protected function __construct($className)
     {
@@ -80,11 +84,15 @@ class SchemaBuilder
         if (!isset($classAnnotations[self::ANNOTATION_PK])) {
             throw new ModelException('Missing @' . self::ANNOTATION_PK . ' annotation in ' . $this->className . ' definition');
         }
+        $pk = $classAnnotations[self::ANNOTATION_PK];
+        if (is_array($pk)) {
+            throw new ModelException('Alchemy models does not support compound keys yet!');
+        }
+
 
         if (isset($classAnnotations[self::ANNOTATION_CONNECTION])) {
             $connectionName = $classAnnotations[self::ANNOTATION_CONNECTION];
         }
-
         $className = explode('\\', $this->className);
         $namespace = implode('\\', array_slice($className,0, -1));
         $className = array_slice($className, -1);
@@ -97,8 +105,6 @@ class SchemaBuilder
         }
 
         $className = $className[0] . self::SCHEMA_CLASS_POSTFIX;
-
-        $pk = $classAnnotations[self::ANNOTATION_PK];
         $constructBody = '';
         $propertyAliases = array();
 
@@ -173,6 +179,7 @@ class SchemaBuilder
     protected $schemaClassName;
     protected $schemaData;
 
+    protected static $cache = true;
     protected static $typeMap = array(
         'string'    => Property::TYPE_STRING,
         'text'      => Property::TYPE_STRING,
