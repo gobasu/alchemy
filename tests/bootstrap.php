@@ -7,7 +7,12 @@ require_once 'src/alchemy/app/Application.php';
 use alchemy\storage\db\IConnection;
 use alchemy\storage\db\Model;
 use alchemy\storage\db\ISchema;
-use alchemy\storage\session\IHander;
+use alchemy\storage\DB;
+use alchemy\storage\db\connection\SQLite;
+
+//alchemy framework constans
+define('AL_APP_DIR', __DIR__);
+define('AL_APP_CACHE_DIR', sys_get_temp_dir());
 
 /**
  * Test resources and callbacks
@@ -87,5 +92,44 @@ class DummyConnection implements IConnection
         // TODO: Implement findAndRemove() method.
     }
 
+}
+
+//add db connection
+DB::add(new SQLite(SQLite::USE_MEMORY), 'sqlite');
+
+/**
+ * Dummy model
+ *
+ * @Pk id
+ * @Collection testCollection
+ * @Connection sqlite
+ */
+class DummyModel extends Model
+{
+    public static function import()
+    {
+        $sql = file_get_contents(__DIR__ . '/test.sql');
+        $sql = explode(";\n" ,$sql);
+        foreach ($sql as $q) {
+            self::query($q);
+        }
+    }
+
+    /**
+     * @Param(type=number)
+     */
+    protected $id;
+
+    /**
+     * @Param(type=number)
+     */
+    protected $propertyA;
+
+    /**
+     * @Param(type=string)
+     */
+    protected $propertyB;
+
+    protected $propertyC;
 }
 ob_start();

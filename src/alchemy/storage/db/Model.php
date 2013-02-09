@@ -158,7 +158,7 @@ abstract class Model extends EventDispatcher
      * Calculates the changes and writes them to $this->changes array
      *
      * @param string $name
-     * @param string|int\float $value
+     * @param mixed $value
      * @throws ModelException
      */
     public function __set($name, $value)
@@ -327,12 +327,7 @@ abstract class Model extends EventDispatcher
     {
         return $this->changes;
     }
-
-    public function validate()
-    {
-
-    }
-
+    
     /**
      * Dispatches an event to EventHub
      *

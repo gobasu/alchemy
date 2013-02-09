@@ -72,6 +72,7 @@ class SchemaBuilder
             throw new ModelException('Missing @' . self::ANNOTATION_PK . ' annotation in ' . $this->className . ' definition');
         }
         $pk = $classAnnotations[self::ANNOTATION_PK];
+
         if (is_array($pk)) {
             throw new ModelException('Alchemy models does not support compound keys yet!');
         }
@@ -82,13 +83,16 @@ class SchemaBuilder
         }
         $className = explode('\\', $this->className);
         $namespace = implode('\\', array_slice($className,0, -1));
+        if ($namespace) {
+            $namespace = 'namespace ' . $namespace . ';';
+        }
         $className = array_slice($className, -1);
 
         //get Collection name or use class name
         if (isset($classAnnotations[self::ANNOTATION_COLLECTION])) {
             $collectionName = $classAnnotations[self::ANNOTATION_COLLECTION];
         } else {
-            $collectionName = $className;
+            $collectionName = $className[0];
         }
 
         $className = $className[0] . self::SCHEMA_CLASS_POSTFIX;
@@ -132,7 +136,6 @@ class SchemaBuilder
                 $constructBody .= PHP_EOL . $property . '->setRequired();';
             }
         }
-
 
         $this->schemaData = sprintf(self::CLASS_TEMPLATE,
             $namespace, //Schema namespace
@@ -194,7 +197,7 @@ class SchemaBuilder
     const SCHEMA_CLASS_POSTFIX = 'Schema';
 
     const CLASS_TEMPLATE = <<<CLASS
-namespace %s;
+%s
 /**
  * Class generated automatically via \alchemy\storage\db\SchemaBuilder
  * DO NOT CHANGE THIS MANUALLY
