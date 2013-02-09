@@ -1,6 +1,6 @@
 <?php
-use alchemy\template\html\Form;
-use alchemy\template\html\form\TextInput;
+use alchemy\future\template\html\Form;
+use alchemy\future\template\html\form\TextInput;
 
 class FormTest extends PHPUnit_Framework_TestCase
 {

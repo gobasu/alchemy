@@ -6,8 +6,9 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\template\html;
+namespace alchemy\future\template\html;
 use alchemy\storage\Session;
+use alchemy\future\template\html\form\Hidden;
 class Form implements \Iterator
 {
     /**
@@ -50,7 +51,7 @@ class Form implements \Iterator
         if (!$salt) {
             $salt = sha1(time() . mt_rand(1, 1000));
         }
-        $input = new \alchemy\template\html\form\Hidden();
+        $input = new Hidden();
         $input->setName($salt);
         $input->setValue(1);
 
@@ -63,7 +64,7 @@ class Form implements \Iterator
      * Gets form item
      *
      * @param $name
-     * @return \alchemy\html\form\Input
+     * @return \alchemy\future\template\html\form\Input
      */
     public function __get($name)
     {
@@ -160,7 +161,7 @@ class Form implements \Iterator
     protected $input;
 
     /**
-     * @var form\Hidden
+     * @var \alchemy\future\template\html\form\Hidden
      */
     private $saltItem;
 }

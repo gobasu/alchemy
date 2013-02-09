@@ -7,7 +7,7 @@
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
 
-namespace alchemy\template;
+namespace alchemy\future\template;
 
 /**
  * Base view rendering class

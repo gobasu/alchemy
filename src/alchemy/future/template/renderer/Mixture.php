@@ -1,5 +1,5 @@
 <?php
-namespace alchemy\template;
+namespace alchemy\future\template;
 /**
  * Templating enginge
  *

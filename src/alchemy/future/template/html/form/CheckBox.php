@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\template\html\form;
+namespace alchemy\future\template\html\form;
 class CheckBox extends Input
 {
     public function __construct($label = '', Validator $validator = null)
