@@ -2,8 +2,11 @@
 
 [![Build Status](https://travis-ci.org/dkraczkowski/alchemy.png)](https://travis-ci.org/dkraczkowski/alchemy)
 
-Alchemy framework is fast and clean PHP framework. Alchemy focus to be fast, simple and yet
-gives you the way to build your application faster than writing from scratch. 
+Alchemy is lightweight and very fast PHP framework. Alchemy main points are:
+ - fast, very fast
+ - simple
+ - flexible
+ - gives you the way to build your application faster than writing from scratch
 
 What differs this framework from others:
 - It does not trying force on you to use predefined dir structure you may not like or don't want to have.

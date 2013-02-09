@@ -28,7 +28,7 @@ class SessionNamespace implements \ArrayAccess, \Countable
 {
     public function offsetExists($offset)
     {
-        return isset($data[$offset]);
+        return isset($this->data[$offset]);
     }
 
     public function count()
@@ -56,6 +56,19 @@ class SessionNamespace implements \ArrayAccess, \Countable
         return $this->offsetGet($name);
     }
 
+    public function __isset($name)
+    {
+        if ($this->isExpired()) {
+            return false;
+        }
+        return $this->offsetExists($name);
+    }
+
+    public function __unset($name)
+    {
+        unset($this->data[$name]);
+    }
+
     public function offsetSet($offset, $value)
     {
         if (is_null($offset)) {
@@ -79,7 +92,11 @@ class SessionNamespace implements \ArrayAccess, \Countable
     public function setExpiration($expire = 0)
     {
         $this->expirationTime = $expire;
-        $this->expireAt = time() + $this->expirationTime;
+        if ($expire === 0) {
+            $this->expireAt = $expire;
+        } else {
+            $this->expireAt = time() + $this->expirationTime;
+        }
     }
 
     /**

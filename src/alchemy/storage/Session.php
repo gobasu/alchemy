@@ -66,7 +66,7 @@ class Session
      */
     public static function getID()
     {
-        return self::$sessionId;
+        return session_id();
     }
 
     /**

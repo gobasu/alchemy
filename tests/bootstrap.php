@@ -88,3 +88,4 @@ class DummyConnection implements IConnection
     }
 
 }
+ob_start();
