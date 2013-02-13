@@ -33,5 +33,5 @@ use alchemy\app\Application;
 $app = Application::instance();
 $app->setApplicationDir(realpath(dirname(__FILE__) . '/../'));
 $app->setConfigDir('config');
-$app->addRoute('*', 'example\controller\HelloWorld->sayHello'); //default route
+$app->onURI('*', 'example\controller\HelloWorld->sayHello'); //default route
 $app->run();

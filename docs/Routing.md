@@ -10,17 +10,17 @@ Each route need to point to a specific resource (closure function, class' method
 Framework supports three variations of resources:
 - closures, eg:
 
-        $app->onURL('*', function(){
+        $app->onURI('*', function(){
             //handle request here
         });
 
 - class' method, eg:
 
-        $app->onURL('*', 'your\controller\MyController::index');
+        $app->onURI('*', 'your\controller\MyController::index');
 
 - object's method, eg:
 
-        $app->onURL('*', 'your\controller\MyController->index');
+        $app->onURI('*', 'your\controller\MyController->index');
 
 The difference between using class' method (`->`) and object's method (`::`) is when using `->`
 framework will automaticaly create an instance of given class otherwise it will just call the method.
@@ -32,7 +32,7 @@ Basic routing example
 use alchemy\app\Application;
 $app = Application::instance();
 $app->setApplicationDir($PATH_TO_APPLICATION_ROOT);
-$app->onURL('hello/world', 'controller\Hello::worldMethod');
+$app->onURI('hello/world', 'controller\Hello::worldMethod');
 ```  
 
 Dynamic routing example
@@ -41,7 +41,7 @@ Dynamic routing example
 use alchemy\app\Application;
 $app = Application::instance();
 $app->setApplicationDir($PATH_TO_APPLICATION_ROOT);
-$app->onURL('/{$controller}/{$method}', 'app\controller\{$controller}->{$method}');
+$app->onURI('/{$controller}/{$method}', 'app\controller\{$controller}->{$method}');
 ```
 
 Using different HTTP methods
@@ -51,6 +51,6 @@ Using different HTTP methods
 use alchemy\app\Application;
 $app = Application::instance();
 $app->setApplicationDir($PATH_TO_APPLICATION_ROOT);
-$app->onURL('GET /{$controller}/{$method}', 'app\controller\{$controller}->{$method}');
-$app->onURL('POST /{$controller}/{$method}', 'app\controller\PostHandler->{$controller}{$method}');
+$app->onURI('GET /{$controller}/{$method}', 'app\controller\{$controller}->{$method}');
+$app->onURI('POST /{$controller}/{$method}', 'app\controller\PostHandler->{$controller}{$method}');
 ```

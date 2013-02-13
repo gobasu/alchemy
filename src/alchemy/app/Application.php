@@ -55,34 +55,18 @@ class Application
     }
 
     /**
-     * Calls handler corresponding to route when matches current
-     * url
-     *
-     * @see alchemy\http\Router::addResource
-     *
-     * @param $route    uri pattern to given resource
-     *                  for example GET /posts/{$id}
-     * @param $handler
-     * @deprecated
-     */
-    public function addRoute($route, $handler)
-    {
-        $this->router->addResource($route, $handler);
-    }
-
-    /**
      * Calls callback corresponding to route when matches
      * current url
      *
      * @see alchemy\http\Router::addResource
      *
-     * @param $route    uri pattern to given resource
+     * @param $uri    uri pattern to given resource
      *                  for example GET /posts/{$id}
      * @param $handler
      */
-    public function onURL($route, $callback)
+    public function onURI($uri, $callback)
     {
-        $this->router->addResource($route, $callback);
+        $this->router->addResource($uri, $callback);
     }
 
     /**

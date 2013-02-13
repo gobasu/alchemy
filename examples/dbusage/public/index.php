@@ -21,5 +21,5 @@ DB::add(new Mysql('localhost', 'root', 'root', 'classicmodels'));
 
 $app = Application::instance();
 $app->setApplicationDir(realpath(dirname(__FILE__) . '/../'));
-$app->addRoute('*', 'dbusage\controller\HelloWorld->sayHello'); //default route
+$app->onURI('*', 'dbusage\controller\HelloWorld->sayHello'); //default route
 $app->run();

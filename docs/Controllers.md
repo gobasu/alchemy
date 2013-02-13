@@ -25,7 +25,7 @@ Lets assume we want to see the result of `app\controller\HelloWorld->index()` wh
 Than all you need it to put in your bootstrap file after creating instance of `alchemy\app\Application` following
 line of code
 ```php
-$app->onURL('/showhello', 'app\controller\HelloWorld->index');
+$app->onURI('/showhello', 'app\controller\HelloWorld->index');
 ```
 
 Getting route parameters
@@ -37,7 +37,7 @@ And we need to point it to `app\controller\Item->get` and pass number `12` as a 
 Consider following example:
 ```php
 //put this route in your bootstrap
-$app->onURL('/item/get/{$id}', 'app\controller\Item->get');
+$app->onURI('/item/get/{$id}', 'app\controller\Item->get');
 ```
 
 ```php

@@ -6,11 +6,11 @@
 require_once __DIR__ . '/app/Application.php';
 $app = new \alchemy\future\util\Console(__DIR__ . '/future/util');
 //$app->addRoute('generate:{$what}', )
-$app->addRoute('locale:{$func:.*}', 'util\command\Locale::{$func}');
-$app->addRoute('help', 'util\command\Common::help');
-$app->addRoute('exit', 'util\command\Common::close');
-$app->addRoute('close', 'util\command\Common::close');
-$app->addRoute('*','util\command\Common::error');
+$app->onURI('locale:{$func:.*}', 'util\command\Locale::{$func}');
+$app->onURI('help', 'util\command\Common::help');
+$app->onURI('exit', 'util\command\Common::close');
+$app->onURI('close', 'util\command\Common::close');
+$app->onURI('*','util\command\Common::error');
 $app->onStartup('util\command\Common::help');
 $app->onError('util\command\Common::error');
 $app->run();
