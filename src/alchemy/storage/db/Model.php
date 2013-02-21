@@ -48,18 +48,40 @@ abstract class Model extends EventDispatcher
         } elseif (is_string($data) || is_numeric($data)) {
             $this->{self::getSchema()->getPKProperty()->getName()} = $data;
         } elseif (is_array($data)) {
-            $this->fetch($data);
+            $this->set($data);
         } else {
             throw new ModelException('Model::__construct() accepts string|int|array, ' . gettype($data) . ' passed');
         }
     }
 
     /**
+     * Creates or fetch model in the way it stays unchanged
+     *
+     * @param array $data
+     * @param Model $model
+     * @return Model
+     */
+    public static function create(array $data, Model $model = null)
+    {
+        if (!$model) {
+            $class = get_called_class();
+            $model = new $class();
+        }
+
+        foreach ($data as $property => $value) {
+            $model->{$property} = $value;
+        }
+
+        return $model;
+    }
+
+
+    /**
      * Sets multiple parameters in model
      *
      * @param array $data
      */
-    public function fetch(array $data)
+    public function set(array $data)
     {
         foreach ($data as $property => $value) {
             $this->__set($property, $value);
@@ -226,6 +248,10 @@ abstract class Model extends EventDispatcher
     public function onDelete()
     {}
 
+
+    public function onChange()
+    {}
+
     /**
      * Override this method if you need
      * Called when record was fetched from DB
@@ -327,7 +353,7 @@ abstract class Model extends EventDispatcher
     {
         return $this->changes;
     }
-    
+
     /**
      * Dispatches an event to EventHub
      *

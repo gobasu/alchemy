@@ -68,14 +68,14 @@ class ModelTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($data, $m->getChanges());
     }
 
-    public function testFetch()
+    public function testSet()
     {
         $data = array(
             'propertyA' => 1,
             'propertyB' => 2
         );
         $m = new DummyModel(1);
-        $m->fetch($data);
+        $m->set($data);
 
         $this->assertEquals($data, $m->getChanges());
         $this->assertEquals(1, $m->getPK());
@@ -88,9 +88,20 @@ class ModelTest extends PHPUnit_Framework_TestCase
             'propertyB' => 2
         );
         $m = new DummyModel(1);
-        $m->fetch($data);
+        $m->set($data);
         $serialized = $m->serialize();
         $data[$m->getSchema()->getPKProperty()->getName()] = 1;
         $this->assertEquals($data, $serialized);
+    }
+
+    public function testCreate()
+    {
+        $data = array(
+            'propertyA' => 1,
+            'propertyB' => 2,
+            'id'        => 1
+        );
+        $m = DummyModel::create($data);
+        print_r($m);
     }
 }

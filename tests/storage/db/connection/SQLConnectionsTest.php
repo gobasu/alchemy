@@ -1,6 +1,5 @@
 <?php
 use alchemy\storage\db\Model;
-use alchemy\storage\db\Property;
 use alchemy\storage\DB;
 use alchemy\storage\db\connection\SQLite;
 

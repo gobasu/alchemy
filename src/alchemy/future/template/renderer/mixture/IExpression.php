@@ -8,15 +8,11 @@
  */
 namespace alchemy\future\template\renderer\mixture;
 
-class Compiler
+interface IExpression
 {
-    public function registerExpressionHandler($tagList, $handelr)
-    {
-
-    }
-    public function compile(Node $tree)
-    {
-
-    }
-
+    public static function isBlock();
+    public static function getOpenTag();
+    public static function getCloseTag();
+    public function handleOpen(Node $node);
+    public function handleClose(Node $node);
 }

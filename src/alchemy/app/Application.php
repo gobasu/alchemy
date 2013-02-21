@@ -107,6 +107,11 @@ class Application
         $this->pluginDir = $dir;
     }
 
+    public function getPluginDir($dir)
+    {
+        return $this->pluginDir;
+    }
+
     /**
      * Sets directory for config loading
      *

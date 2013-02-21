@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace configurable\controller;
+namespace usingview\controller;
 use alchemy\app\Controller;
 use alchemy\app\Application;
 /**
@@ -15,9 +15,9 @@ use alchemy\app\Application;
 
 class HelloWorld extends Controller
 {
-    public function viewExample()
+    public function index()
     {
-        $view = new \usingview\view\PageView();
-        return $view->render();
+        $mix = new \alchemy\future\template\renderer\Mixture();
+        $mix->render('sample.html');
     }
 }

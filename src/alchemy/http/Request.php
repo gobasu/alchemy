@@ -135,18 +135,28 @@ class Request
         return $this->isXHR;
     }
 
+    /**
+     * Gets request's query string
+     *
+     * @return array
+     */
     public function getQuery()
     {
         return $this->query;
     }
 
+    /**
+     * Sets request's query string
+     *
+     * @param array $query
+     */
     public function setQuery(array $query)
     {
         $this->query = $query;
     }
 
     /**
-     * Sends a request
+     * Sends a request using CURLlib
      *
      * @param int $timeout timeout in ms
      * @return Response
@@ -219,6 +229,12 @@ class Request
         return $response;
     }
 
+    /**
+     * Sets file that will be used to storage cookies
+     * while making requests
+     *
+     * @param $file
+     */
     public function setCookieJar($file)
     {
         $this->cookieJar = $file;
@@ -257,6 +273,12 @@ class Request
         $this->caFile = $filename;
     }
 
+    /**
+     * Checks/sets whatever request is/should be done by ssl
+     *
+     * @param null $set
+     * @return bool
+     */
     public function isSecure($set = null)
     {
         if ($set !== null) {
@@ -269,6 +291,12 @@ class Request
         return $this->scheme == 'https';
     }
 
+    /**
+     * Gets request's scheme eg. http, https
+     * Defult is http
+     *
+     * @return string
+     */
     public function getScheme()
     {
         return $this->scheme;
