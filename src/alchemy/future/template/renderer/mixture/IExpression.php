@@ -7,12 +7,13 @@
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
 namespace alchemy\future\template\renderer\mixture;
+use alchemy\future\template\renderer\mixture\Compiler;
 
 interface IExpression
 {
     public static function isBlock();
-    public static function getOpenTag();
     public static function getCloseTag();
-    public function handleOpen(Node $node);
-    public function handleClose(Node $node);
+    public static function getOpenTag();
+
+    public function handle(Compiler $compiler);
 }

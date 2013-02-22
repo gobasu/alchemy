@@ -10,6 +10,7 @@ namespace alchemy\future\template\renderer\mixture\expression;
 
 use alchemy\future\template\renderer\mixture\IExpression;
 use alchemy\future\template\renderer\mixture\Node;
+use alchemy\future\template\renderer\mixture\Compiler;
 
 class ImportExpression implements IExpression
 {
@@ -27,15 +28,9 @@ class ImportExpression implements IExpression
     {
     }
 
-    public function handleOpen(Node $node)
+    public function handle(Compiler $compiler)
     {
 
     }
-
-    public function handleClose(Node $node)
-    {
-
-    }
-
 
 }

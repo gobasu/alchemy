@@ -6,32 +6,18 @@
     </head>
 {% endblock %}
 <body>
-{% if aaa %}
+{% import "file.name.ext" %}
+{% i18n "Welcome ${user}" %}
+
+{% each $item in 1..10 %}
+
+{% endeach %}
+
+{% if $aaa %}
 {% block body %}
-    {% import "file.name.ext" %}
-    {% i18n "Welcome ${user}" %}
-
-    {% each item in 1..10 %}
-
-        {% if item is odd %}
-        {% endif %}
-
-        {% if item is even %}
-
-        {% endif %}
-
-        ${@index}
-        ${@odd}
-        ${@even}
-
-
-
-        element ${item} is {% if odd %}odd{% endif %}{% if even %}even{% endif %}
-        {% if item is 3 %} and additionali this is 3 {% endif %}
-    {% endeach %}
 
     {% import "file.name.ext" %}
-	{! dla tablicy array('user' => array('firstName' => 1, 'lastName' => 2)) !}
+    {! dla tablicy array('user' => array('firstName' => 1, 'lastName' => 2)) !}
     {% use $user %}
         <a href="logout"> ${firstName} ${lastName}</a>
     {% enduse %}
@@ -44,5 +30,6 @@
     //!}
     </script>
 {% endblock %}
+{% endif %}
 </body>
 </html>

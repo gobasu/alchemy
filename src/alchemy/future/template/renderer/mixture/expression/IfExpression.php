@@ -10,6 +10,7 @@ namespace alchemy\future\template\renderer\mixture\expression;
 
 use alchemy\future\template\renderer\mixture\IExpression;
 use alchemy\future\template\renderer\mixture\Node;
+use alchemy\future\template\renderer\mixture\Compiler;
 
 class IfExpression implements IExpression
 {
@@ -28,15 +29,8 @@ class IfExpression implements IExpression
         return 'endif';
     }
 
-    public function handleOpen(Node $node)
+    public function handle(Compiler $compiler)
     {
 
     }
-
-    public function handleClose(Node $node)
-    {
-
-    }
-
-
 }

@@ -10,13 +10,79 @@ namespace alchemy\future\template\renderer\mixture;
 
 class Compiler
 {
-    public function registerExpressionHandler($tagList, $handelr)
+    public function __construct()
     {
-
+        $this->setContext(self::MAIN_FUNCTION_NAME);
     }
+
     public function compile(Node $tree)
     {
+        foreach ($tree->getChildren() as $node) {
+            if ($node->getType() == Node::NODE_TEXT) {
+                $this->appendText($node->getValue());
+                continue;
+            }
 
+            $handler = $node->getHandler();
+            $handler = new $handler($node);
+            $handler->handle($this);
+
+            if ($node->hasChildren()) {
+                $this->compile($node);
+            }
+
+        }
     }
 
+    public function appendText($text)
+    {
+        $this->source[$this->context] .= $text;
+    }
+
+    public function setText($text)
+    {
+        $this->source[$this->context] = $text;
+    }
+
+    public function setContext($name)
+    {
+        if ($this->context) {
+            $this->lastContext[] = $this->context;
+        }
+        $this->context = $name;
+        if (!isset($this->source[$name])) {
+            $this->source[$name] = '';
+        }
+    }
+
+    public function removeContext($name)
+    {
+        unset($this->source[$name]);
+    }
+
+    public function gotoLastContext()
+    {
+        $context = array_pop($this->lastContext);
+        if (!$context) {
+            $context = self::MAIN_FUNCTION_NAME;
+        }
+        $this->context = $context;
+    }
+
+    protected $context = self::MAIN_FUNCTION_NAME;
+    protected $lastContext = array();
+    public $source = array();
+
+    /**
+     * $source = array(
+        'render' <---main function
+     * 'name' <--- other functions
+     * )
+     */
+
+    const MAIN_FUNCTION_NAME = 'render';
+    const TEMPLATE_CLASS = 'class Tpl extends Template
+    {
+
+    }';
 }

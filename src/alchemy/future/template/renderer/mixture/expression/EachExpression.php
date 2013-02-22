@@ -10,9 +10,15 @@ namespace alchemy\future\template\renderer\mixture\expression;
 
 use alchemy\future\template\renderer\mixture\IExpression;
 use alchemy\future\template\renderer\mixture\Node;
+use alchemy\future\template\renderer\mixture\Compiler;
 
 class EachExpression implements IExpression
 {
+    public function __construct(Node $node)
+    {
+        $this->node = $node;
+    }
+
     public static function isBlock()
     {
         return true;
@@ -28,15 +34,14 @@ class EachExpression implements IExpression
         return 'endeach';
     }
 
-    public function handleOpen(Node $node)
+    public function handle(Compiler $compiler)
     {
 
     }
 
-    public function handleClose(Node $node)
-    {
-
-    }
-
+    /**
+     * @var \alchemy\future\template\renderer\mixture\Node
+     */
+    protected $node;
 
 }

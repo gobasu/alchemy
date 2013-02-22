@@ -10,9 +10,15 @@ namespace alchemy\future\template\renderer\mixture\expression;
 
 use alchemy\future\template\renderer\mixture\IExpression;
 use alchemy\future\template\renderer\mixture\Node;
+use alchemy\future\template\renderer\mixture\Compiler;
 
 class VarExpression implements IExpression
 {
+    public function __construct(Node $node)
+    {
+        $this->node = $node;
+    }
+
     public static function isBlock()
     {
         return false;
@@ -26,15 +32,14 @@ class VarExpression implements IExpression
     {
     }
 
-    public function handleOpen(Node $node)
+    public function handle(Compiler $compiler)
     {
-
+        $parameters = $this->node->getParameters();
+        $compiler->appendText('<?=$this->get(\'$' . $parameters[0] . '\')?>');
     }
 
-    public function handleClose(Node $node)
-    {
-
-    }
-
-
+    /**
+     * @var \alchemy\future\template\renderer\mixture\Node
+     */
+    protected $node;
 }

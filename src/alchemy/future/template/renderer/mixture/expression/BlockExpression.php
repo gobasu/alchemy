@@ -10,9 +10,15 @@ namespace alchemy\future\template\renderer\mixture\expression;
 
 use alchemy\future\template\renderer\mixture\IExpression;
 use alchemy\future\template\renderer\mixture\Node;
+use alchemy\future\template\renderer\mixture\Compiler;
 
 class BlockExpression implements IExpression
 {
+    public function __construct(Node $node)
+    {
+        $this->node = $node;
+    }
+
     public static function isBlock()
     {
         return true;
@@ -28,16 +34,21 @@ class BlockExpression implements IExpression
         return 'endblock';
     }
 
-
-    public function handleOpen(Node $node)
+    public function handle(Compiler $compiler)
     {
-
+        if ($this->node->getTagname() == self::getCloseTag()) {
+            $compiler->gotoLastContext();
+            return;
+        }
+        $parameters = $this->node->getParameters();
+        $func = 'userBlock' . $parameters[1];
+        $compiler->appendText('<?php $this->' . $func . '(); ?>');
+        $compiler->setContext($func);
     }
-
-    public function handleClose(Node $node)
-    {
-
-    }
+    /**
+     * @var \alchemy\future\template\renderer\mixture\Node
+     */
+    protected $node;
 
 
 }

@@ -15,6 +15,7 @@ class Node
         $this->value = $value;
         $this->type = $type;
     }
+
     public function isRoot()
     {
         return $this->parent === null;
@@ -56,12 +57,22 @@ class Node
         return $this->children;
     }
 
-    public function getType()
+    public function hasChildren()
+    {
+        return !empty($this->children);
+    }
+
+    public function getTagname()
     {
         if (!isset($this->parameters[0])) {
             return null;
         }
         return $this->parameters[0];
+    }
+
+    public function getType()
+    {
+        return $this->type;
     }
 
     public function getParameters()
@@ -72,6 +83,11 @@ class Node
     public function setHandler($className)
     {
         $this->handler = $className;
+    }
+
+    public function getHandler()
+    {
+        return $this->handler;
     }
 
     protected $value;

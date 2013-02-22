@@ -75,7 +75,6 @@ class Parser
         self::$openingTags[$close] = $open;
         self::$closingTags[$open] = $close;
 
-
     }
 
     /**
@@ -149,13 +148,13 @@ class Parser
                     break;
                 case Tokenizer::T_END_TAG:
                     $current->setValue($current->getValue() . ' ' . $token['type']);
-                    $type = $current->getType();
+                    $type = $current->getTagname();
                     if (!$this->isValidExpression($type)) {
                         throw new ParserException('Unknown expression ' . $type, $this);
                     }
 
-
                     if (!self::$blockExpressions[$type] || $current->isRoot()) {
+                        $current->setHandler(self::$openingExpressions[$type]);
                         $current = $current->getParent();
                         break;
                     }
@@ -188,8 +187,8 @@ class Parser
         }
 
         //parser was expecting a token none given
-        if ($next) {
-            throw new ParserException('Unexpected end of template file, expecting: ' . $next, $this);
+        if (!empty($this->openTags)) {
+            throw new ParserException('Unexpected end of template file, expecting: ' . self::$closingTags[end($this->openTags)], $this);
         }
 
         return $this->tree;

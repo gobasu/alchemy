@@ -9,6 +9,7 @@
 namespace alchemy\future\template\renderer;
 use alchemy\future\template\renderer\mixture\Tokenizer;
 use alchemy\future\template\renderer\mixture\Parser;
+use alchemy\future\template\renderer\mixture\Compiler;
 
 class MixtureException extends \Exception {}
 /**
@@ -28,22 +29,18 @@ class Mixture
     public function render($name, &$data = array())
     {
         $file = $this->dir . DIRECTORY_SEPARATOR . $name;
-
-        $m = microtime(true);
-        $mem = memory_get_peak_usage();
-
         try {
             $parser = new Parser(new Tokenizer($file));
         } catch (\Exception $e) {
             throw new MixtureException('Cannot load template file \'' . $file . '\'');
         }
 
-        print_r($parser->parse());
-        $mem = memory_get_peak_usage() - $mem;
-        echo 'mem: ';
-        echo $mem / 1024;
-        echo ', time: ';
-        echo microtime(true) - $m;
+        $compiler = new Compiler();
+        $compiler->compile($parser->parse());
+
+        print_r($compiler->source);
+
+
     }
 
     protected $dir;
