@@ -42,13 +42,30 @@ class Template
         self::$cacheDir = $dir;
     }
 
+    public static function getTemplateFileName($name)
+    {
+        return self::$templateDir . DIRECTORY_SEPARATOR . $name;
+    }
+
     /**
      * @param $name
      * @return Template
      */
     public static function factory($name, &$data)
     {
-        $templateFileName = self::$templateDir . '/' . $name;
+        self::load($name);
+        $templateFileName = self::getTemplateFileName($name);
+        $templateClassName = Compiler::getTemplateClassName($templateFileName);
+        return new $templateClassName($data);
+    }
+
+    /**
+     * Loads dependency templates
+     * @param $name template name
+     */
+    public static function load($name)
+    {
+        $templateFileName = self::getTemplateFileName($name);
 
         if (!is_readable($templateFileName)) {
             throw new TemplateException('Template file:' . $templateFileName . ' is not readable');
@@ -57,14 +74,14 @@ class Template
 
         //template was already loaded
         if (class_exists($templateClassName)) {
-            return new $templateClassName($data);
+            return true;
         }
 
         //template from cache
-        $templateCacheFileName = self::$cacheDir . '/' . $templateClassName . '.php';
+        $templateCacheFileName = self::$cacheDir . DIRECTORY_SEPARATOR . $templateClassName . '.php';
         if (is_readable($templateCacheFileName) && filemtime($templateCacheFileName) >= filemtime($templateFileName)) {
             require_once $templateCacheFileName;
-            return new $templateClassName($data);
+            return true;
         }
 
         //parse template
@@ -79,7 +96,8 @@ class Template
         //save cache & return new template object
         file_put_contents($templateCacheFileName, $compiler->getOutput($templateClassName));
         require_once $templateCacheFileName;
-        return new $templateClassName($data);
+
+        return true;
     }
 
     /**

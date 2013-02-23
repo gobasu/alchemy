@@ -7,13 +7,9 @@
 {% endblock %}
 <body>
 
-using example:
-
-
-    {% each $i in $some.var.in %}
-        ::::: ${@value}
-    {% endeach %}
-
+{% each $i in $some.var.in %}
+::::: ${@value}
+{% endeach %}
 ${some.var.in.0}
 {% each $item in 1..10 %}
     {% if $item is odd %}
@@ -24,9 +20,6 @@ ${some.var.in.0}
 
 {% endeach %}
 
-{% import 'extension.html' %}
-
-
-
+{% import 'import.html' %}
 </body>
 </html>

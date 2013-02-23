@@ -42,10 +42,16 @@ class Compiler
     public function getOutput($className)
     {
         ob_start();
-
-        echo '<?php class ' . $className . ' extends alchemy\future\template\renderer\mixture\Template{';
+        echo '<?php ';
+        if ($this->dependencyFile) {
+            echo '\alchemy\future\template\renderer\mixture\Template::load(\'' . $this->dependencyFile . '\');';
+        }
+        echo 'class ' . $className . ' extends ' . $this->extends . '{';
 
         foreach ($this->source as $methodName => $content) {
+            if ($this->dependencyFile && $methodName == self::MAIN_FUNCTION_NAME) {//ommit render function
+                continue;
+            }
             echo 'public function ' . $methodName . '() {?>' . $content . '<?}';
         }
 
@@ -92,9 +98,22 @@ class Compiler
         $this->context = $context;
     }
 
+    public function setExtends($name)
+    {
+        $file = Template::getTemplateFileName($name);
+        if (!is_readable($file)) {
+            throw new CompilerException('Cannot extend unexistent template file ' . $name);
+        }
+        $this->extends = self::getTemplateClassName($file);
+        $this->dependencyFile = $name;
+    }
+
     protected $context = self::MAIN_FUNCTION_NAME;
     protected $lastContext = array();
-    public $source = array();
+    protected $source = array();
+    protected $extends = self::TEMPLATE_EXTENDS;
+    protected $dependencyFile;
+
 
     /**
      * $source = array(
@@ -102,7 +121,7 @@ class Compiler
      * 'name' <--- other functions
      * )
      */
-
+    const TEMPLATE_EXTENDS = 'alchemy\future\template\renderer\mixture\Template';
     const MAIN_FUNCTION_NAME = 'render';
     const TEMPLATE_CLASS_SUFFIX = 'MixtureTemplate';
     const TEMPLATE_CLASS = 'class Tpl extends alchemy\future\template\renderer\mixture\Template

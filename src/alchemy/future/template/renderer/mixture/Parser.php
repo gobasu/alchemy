@@ -25,11 +25,19 @@ class ParserException extends \Exception
     public function __toString()
     {
         $fileData = explode("\n", $this->tokenizer->getText());
-
-        $context = $fileData[$this->line - 2] . PHP_EOL . $fileData[$this->line - 1] . PHP_EOL;
+        $context = '';
+        if (isset($fileData[$this->line - 2])) {
+            $context .= $fileData[$this->line - 2] . PHP_EOL;
+        }
+        if (isset($fileData[$this->line - 1])) {
+            $context .= $fileData[$this->line - 1] . PHP_EOL;
+        }
         $context .= sprintf("%'-" . ($this->column + 1) . "s\n", '^');
+
         $context .= $fileData[$this->line] . PHP_EOL;
-        $context .= $fileData[$this->line + 1];
+        if (isset($fileData[$this->line + 1])) {
+            $context .= $fileData[$this->line + 1] . PHP_EOL;
+        }
 
         return 'MixtureException with message ' . $this->message . ' in ' . "\n" .  $context;
     }
@@ -54,6 +62,7 @@ class Parser
         $this->addExpression('\alchemy\future\template\renderer\mixture\expression\IfExpression');
         $this->addExpression('\alchemy\future\template\renderer\mixture\expression\ImportExpression');
         $this->addExpression('\alchemy\future\template\renderer\mixture\expression\UseExpression');
+        $this->addExpression('\alchemy\future\template\renderer\mixture\expression\ExtendExpression');
     }
 
     public function addExpression($className)
