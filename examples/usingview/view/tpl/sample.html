@@ -6,30 +6,27 @@
     </head>
 {% endblock %}
 <body>
-{% import "file.name.ext" %}
-{% i18n "Welcome ${user}" %}
 
+using example:
+
+
+    {% each $i in $some.var.in %}
+        ::::: ${@value}
+    {% endeach %}
+
+${some.var.in.0}
 {% each $item in 1..10 %}
+    {% if $item is odd %}
+        ${@index}
+    {% endif %}
+
+    {% each $i2 in 2..5 %}${i2}{% endeach %}
 
 {% endeach %}
 
-{% if $aaa %}
-{% block body %}
+{% import 'extension.html' %}
 
-    {% import "file.name.ext" %}
-    {! dla tablicy array('user' => array('firstName' => 1, 'lastName' => 2)) !}
-    {% use $user %}
-        <a href="logout"> ${firstName} ${lastName}</a>
-    {% enduse %}
-    <script type="text/javascript">
-    //{!
 
-    //this content will be ignored by template interpreter and tokenizer
-    //as well
 
-    //!}
-    </script>
-{% endblock %}
-{% endif %}
 </body>
 </html>

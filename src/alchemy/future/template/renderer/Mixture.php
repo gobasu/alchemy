@@ -10,6 +10,7 @@ namespace alchemy\future\template\renderer;
 use alchemy\future\template\renderer\mixture\Tokenizer;
 use alchemy\future\template\renderer\mixture\Parser;
 use alchemy\future\template\renderer\mixture\Compiler;
+use alchemy\future\template\renderer\mixture\Template;
 
 class MixtureException extends \Exception {}
 /**
@@ -23,25 +24,33 @@ class Mixture
 {
     public function __construct($dir = null)
     {
-        $this->dir = AL_APP_DIR . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . 'tpl';
+        if (!$dir) {
+            $this->dir = AL_APP_DIR . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . 'tpl';
+        } else {
+            $this->dir = realpath($dir);
+        }
+        $this->cache = sys_get_temp_dir();
+    }
+
+    public function setCacheDir($dir)
+    {
+        $dir = realpath($dir);
+        if (!is_dir($dir)) {
+            throw new MixtureException('Cache dir ' . $dir . ' does not exists');
+        }
+        $this->cache = $dir;
     }
 
     public function render($name, &$data = array())
     {
-        $file = $this->dir . DIRECTORY_SEPARATOR . $name;
-        try {
-            $parser = new Parser(new Tokenizer($file));
-        } catch (\Exception $e) {
-            throw new MixtureException('Cannot load template file \'' . $file . '\'');
-        }
-
-        $compiler = new Compiler();
-        $compiler->compile($parser->parse());
-
-        print_r($compiler->source);
-
+        Template::setCacheDir($this->cache);
+        Template::setTemplateDir($this->dir);
+        $tpl = Template::factory($name, $data);
+        return $tpl->render();
 
     }
 
     protected $dir;
+    protected $cache;
+
 }

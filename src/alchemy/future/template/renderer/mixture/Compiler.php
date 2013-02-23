@@ -7,7 +7,7 @@
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
 namespace alchemy\future\template\renderer\mixture;
-
+class CompilerException extends \Exception {}
 class Compiler
 {
     public function __construct()
@@ -32,6 +32,29 @@ class Compiler
             }
 
         }
+    }
+
+    public static function getTemplateClassName($file)
+    {
+        return self::TEMPLATE_CLASS_SUFFIX . sha1($file);
+    }
+
+    public function getOutput($className)
+    {
+        ob_start();
+
+        echo '<?php class ' . $className . ' extends alchemy\future\template\renderer\mixture\Template{';
+
+        foreach ($this->source as $methodName => $content) {
+            echo 'public function ' . $methodName . '() {?>' . $content . '<?}';
+        }
+
+        echo '}';
+
+        $class = ob_get_contents();
+        ob_end_clean();
+
+        return $class;
     }
 
     public function appendText($text)
@@ -81,8 +104,9 @@ class Compiler
      */
 
     const MAIN_FUNCTION_NAME = 'render';
-    const TEMPLATE_CLASS = 'class Tpl extends Template
+    const TEMPLATE_CLASS_SUFFIX = 'MixtureTemplate';
+    const TEMPLATE_CLASS = 'class Tpl extends alchemy\future\template\renderer\mixture\Template
     {
-
+        %s
     }';
 }

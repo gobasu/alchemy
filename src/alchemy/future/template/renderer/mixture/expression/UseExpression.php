@@ -11,6 +11,7 @@ namespace alchemy\future\template\renderer\mixture\expression;
 use alchemy\future\template\renderer\mixture\IExpression;
 use alchemy\future\template\renderer\mixture\Node;
 use alchemy\future\template\renderer\mixture\Compiler;
+use alchemy\future\template\renderer\mixture\CompilerException;
 
 class UseExpression implements IExpression
 {
@@ -38,10 +39,13 @@ class UseExpression implements IExpression
     {
         $parameters = $this->node->getParameters();
         if ($this->node->getTagname() == self::getCloseTag()) {
-            $compiler->appendText('<?php $this->goOutFromStack();?>');
+            $compiler->appendText('<?php endif; $this->stack->out();?>');
             return;
         }
-        $compiler->appendText('<?php $this->gotoStack(\'' . $parameters[1] . '\');?>');
+        if ($parameters[1]{0} != '$') {
+            throw new CompilerException('Cannot use keyword as variable in ' . $parameters[0] . ' expression');
+        }
+        $compiler->appendText('<?php $this->stack->in(\'' . substr($parameters[1], 1) . '\'); if($this->get(\'.\')):?>');
     }
 
     /**

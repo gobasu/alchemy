@@ -37,7 +37,7 @@ class I18nExpression implements IExpression
     public function handle(Compiler $compiler)
     {
         $parameters = $this->node->getParameters();
-        $compiler->appendText('<?php $this->i18n(\'' . $parameters[1] . '\');?>');
+
     }
 
     /**

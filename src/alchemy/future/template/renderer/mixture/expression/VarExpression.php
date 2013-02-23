@@ -35,11 +35,40 @@ class VarExpression implements IExpression
     public function handle(Compiler $compiler)
     {
         $parameters = $this->node->getParameters();
-        $compiler->appendText('<?=$this->get(\'$' . $parameters[0] . '\')?>');
+        $compiler->appendText('<?=' . self::getVariableReference($parameters[0]) . '?>');
+    }
+
+    public static function getVariableReference($name)
+    {
+        //current variable
+        if ($name == '.' || $name == 'this' || $name == '$.') {
+            return '$this->stack->get(\'.\')';
+        }
+
+        //loop variables
+        if ($name{0} == '@') {
+            $name = substr($name, 1);
+
+            //undefined varname return null
+            if (!isset(self::$loopVars[$name])) {
+                return 'null';
+            }
+            return EachExpression::getVariable($name);
+        }
+
+        //normal variables from different expressions
+        if ($name{0} == '$') {
+            return '$this->stack->get(\''. substr($name, 1) . '\')';
+        }
+
+        //normal variables from var expression
+        return '$this->stack->get(\''. $name . '\')';
     }
 
     /**
      * @var \alchemy\future\template\renderer\mixture\Node
      */
     protected $node;
+
+    protected static $loopVars = array('odd' => true, 'even' => true, 'index' => true, 'value' => true, 'key' => true);
 }

@@ -14,6 +14,10 @@ use alchemy\future\template\renderer\mixture\Compiler;
 
 class ImportExpression implements IExpression
 {
+    public function __construct(Node $node)
+    {
+        $this->node = $node;
+    }
     public static function isBlock()
     {
         return false;
@@ -30,7 +34,13 @@ class ImportExpression implements IExpression
 
     public function handle(Compiler $compiler)
     {
-
+        $parameters = $this->node->getParameters();
+        $compiler->appendText('<?php $this->import(\'' . $parameters[1] . '\')?>');
     }
+
+    /**
+     * @var Node
+     */
+    protected $node;
 
 }
