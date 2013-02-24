@@ -71,16 +71,18 @@ class IfExpression implements IExpression
             $not = null;
         }
 
+        $iteratedItem = substr($parameters[1],1);
+
         if ($length == 4) {
             switch (true) {
                 case $parameters[3] == 'number':
                     $compiler->appendText('<?php if(' . $not . 'is_numeric(' . VarExpression::getVariableReference($parameters[1]) . ')):?>');
                     break;
-                case $parameters[3] == 'odd':
-                    $compiler->appendText('<?php if(' . $not . EachExpression::getVariable('odd', substr($parameters[1],1)) . '):?>');
-                    break;
-                case $parameters[3] == 'even':
-                    $compiler->appendText('<?php if(' . $not . EachExpression::getVariable('odd', substr($parameters[1],1)) . '):?>');
+                case $parameters[3] == 'odd' && EachExpression::isIterationAvailable($iteratedItem):
+                case $parameters[3] == 'even' && EachExpression::isIterationAvailable($iteratedItem):
+                case $parameters[3] == 'first' && EachExpression::isIterationAvailable($iteratedItem):
+                case $parameters[3] == 'last' && EachExpression::isIterationAvailable($iteratedItem):
+                    $compiler->appendText('<?php if(' . $not . EachExpression::getVariable($parameters[3], $iteratedItem) . '):?>');
                     break;
                 case is_numeric($parameters[3]):
                     $compiler->appendText('<?php if(' . VarExpression::getVariableReference($parameters[1]) . ' ' . ($not ? $not : '='   ) . '= ' . $parameters[3] . '):?>');

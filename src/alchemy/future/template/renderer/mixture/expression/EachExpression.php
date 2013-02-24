@@ -38,13 +38,11 @@ class EachExpression implements IExpression
     public function handle(Compiler $compiler)
     {
         if ($this->node->getTagname() == self::getCloseTag()) {
-            $name = array_pop(self::$iteratedItem);
+            array_pop(self::$iteratedItems);
             $compiler->appendText('<?php endforeach;?>');
 
             return;
         }
-
-        self::$iteratedItem++;
 
         $parameters = $this->node->getParameters();
         if ($parameters[2] != 'in') {
@@ -54,23 +52,29 @@ class EachExpression implements IExpression
         if ($parameters[1]{0} == '$') {
             $parameters[1] = substr($parameters[1], 1);
         }
-        self::$iteratedItem[] = $parameters[1];
+        self::$iteratedItems[] = $parameters[1];
 
         $index = self::getVariable('index');
         $key = self::getVariable('key');
         $value = self::getVariable('value');
         $odd = self::getVariable('odd');
         $even = self::getVariable('even');
+        $last = self::getVariable('last');
+        $first = self::getVariable('first');
+        $length = self::getVariable('length');
 
         //looping through a variable
         if ($parameters[3]{0} == '$') {
             $var = VarExpression::getVariableReference($parameters[3]);
-            $compiler->appendText('<?php ' . $index . ' = 0; foreach((array)' . $var . ' as ' . $key . ' => ' . $value . '):');
+            $compiler->appendText('<?php ' . $index . ' = 0; ' . $length . ' = count(' . $var . '); foreach(' . $var . ' as ' . $key . ' => ' . $value . '):');
             $compiler->appendText('$this->stack->set(\'' . $parameters[1] . '\', ' . $value . ');');
             $compiler->appendText(
+                $first . ' = ' . $index. ' == 0 ? true : false;' .
+                $last . ' = ' . $length . ' - 1 == ' . $index . ' ? true : false;' .
                 $index . '++;' .
                 $odd . ' = ' . $index . '%2 ? false : true;' .
                 $even . ' = !' . $odd . '; ' .
+
             '?>');
             return;
         }
@@ -81,9 +85,11 @@ class EachExpression implements IExpression
         $range = self::getVariable('range');
 
 
-        $compiler->appendText('<?php ' . $index .' = 0; ' . $range .' = range(' . $matches[1] . ',' . $matches[2] . '); foreach(' . $range . ' as ' . $key . ' => ' . $value . '):');
+        $compiler->appendText('<?php ' . $index .' = 0; ' . $range .' = range(' . $matches[1] . ',' . $matches[2] . ');' . $length . ' = count(' . $range . '); foreach(' . $range . ' as ' . $key . ' => ' . $value . '):');
         $compiler->appendText('$this->stack->set(\'' . $parameters[1] . '\', ' . $value . ');');
         $compiler->appendText(
+            $first . ' = ' . $index. ' == 0 ? true : false;' .
+            $last . ' = ' . $length . ' - 1 == ' . $index . ' ? true : false;' .
             $index . '++;' .
             $odd . ' = ' . $index . '%2 ? false : true;' .
             $even . ' = !' . $odd . '; ' .
@@ -93,7 +99,12 @@ class EachExpression implements IExpression
 
     public static function getVariable($type, $iteratedItem = null)
     {
-        return '$_each' . $type . '_' . ($iteratedItem ? $iteratedItem : end(self::$iteratedItem));
+        return '$_each' . $type . '_' . ($iteratedItem ? $iteratedItem : end(self::$iteratedItems));
+    }
+
+    public static function isIterationAvailable($name)
+    {
+        return in_array($name, self::$iteratedItems);
     }
 
 
@@ -108,6 +119,6 @@ class EachExpression implements IExpression
      * Disalows to mix scopes
      * @var int
      */
-    protected static $iteratedItem = array();
+    protected static $iteratedItems = array();
 
 }

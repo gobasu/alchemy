@@ -102,5 +102,5 @@ class VarExpression implements IExpression
      */
     protected $node;
 
-    protected static $loopVars = array('odd' => true, 'even' => true, 'index' => true, 'value' => true, 'key' => true);
+    protected static $loopVars = array('odd' => true, 'even' => true, 'index' => true, 'value' => true, 'key' => true, 'last' => true, 'first' => true);
 }
