@@ -13,40 +13,6 @@ class TemplateException extends MixtureException {}
 
 class Template
 {
-    protected function __construct(&$data = array())
-    {
-        if ($data instanceof VarStack) {
-            $this->stack = $data;
-        } else {
-            $this->stack = new VarStack($data);
-        }
-    }
-
-    public function render()
-    {
-        return '';
-    }
-
-    public function import($name)
-    {
-        self::factory($name, $this->stack)->render();
-    }
-
-    public static function setTemplateDir($dir)
-    {
-        self::$templateDir = $dir;
-    }
-
-    public static function setCacheDir($dir)
-    {
-        self::$cacheDir = $dir;
-    }
-
-    public static function getTemplateFileName($name)
-    {
-        return self::$templateDir . DIRECTORY_SEPARATOR . $name;
-    }
-
     /**
      * @param $name
      * @return Template
@@ -60,7 +26,18 @@ class Template
     }
 
     /**
-     * Loads dependency templates
+     * Returns template filename
+     * @param string $name
+     * @return string
+     */
+    public static function getTemplateFileName($name)
+    {
+        return self::$templateDir . DIRECTORY_SEPARATOR . $name;
+    }
+
+    /**
+     * Loads template classes
+     *
      * @param $name template name
      */
     public static function load($name)
@@ -100,12 +77,99 @@ class Template
         return true;
     }
 
+    public static function setOption($name, $value)
+    {
+        self::$options[$name] = $value;
+    }
+
+    public static function getOption($name)
+    {
+        if (!isset(self::$options[$name])) {
+            return null;
+        }
+        return self::$options[$name];
+    }
+
+    /**
+     * Sets new cache dir, default is sys_get_temp()
+     *
+     * @param $dir
+     */
+    public static function setCacheDir($dir)
+    {
+        self::$cacheDir = $dir;
+    }
+
+    /**
+     * Sets dirpath were mixture will be searching fro tempaltes
+     *
+     * @param $dir
+     */
+    public static function setTemplateDir($dir)
+    {
+        self::$templateDir = $dir;
+    }
+
+
+
+    protected function __construct(&$data = array())
+    {
+        if ($data instanceof VarStack) {
+            $this->stack = $data;
+        } else {
+            $this->stack = new VarStack($data);
+        }
+    }
+
+    /**
+     * Imports other template
+     *
+     * @param string $name template name
+     */
+    public function import($name)
+    {
+        self::factory($name, $this->stack)->render();
+    }
+
+    /**
+     * Renders the template
+     *
+     * @return string
+     */
+    public function render()
+    {
+        return '';
+    }
+
+    /**
+     * @var string
+     */
+    protected static $cacheDir;
+
+    /**
+     * @var array
+     */
+    protected static $options = array(
+        self::OPTION_DATE_FORMAT       => 'Y.m.d',
+        self::OPTION_DATETIME_FORMAT   => 'Y.m.d H:i:s',
+        self::OPTION_TIME_FORMAT       => 'H:i:s',
+        self::OPTION_NUMBER_FORMAT     => array(0, '.' , ','),
+        self::OPTION_CURRENCY_SUFFIX   => 'USD'
+    );
+
+    /**
+     * @var string
+     */
+    protected static $templateDir;
+
     /**
      * @var VarStack
      */
     protected $stack;
 
-    protected static $templateDir;
-
-    protected static $cacheDir;
+    const OPTION_DATE_FORMAT       = 1;
+    const OPTION_DATETIME_FORMAT   = 2;
+    const OPTION_TIME_FORMAT       = 3;
+    const OPTION_NUMBER_FORMAT     = 4;
+    const OPTION_CURRENCY_SUFFIX   = 5;
 }

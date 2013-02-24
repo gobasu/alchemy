@@ -124,6 +124,7 @@ class Tokenizer
                     }
 
                     if (!$inVar && $token == self::T_END_TAG) {
+                        $this->index++;
                         //add latest param
                         if ($buffer) {
                             $this->addToken(self::T_PARAM, $buffer);

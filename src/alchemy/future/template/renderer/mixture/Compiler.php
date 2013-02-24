@@ -19,7 +19,8 @@ class Compiler
     {
         foreach ($tree->getChildren() as $node) {
             if ($node->getType() == Node::NODE_TEXT) {
-                $this->appendText($node->getValue());
+                //escape <?php and <? from code
+                $this->appendText(str_replace('<?', '&lt;?', $node->getValue()));
                 continue;
             }
 

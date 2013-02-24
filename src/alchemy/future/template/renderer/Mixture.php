@@ -22,6 +22,42 @@ class MixtureException extends \Exception {}
  */
 class Mixture
 {
+    /**
+     * Sets how date values should be formatted in template
+     *
+     * @param string $format
+     */
+    public static function setDateFormat($format = 'Y.m.d')
+    {
+        Template::setOption(Template::OPTION_DATE_FORMAT, $format);
+    }
+
+    /**
+     * Sets how datetime values in template should be formatted
+     * @param string $format
+     */
+    public static function setDatetimeFormat($format = 'Y.m.d H:i:s')
+    {
+        Template::setOption(Template::OPTION_DATETIME_FORMAT, $format);
+    }
+
+    /**
+     * Sets how float numbers and currency values should be displayed
+     *
+     * @param int $decimals
+     * @param string $decimalsSeparator
+     * @param string $thousandsSeparator
+     */
+    public static function setNumberFormat($decimals = 0, $decimalsSeparator = '.', $thousandsSeparator = ',')
+    {
+        Template::setOption(Template::OPTION_NUMBER_FORMAT, array($decimals, $decimalsSeparator, $thousandsSeparator));
+    }
+
+    public static function setCurrencySuffix($suffix = 'USD')
+    {
+        Template::setOption(Template::OPTION_CURRENCY_SUFFIX, $suffix);
+    }
+
     public function __construct($dir = null)
     {
         if (!$dir) {

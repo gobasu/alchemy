@@ -11,6 +11,7 @@ namespace alchemy\future\template\renderer\mixture\expression;
 use alchemy\future\template\renderer\mixture\IExpression;
 use alchemy\future\template\renderer\mixture\Node;
 use alchemy\future\template\renderer\mixture\Compiler;
+use alchemy\future\template\renderer\mixture\Template;
 
 class VarExpression implements IExpression
 {
@@ -35,7 +36,38 @@ class VarExpression implements IExpression
     public function handle(Compiler $compiler)
     {
         $parameters = $this->node->getParameters();
-        $compiler->appendText('<?=' . self::getVariableReference($parameters[0]) . '?>');
+
+        $var = self::getVariableReference($parameters[0]);
+
+        if (in_array('strip', $parameters)) {
+            $var = 'strip(' . $var . ')';
+        }
+        if (in_array('trim', $parameters)) {
+            $var = 'trim(' . $var . ')';
+        }
+
+        //date
+        if (in_array('date', $parameters)) {
+            $dateFormat = Template::getOption(Template::OPTION_DATE_FORMAT);
+            $var = 'is_numeric(' . $var . ') ? date(\'' . $dateFormat  . '\', ' . $var . ') : date(\'' . $dateFormat  . '\', strtotime(' . $var . '))';
+        } elseif (in_array('datetime', $parameters)) {
+            $dateFormat = Template::getOption(Template::OPTION_DATETIME_FORMAT);
+            $var = 'is_numeric(' . $var . ') ? date(\'' . $dateFormat  . '\', ' . $var . ') : date(\'' . $dateFormat  . '\', strtotime(' . $var . '))';
+        } else {
+            $isCurrenty = in_array('currency', $parameters);
+            if (in_array('number', $parameters) || $isCurrenty) {
+                $numberFormat = Template::getOption(Template::OPTION_NUMBER_FORMAT);
+                $var = 'number_format(' . $var . ', ' . $numberFormat[0] . ', \'' . $numberFormat[1] . '\', \'' . $numberFormat[2] . '\')';
+                if ($isCurrenty) {
+                    $var = $var . '.\' ' . Template::getOption(Template::OPTION_CURRENCY_SUFFIX) . '\'';
+                }
+            } elseif (!in_array('unescape', $parameters)) { //escape rest of the variables
+                $var = 'htmlentities(' . $var . ')';
+            }
+        }
+
+
+        $compiler->appendText('<?php echo ' . $var . '?>');
     }
 
     public static function getVariableReference($name)
