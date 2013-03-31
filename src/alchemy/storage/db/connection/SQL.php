@@ -1,4 +1,11 @@
 <?php
+/**
+ * Alchemy Framework (http://alchemyframework.org/)
+ *
+ * @link      http://github.com/dkraczkowski/alchemy for the canonical source repository
+ * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
+ * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
+ */
 namespace alchemy\storage\db\connection;
 use alchemy\storage\db\Model;
 use alchemy\storage\db\ISchema;
@@ -180,7 +187,6 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
      */
     public function find(ISchema $schema, array $query = null, array $sort = null)
     {
-
         $sql = $this->generateFindSQL($schema, $query, $sort);
         return $this->query($sql, $schema, $query);
     }
@@ -197,8 +203,8 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
      * @param \alchemy\storage\db\ISchema $schema
      * @param array $query query term
      * @param array $update specify update fields
-     * @param bool $returnData whatever modified data should be returned
-     * @return array|null
+     * @param bool $returnData whatever data which will be modified should be returned
+     * @return array|boolean
      * @throws SQLException
      */
     public function findAndModify(ISchema $schema, array $query = null, array $update, $returnData = false)
@@ -227,36 +233,56 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
             $bind[$field] = $value;
 
         }
+
+        if ($returnData) {
+            $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
+            $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
+            $returnData = $this->query($sql, $schema, $query);
+        }
+
         $sql = sprintf(self::UPDATE_SQL, $schema->getCollectionName(), implode(',', $updateFields), $where);
         $bind = array_merge($query, $bind);
 
         //run command
         $q = $this->prepare($sql);
-        $q->execute($bind);
-
-        if ($returnData) {
-            $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
-            $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
-            return $this->query($sql, $schema, $query);
+        if (!$q) {
+            return false;
         }
+        $updateQueryResult = $q->execute($bind);
 
+        if ($updateQueryResult && $returnData !== false) {
+            return $returnData;
+        }
+        return $updateQueryResult;
     }
 
+    /**
+     * Finds and remove rows from DB
+     * @param \alchemy\storage\db\ISchema $schema
+     * @param array $query
+     * @param bool $returnData
+     * @return mixed returns set of models if $returnData = true or boolean otherwise
+     */
     public function findAndRemove(ISchema $schema, array $query = null, $returnData = false)
     {
         $where = $this->parseQuery($query);
-        $data = null;
         if ($returnData) {
             $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
             $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
-            $data = $this->query($sql, $schema, $query);
+            $returnData = $this->query($sql, $schema, $query);
         }
 
         $sql = sprintf(self::DELETE_SQL, $schema->getCollectionName(), $where);
         $q = $this->prepare($sql);
-        $q->execute($query);
+        if (!$q) {
+            return false;
+        }
+        $removeQueryResult = $q->execute($query);
 
-        return $data;
+        if ($removeQueryResult && $returnData !== false) {
+            return $returnData;
+        }
+        return $removeQueryResult;
     }
 
     private function generateFindSQL(ISchema $schema, array &$query = null, array $sort = null, $limit = null)
@@ -297,6 +323,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
         {
             return ' 1';
         }
+        $bind = array();
         foreach ($query as $key => $value) {
             $key = trim($key);
             $operator = '=';
@@ -336,6 +363,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
 
             $where[] = '`' . $key . '` ' . $operator . ' :' . $key;
         }
+
         $query = $bind;
         $where = implode(' AND ', $where);
         return $where;

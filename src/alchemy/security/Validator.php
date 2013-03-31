@@ -1,23 +1,10 @@
 <?php
 /**
- * Copyright (C) 2012 Dawid Kraczkowski
+ * Alchemy Framework (http://alchemyframework.org/)
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR
- * A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
- * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
- * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * @link      http://github.com/dkraczkowski/alchemy for the canonical source repository
+ * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
+ * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
 namespace alchemy\security;
 
@@ -129,7 +116,7 @@ class Validator
                 return false;
             }
         } else {
-            foreach ($types as $match) {
+            foreach ($types as $t => $match) {
                 if (preg_match('#^' . $match . '$#', $number)) {
                     return self::luhn($number);
                 }
@@ -172,7 +159,7 @@ class Validator
      * @param array $options
      * @return bool
      */
-    public static function number($value, $options)
+    public static function number($value, $options = array())
     {
         if (!is_numeric($value)) return false;
 
@@ -195,7 +182,7 @@ class Validator
      * @param array $options
      * @return bool
      */
-    public static function string($value, $options)
+    public static function string($value, $options = array())
     {
         if (!is_string($value)) return false;
 
@@ -249,7 +236,7 @@ class Validator
      * @param string $regexp
      * @return bool
      */
-    public function regexp($value, $regexp)
+    public static function regexp($value, $regexp)
     {
 
         return preg_match('#' . $regexp . '#', $value) ? true : false;
@@ -272,7 +259,7 @@ class Validator
      * @param array $options
      * @return bool
      */
-    public function date($value, $options)
+    public static function date($value, $options = array())
     {
         $timestamp = strtotime($value);
 

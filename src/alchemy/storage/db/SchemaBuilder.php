@@ -1,23 +1,10 @@
 <?php
 /**
- * Copyright (C) 2012 Dawid Kraczkowski
+ * Alchemy Framework (http://alchemyframework.org/)
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR
- * A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
- * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
- * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * @link      http://github.com/dkraczkowski/alchemy for the canonical source repository
+ * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
+ * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
 namespace alchemy\storage\db;
 
@@ -44,10 +31,10 @@ class SchemaBuilder
     {
         $schemaBuilder = new SchemaBuilder($className);
         $path = Loader::getPathForApplicationClass($className);
-        $schemaPath = AL_APP_CACHE_DIR . '/' . sha1($path);
+        $schemaPath = AL_APP_CACHE_DIR . '/' . sha1($path) . '.php';
 
-        if (is_readable($schemaPath)) {
-            if (filemtime($schemaPath) >= filemtime(Loader::getPathForApplicationClass($className))) {
+        if (is_readable($schemaPath) && self::$cache) {
+            if (filemtime($schemaPath) >= filemtime($path)) {
                 //get the schema from cache
                 require_once $schemaPath;
                 return $schemaBuilder->getInstance();
@@ -57,9 +44,14 @@ class SchemaBuilder
         //build schema
         $schemaBuilder->build();
         $schemaBuilder->save($schemaPath);
+        require_once $schemaPath;
         return $schemaBuilder->getInstance();
     }
 
+    public static function disableCache()
+    {
+        self::$cache = false;
+    }
 
     protected function __construct($className)
     {
@@ -79,25 +71,31 @@ class SchemaBuilder
         if (!isset($classAnnotations[self::ANNOTATION_PK])) {
             throw new ModelException('Missing @' . self::ANNOTATION_PK . ' annotation in ' . $this->className . ' definition');
         }
+        $pk = $classAnnotations[self::ANNOTATION_PK];
+
+        if (is_array($pk)) {
+            throw new ModelException('Alchemy models does not support compound keys yet!');
+        }
+
 
         if (isset($classAnnotations[self::ANNOTATION_CONNECTION])) {
             $connectionName = $classAnnotations[self::ANNOTATION_CONNECTION];
         }
-
         $className = explode('\\', $this->className);
         $namespace = implode('\\', array_slice($className,0, -1));
+        if ($namespace) {
+            $namespace = 'namespace ' . $namespace . ';';
+        }
         $className = array_slice($className, -1);
 
         //get Collection name or use class name
         if (isset($classAnnotations[self::ANNOTATION_COLLECTION])) {
             $collectionName = $classAnnotations[self::ANNOTATION_COLLECTION];
         } else {
-            $collectionName = $className;
+            $collectionName = $className[0];
         }
 
         $className = $className[0] . self::SCHEMA_CLASS_POSTFIX;
-
-        $pk = $classAnnotations[self::ANNOTATION_PK];
         $constructBody = '';
         $propertyAliases = array();
 
@@ -139,7 +137,6 @@ class SchemaBuilder
             }
         }
 
-
         $this->schemaData = sprintf(self::CLASS_TEMPLATE,
             $namespace, //Schema namespace
             $className, //Schame class name
@@ -150,8 +147,6 @@ class SchemaBuilder
             $collectionName, // set collection name
             $this->className // set model class name
         );
-
-        eval($this->schemaData);
     }
 
     protected function getInstance()
@@ -174,6 +169,7 @@ class SchemaBuilder
     protected $schemaClassName;
     protected $schemaData;
 
+    protected static $cache = true;
     protected static $typeMap = array(
         'string'    => Property::TYPE_STRING,
         'text'      => Property::TYPE_STRING,
@@ -181,6 +177,7 @@ class SchemaBuilder
         'float'     => Property::TYPE_NUMBER,
         'number'    => Property::TYPE_NUMBER,
         'date'      => Property::TYPE_DATE,
+        'json'      => Property::TYPE_JSON,
         'enum'      => Property::TYPE_ENUM,
         'bool'      => Property::TYPE_BOOL,
         'boolean'   => Property::TYPE_BOOL,
@@ -188,10 +185,10 @@ class SchemaBuilder
         'default'   => Property::TYPE_STRING
     );
 
-    const ANNOTATION_PK = 'Pk';
-    const ANNOTATION_PROPERTY = 'Param';
-    const ANNOTATION_CONNECTION = 'Connection';
-    const ANNOTATION_COLLECTION = 'Collection';
+    const ANNOTATION_PK = 'pk';
+    const ANNOTATION_PROPERTY = 'param';
+    const ANNOTATION_CONNECTION = 'connection';
+    const ANNOTATION_COLLECTION = 'collection';
 
     const PROPERTY_ATTRIBUTE_NAME = 'name';
     const PROPERTY_ATTRIBUTE_REQUIRED = 'required';
@@ -200,7 +197,7 @@ class SchemaBuilder
     const SCHEMA_CLASS_POSTFIX = 'Schema';
 
     const CLASS_TEMPLATE = <<<CLASS
-namespace %s;
+%s
 /**
  * Class generated automatically via \alchemy\storage\db\SchemaBuilder
  * DO NOT CHANGE THIS MANUALLY

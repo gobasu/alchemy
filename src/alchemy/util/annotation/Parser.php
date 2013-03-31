@@ -23,7 +23,6 @@ namespace alchemy\util\annotation;
 /**
  * Annotation Parser
  *
- * @author: lunereaper
  */
 
 final class Parser
@@ -40,6 +39,9 @@ final class Parser
         }
         foreach ($annotations[2] as &$value) {
             $value = self::parseValue($value);
+        }
+        foreach ($annotations[1] as &$name) {
+            $name = strtolower($name);
         }
         $result = array_combine($annotations[1], $annotations[2]);
         return $result;

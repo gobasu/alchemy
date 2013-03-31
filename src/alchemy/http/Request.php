@@ -1,30 +1,17 @@
 <?php
 /**
- * Copyright (C) 2012 Dawid Kraczkowski
+ * Alchemy Framework (http://alchemyframework.org/)
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR
- * A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
- * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
- * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * @link      http://github.com/dkraczkowski/alchemy for the canonical source repository
+ * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
+ * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
 namespace alchemy\http;
 class RequestException extends \Exception {}
 class Request 
 {
     /**
-     * Gets global request performed to application
+     * Gets global request performed to server
      * @return Request
      */
     public static function getGlobal()
@@ -42,9 +29,27 @@ class Request
                 'Accept-Charset'    => isset($_SERVER['HTTP_ACCEPT_CHARSET']) ? $_SERVER['HTTP_ACCEPT_CHARSET'] : null
             );
 
-            self::$globalRequest = new self($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $_POST, new Headers($headers));
+            //create global request's data
+            $requestData = array();
+            switch ($_SERVER['REQUEST_METHOD']) {
+                case self::METHOD_POST:
+                    $requestData = $_POST;
+                    break;
+                case self::METHOD_PUT:
+                    $requestData = file_get_contents("php://input");
+                    break;
+                case self::METHOD_GET:
+                    $requestData = $_GET;
+                    break;
+                default:
+                    $requestData = $_REQUEST;
+                    break;
+            }
+
+            self::$globalRequest = new self($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $requestData, new Headers($headers));
             //is XHR
             self::$globalRequest->isXHR(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
+
             //is secure
             if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) {
                 self::$globalRequest->isSecure(true);
@@ -130,18 +135,28 @@ class Request
         return $this->isXHR;
     }
 
+    /**
+     * Gets request's query string
+     *
+     * @return array
+     */
     public function getQuery()
     {
         return $this->query;
     }
 
+    /**
+     * Sets request's query string
+     *
+     * @param array $query
+     */
     public function setQuery(array $query)
     {
         $this->query = $query;
     }
 
     /**
-     * Sends a request
+     * Sends a request using CURLlib
      *
      * @param int $timeout timeout in ms
      * @return Response
@@ -214,6 +229,12 @@ class Request
         return $response;
     }
 
+    /**
+     * Sets file that will be used to storage cookies
+     * while making requests
+     *
+     * @param $file
+     */
     public function setCookieJar($file)
     {
         $this->cookieJar = $file;
@@ -252,6 +273,12 @@ class Request
         $this->caFile = $filename;
     }
 
+    /**
+     * Checks/sets whatever request is/should be done by ssl
+     *
+     * @param null $set
+     * @return bool
+     */
     public function isSecure($set = null)
     {
         if ($set !== null) {
@@ -264,6 +291,12 @@ class Request
         return $this->scheme == 'https';
     }
 
+    /**
+     * Gets request's scheme eg. http, https
+     * Defult is http
+     *
+     * @return string
+     */
     public function getScheme()
     {
         return $this->scheme;

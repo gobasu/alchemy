@@ -1,23 +1,10 @@
 <?php
 /**
- * Copyright (C) 2012 Dawid Kraczkowski
+ * Alchemy Framework (http://alchemyframework.org/)
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR
- * A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
- * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
- * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * @link      http://github.com/dkraczkowski/alchemy for the canonical source repository
+ * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
+ * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
 namespace alchemy\app;
 
@@ -68,16 +55,18 @@ class Application
     }
 
     /**
-     * Adds route to handler resource
+     * Calls callback corresponding to route when matches
+     * current url
+     *
      * @see alchemy\http\Router::addResource
      *
-     * @param $route    uri pattern to given resource
+     * @param $uri    uri pattern to given resource
      *                  for example GET /posts/{$id}
      * @param $handler
      */
-    public function addRoute($route, $handler)
+    public function onURI($uri, $callback)
     {
-        $this->router->addResource($route, $handler);
+        $this->router->addResource($uri, $callback);
     }
 
     /**
@@ -104,6 +93,11 @@ class Application
             $path = Loader::getPathForApplicationClass($className);
             if (is_readable($path)) {
                 require_once $path;
+
+                //provide onLoad static call for models
+                if (is_subclass_of($className, 'alchemy\storage\db\Model')) {
+                    $className::onLoad();
+                }
             }
         });
     }
@@ -116,6 +110,11 @@ class Application
     public function setPluginDir($dir)
     {
         $this->pluginDir = $dir;
+    }
+
+    public function getPluginDir($dir)
+    {
+        return $this->pluginDir;
     }
 
     /**
@@ -169,6 +168,7 @@ class Application
 
     /**
      * Gets config constant if config dir was set
+     *
      * @param string $name
      */
     public function get($name)
@@ -191,9 +191,15 @@ class Application
         if (!defined('AL_APP_DIR')) {
             throw new ApplicationException('Application dir has not been set. Please use Application::setApplicationDir before use Application::run');
         }
+        Session::start();
         $this->getConfig();
 
-        Session::start();
+        //handle plugins
+        if ($this->pluginDir) {
+            \alchemy\app\plugin\PluginLoader::initialize($this->pluginDir);
+        }
+
+
         $request = Request::getGlobal();
 
         $this->router->setRequestMethod($request->getMethod());
