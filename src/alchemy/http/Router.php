@@ -8,6 +8,8 @@
  */
 namespace alchemy\http;
 use alchemy\http\Request;
+use alchemy\app\Resource;
+use alchemy\http\router\Route;
 
 class RouterException extends \Exception {}
 class RouterInvalidRequestMethodException extends RouterException {}
@@ -23,7 +25,7 @@ class Router
      */
     public function getRoute()
     {
-        $this->process();
+        $this->processRouteSearch();
         return $this->currentRoute;
     }
 
@@ -43,13 +45,18 @@ class Router
      */
     public function getResource()
     {
-        $this->process();
+        $this->processRouteSearch();
         return $this->currentResource;
     }
 
     public function setURI($uri)
     {
         $this->uri = $uri;
+    }
+
+    public function findURI($resource, $options = array())
+    {
+
     }
 
     public function setRequestMethod($method = Request::METHOD_GET)
@@ -97,10 +104,13 @@ class Router
             $path = substr($route, $pos + 1);
         }
 
+        $resource = new Resource($resource);
+
         $this->routes[$method][$path] = $resource;
+        $this->resources[$resource->getClassName()][$resource->getFunctionName()] = $route;
     }
 
-    private function process()
+    private function processRouteSearch()
     {
         if (!$this->forceMode && $this->currentRoute && $this->currentResource) {
             return true;
@@ -114,7 +124,7 @@ class Router
             if (!$r->isMatch($this->uri) || $route == self::WILD_CARD) {
                 continue;
             }
-            $this->currentResource = new \alchemy\app\Resource($resource);
+            $this->currentResource = $resource;
             $this->currentResource->bindParameters($r->getParameters());
             $this->currentRoute = $r;
             return true;
@@ -123,7 +133,7 @@ class Router
         //check if wildcard was set
         if (isset($this->routes[$this->method][self::WILD_CARD])) {
             $this->currentRoute = new router\Route(self::WILD_CARD);
-            $this->currentResource = new \alchemy\app\Resource($this->routes[$this->method][self::WILD_CARD]);
+            $this->currentResource = $this->routes[$this->method][self::WILD_CARD];
             return true;
         }
 
@@ -135,7 +145,7 @@ class Router
             if (!$r->isMatch($this->uri) || $route == self::WILD_CARD) {
                 continue;
             }
-            $this->currentResource = new \alchemy\app\Resource($resource);
+            $this->currentResource = $resource;
             $this->currentResource->bindParameters($r->getParameters());
             $this->currentRoute = $r;
             return true;
@@ -145,7 +155,7 @@ class Router
         //check if wildcard was set
         if (isset($this->routes[self::WILD_CARD][self::WILD_CARD])) {
             $this->currentRoute = new router\Route(self::WILD_CARD);
-            $this->currentResource = new \alchemy\app\Resource($this->routes[self::WILD_CARD][self::WILD_CARD]);
+            $this->currentResource = $this->routes[self::WILD_CARD][self::WILD_CARD];
             return true;
         }
 
@@ -200,4 +210,6 @@ class Router
         Request::METHOD_GET     => array(),
         Request::METHOD_DELETE  => array()
     );
+
+    private $resources = array();
 }

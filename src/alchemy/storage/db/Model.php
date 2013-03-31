@@ -75,6 +75,11 @@ abstract class Model extends EventDispatcher
         return $model;
     }
 
+    public static function onLoad()
+    {
+
+    }
+
 
     /**
      * Sets multiple parameters in model

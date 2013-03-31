@@ -62,7 +62,7 @@ class VarExpression implements IExpression
                     $var = $var . '.\' ' . Template::getOption(Template::OPTION_CURRENCY_SUFFIX) . '\'';
                 }
             } elseif (!in_array('unescape', $parameters)) { //escape rest of the variables
-                $var = 'htmlentities(' . $var . ')';
+                $var = 'htmlentities(' . $var . ', ENT_QUOTES, \'UTF-8\')';
             }
         }
 

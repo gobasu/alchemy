@@ -8,6 +8,7 @@
  */
 namespace alchemy\future\template\renderer\mixture\expression;
 
+use alchemy\future\template\renderer\mixture\ExpressionException;
 use alchemy\future\template\renderer\mixture\IExpression;
 use alchemy\future\template\renderer\mixture\Node;
 use alchemy\future\template\renderer\mixture\Compiler;
@@ -41,10 +42,21 @@ class BlockExpression implements IExpression
             return;
         }
         $parameters = $this->node->getParameters();
-        $func = 'userBlock' . $parameters[1];
+
+        if (!isset($parameters[1])) {
+            throw new ExpressionException('Missing block name');
+        }
+
+        $func = 'userBlock' . self::sanitizeName($parameters[1]);
         $compiler->appendText('<?php $this->' . $func . '(); ?>');
         $compiler->setContext($func);
     }
+
+    public static function sanitizeName($name)
+    {
+        return str_replace(array('-','.','/','+','*','&','^','#','@'), '_', $name);
+    }
+
     /**
      * @var \alchemy\future\template\renderer\mixture\Node
      */

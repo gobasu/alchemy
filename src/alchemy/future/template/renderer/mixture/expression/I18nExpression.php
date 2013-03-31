@@ -27,7 +27,7 @@ class I18nExpression implements IExpression
 
     public static function getOpenTag()
     {
-        return 'i18n';
+        return '_';
     }
 
     public static function getCloseTag()
@@ -37,6 +37,7 @@ class I18nExpression implements IExpression
     public function handle(Compiler $compiler)
     {
         $parameters = $this->node->getParameters();
+        $compiler->appendText('<?php echo "' . addcslashes($parameters[1], '"') . '"?>');
 
     }
 

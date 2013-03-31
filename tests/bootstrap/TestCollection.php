@@ -1,11 +1,12 @@
 <?php
 use alchemy\storage\db\Model;
+use alchemy\storage\DB;
 /**
  * TestCollection
  *
  * @Pk id
  * @Collection testCollection
- * @Connection sqlite
+ * @connection sqlite
  */
 class TestCollection extends Model
 {
@@ -16,6 +17,8 @@ class TestCollection extends Model
         foreach ($sql as $q) {
             self::query($q);
         }
+
+
     }
 
     /**

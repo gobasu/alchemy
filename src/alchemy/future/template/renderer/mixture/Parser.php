@@ -159,7 +159,10 @@ class Parser
                     $current->setValue($current->getValue() . ' ' . $token['type']);
                     $type = $current->getTagname();
                     if (!$this->isValidExpression($type)) {
-                        throw new ParserException('Unknown expression ' . $type, $this);
+                        //register helper expression
+                        $current->setHandler('\alchemy\future\template\renderer\mixture\expression\HelperExpression');
+                        $current = $current->getParent();
+                        break;
                     }
 
                     if (!self::$blockExpressions[$type] || $current->isRoot()) {

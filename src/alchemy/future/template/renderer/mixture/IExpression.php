@@ -8,7 +8,7 @@
  */
 namespace alchemy\future\template\renderer\mixture;
 use alchemy\future\template\renderer\mixture\Compiler;
-
+class ExpressionException extends \Exception {}
 interface IExpression
 {
     public static function isBlock();

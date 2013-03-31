@@ -61,11 +61,29 @@ class Mixture
     public function __construct($dir = null)
     {
         if (!$dir) {
-            $this->dir = AL_APP_DIR . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . 'tpl';
+            $this->dir = AL_APP_DIR . DIRECTORY_SEPARATOR . 'template';
         } else {
             $this->dir = realpath($dir);
         }
         $this->cache = sys_get_temp_dir();
+    }
+
+    public static function addHelper($name, $callable)
+    {
+        self::$helpers[$name] = $callable;
+    }
+
+    public static function helperExists($name)
+    {
+        return isset(self::$helpers[$name]);
+    }
+
+    public static function callHelper($name, $args)
+    {
+        if (!self::helperExists($name)) {
+            throw new MixtureException('Call to undefined helper function ' . $name);
+        }
+        return call_user_func_array(self::$helpers[$name], $args);
     }
 
     public function setCacheDir($dir)
@@ -88,5 +106,7 @@ class Mixture
 
     protected $dir;
     protected $cache;
+
+    protected static $helpers;
 
 }

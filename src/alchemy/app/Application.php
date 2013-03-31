@@ -93,6 +93,11 @@ class Application
             $path = Loader::getPathForApplicationClass($className);
             if (is_readable($path)) {
                 require_once $path;
+
+                //provide onLoad static call for models
+                if (is_subclass_of($className, 'alchemy\storage\db\Model')) {
+                    $className::onLoad();
+                }
             }
         });
     }
@@ -186,6 +191,7 @@ class Application
         if (!defined('AL_APP_DIR')) {
             throw new ApplicationException('Application dir has not been set. Please use Application::setApplicationDir before use Application::run');
         }
+        Session::start();
         $this->getConfig();
 
         //handle plugins
@@ -193,7 +199,7 @@ class Application
             \alchemy\app\plugin\PluginLoader::initialize($this->pluginDir);
         }
 
-        Session::start();
+
         $request = Request::getGlobal();
 
         $this->router->setRequestMethod($request->getMethod());

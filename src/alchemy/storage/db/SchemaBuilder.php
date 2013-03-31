@@ -31,7 +31,7 @@ class SchemaBuilder
     {
         $schemaBuilder = new SchemaBuilder($className);
         $path = Loader::getPathForApplicationClass($className);
-        $schemaPath = AL_APP_CACHE_DIR . '/' . sha1($path);
+        $schemaPath = AL_APP_CACHE_DIR . '/' . sha1($path) . '.php';
 
         if (is_readable($schemaPath) && self::$cache) {
             if (filemtime($schemaPath) >= filemtime($path)) {
@@ -185,10 +185,10 @@ class SchemaBuilder
         'default'   => Property::TYPE_STRING
     );
 
-    const ANNOTATION_PK = 'Pk';
-    const ANNOTATION_PROPERTY = 'Param';
-    const ANNOTATION_CONNECTION = 'Connection';
-    const ANNOTATION_COLLECTION = 'Collection';
+    const ANNOTATION_PK = 'pk';
+    const ANNOTATION_PROPERTY = 'param';
+    const ANNOTATION_CONNECTION = 'connection';
+    const ANNOTATION_COLLECTION = 'collection';
 
     const PROPERTY_ATTRIBUTE_NAME = 'name';
     const PROPERTY_ATTRIBUTE_REQUIRED = 'required';

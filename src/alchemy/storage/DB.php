@@ -24,7 +24,7 @@ class DB
      */
     public static function add(IConnection $driver, $name = self::DEFAULT_NAME)
     {
-        self::$connection[$name] = $driver;
+        self::$connections[$name] = $driver;
     }
 
     /**
@@ -34,13 +34,13 @@ class DB
      */
     public static function get($name = self::DEFAULT_NAME)
     {
-        if (!isset(self::$connection[$name])) {
+        if (!isset(self::$connections[$name])) {
             throw new DBException('Connection `' . $name . '` is not defined');
         }
 
-        return self::$connection[$name];
+        return self::$connections[$name];
     }
 
     const DEFAULT_NAME = 'default';
-    protected static $connection = array();
+    protected static $connections = array();
 }

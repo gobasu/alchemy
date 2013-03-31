@@ -142,6 +142,7 @@ class Tokenizer
                         $this->addToken(self::T_PARAM, $buffer);
                         $buffer = '';
                         $this->state = self::S_TAG;
+                        continue 2;
                     }
                     break;
                 case self::S_IGNORE://we are in ignore mode

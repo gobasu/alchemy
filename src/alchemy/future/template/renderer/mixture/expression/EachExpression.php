@@ -39,7 +39,7 @@ class EachExpression implements IExpression
     {
         if ($this->node->getTagname() == self::getCloseTag()) {
             array_pop(self::$iteratedItems);
-            $compiler->appendText('<?php endforeach;?>');
+            $compiler->appendText('<?php endforeach; endif;?>');
 
             return;
         }
@@ -66,7 +66,7 @@ class EachExpression implements IExpression
         //looping through a variable
         if ($parameters[3]{0} == '$') {
             $var = VarExpression::getVariableReference($parameters[3]);
-            $compiler->appendText('<?php ' . $index . ' = 0; ' . $length . ' = count(' . $var . '); foreach(' . $var . ' as ' . $key . ' => ' . $value . '):');
+            $compiler->appendText('<?php if(is_array(' . $var. ')): ' . $index . ' = 0; ' . $length . ' = count(' . $var . '); foreach(' . $var . ' as ' . $key . ' => ' . $value . '):');
             $compiler->appendText('$this->stack->set(\'' . $parameters[1] . '\', ' . $value . ');');
             $compiler->appendText(
                 $first . ' = ' . $index. ' == 0 ? true : false;' .
@@ -85,7 +85,7 @@ class EachExpression implements IExpression
         $range = self::getVariable('range');
 
 
-        $compiler->appendText('<?php ' . $index .' = 0; ' . $range .' = range(' . $matches[1] . ',' . $matches[2] . ');' . $length . ' = count(' . $range . '); foreach(' . $range . ' as ' . $key . ' => ' . $value . '):');
+        $compiler->appendText('<?php if(true): ' . $index .' = 0; ' . $range .' = range(' . $matches[1] . ',' . $matches[2] . ');' . $length . ' = count(' . $range . '); foreach(' . $range . ' as ' . $key . ' => ' . $value . '):');
         $compiler->appendText('$this->stack->set(\'' . $parameters[1] . '\', ' . $value . ');');
         $compiler->appendText(
             $first . ' = ' . $index. ' == 0 ? true : false;' .
