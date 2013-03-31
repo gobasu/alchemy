@@ -6,11 +6,14 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace usingview\view;
-class PageView extends \alchemy\app\View
-{
-    public function render()
-    {
+namespace pluginexample\controller;
+use pluginexample\event;
 
+class Sample extends \alchemy\app\Controller
+{
+    public function index()
+    {
+        //dispatch OnIndex event here!
+        $this->dispatch(new event\OnIndex($this));
     }
 }

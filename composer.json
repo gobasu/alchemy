@@ -1,9 +1,9 @@
 {
     "name": "alchemy/alchemy",
-    "description" : "Fast and clean PHP framework",
+    "description" : "Fast and flexible PHP framework",
     "keywords" : ["php framework", "fast framework", "fast php framework", "php", "framework", "fast", "alchemy"],
     "homepage": "http://alchemyframework.org",
-    "license": "MIT",
+    "license": "new BSD",
     "require": {
         "php": ">=5.3.0",
         "ext-curl": "*",
@@ -20,6 +20,6 @@
             "role": "Developer"
         }
     ],
-    "version" : "0.9.3-RC1"
+    "version" : "0.9.4-dev"
 
 }

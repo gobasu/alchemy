@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+{% block head %}
+    <head>
+        <title>${title}</title>
+    </head>
+{% endblock %}
+<body>
+
+{% each $i in $some.var.in %}
+::::: ${@value}
+{% endeach %}
+${some.var.in.0}
+{% each $item in 1..10 %}
+    {% if $item is odd %}
+        ${@index}
+    {% endif %}
+
+    {% each $i2 in 2..5 %}${i2}{% endeach %}
+
+{% endeach %}
+
+{% import 'import.html' %}
+</body>
+</html>

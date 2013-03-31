@@ -6,11 +6,13 @@ Framework has been sharded into packages, every package has its own role in fram
 - `app` FW's core classes which setup all application and controlls flow
 - `event` event package wich uses Observer pattern to make framework elastic
 - `file` file manipullation classes (images, xls, etc... goes here)
+- `future` packages that will appear in future
 - `http` classes connected with http protocol and request handling
 - `object`
 - `security` acl and validation class
 - `storage` package which focuses on persisting data
-- `ui` views and views helpers
+- `template` templating classes
+- `util` utility classes
 - `vendor` vendor classes and external API helpers (paypal, payu, ups, facebook, g+, etc...)
 
 You can find example applications in [examples](/dkraczkowski/alchemy/blob/master/example) dir.
@@ -48,7 +50,7 @@ $app = Application::instance();
 $app->setApplicationDir($PATH_TO_APPLICATION_ROOT);
 
 //add routes here...
-$app->addRoute('*', function(){
+$app->onURI('*', function(){
   echo 'Hello World!';
 });
 

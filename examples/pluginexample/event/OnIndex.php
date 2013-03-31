@@ -6,11 +6,11 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace usingview\view;
-class PageView extends \alchemy\app\View
+namespace pluginexample\event;
+/**
+ * OnIndex event
+ */
+class OnIndex extends \alchemy\event\Event
 {
-    public function render()
-    {
 
-    }
 }

@@ -2,16 +2,16 @@
 Event system
 ============
 
-`alchemy\app\Application`, `alchemy\app\Controller`, `alchemy\storage\db\Model` extends `alchemy\event\EventDispatcher`.
 The `alchemy\event\EventDispatcher` is a implementation of observer pattern. It allows you to take actions when event
-is dispatched by given object as well as defining your own events. To get familiar with the framework's event system
-I recommand you to visit [event package](http://github.com/dkraczkowski/alchemy/tree/master/alchemy/event)
+is dispatched by given method as well as defining your own events. To get familiar with the framework's event system
+I recommand you to visit [event package](http://github.com/dkraczkowski/alchemy/tree/master/alchemy/event) package
 
 Dispatching a custom event
 --------------------------
 
-To define a event class you must extend `alchemy\event\Event` class and give it a meaningfull name. Let's assume
-we want to dispatch an event meaning that item was added to cart, e.g.
+**Defining Event Class**
+First we need to define custom event class.
+To define a event class you must extend `alchemy\event\Event`.
 ```php
 <?php
 namespace app\event;
@@ -19,20 +19,25 @@ use alchemy\event\Event;
 class OnAddToCart extends Event {}
 ```
 
-Now lets build our Cart model class:
+**Dispatching an event**
+`alchemy\event\EventDispatcher::dispatch(Event $event)`
+
 ```php
 <?php
 namespace app\model;
-use alchemy\storage\db\Model;
+use alchemy\event\EventDispatcher;
 use alchemy\event\Event;
 /**
  * Very simple cart class implementation
  */
-class Cart extends Model
+class Cart extends EventDispatcher
 {
     public function __construct($sessionId = null)
     {
-        parent::__construct($sessionId);
+        $this->cartData = &$_SESSION['mycart'];//dont' get too much attached to this example :P
+        if (!is_array($this->cartData)) {
+            $this->cartData = array();
+        }
     }
     public function addToCart($itemId, $count)
     {
@@ -59,46 +64,18 @@ class Cart extends Model
     {
         unset($this->cartData[$itemId]);
     }
-
-    public function updateCart($itemId, $count)
-    {
-        $this->cartData[$itemId]['count'] = $count;
-    }
-    /**
-     * Called when object is get from db
-     */
-    public function onGet()
-    {
-        $this->cartData = json_decode($this->cartData, true);
-    }
-    /**
-     * Called when framework is trying to save object to DB
-     */
-    public function onSave()
-    {
-        $this->cartData = json_encode($this->cartData);
-    }
     protectes $lastInsertedItem;
     protected $sessionKey;
     protected $cartData;
 }
 ```
-As you can see to dispatch ane event you need to use `$this->dispatch` method which accepts one parameter of `alchemy\event\Event` instance.
-I have also used in the example some builded in model's methods to encode/decode cart data to json when it is needed.
-We will revisit framework events later on.
-
-The `dispatch` function does two things:
-- dispatches an event in object scope
-- pass an event to global event hub (this is helpfull for plugins)
 
 Attaching listeners
 -------------------
+`alchemy\event\EventDispatcher::addListener(string $event, $callable)`
 
-You can attach listeners strict to an object or to the `alchemy\event\EventHub`.
-
-Attaching listener to an object:
 ```php
-$cart = Cart::get($sessionId);
+$cart = new Cart();
 $cart->addListener('app\event\OnAddToCart', function($event){
   $id = $event->getCallee()->getLastInsertedItemId();
   echo 'Added to cart item with id:' . $id;
@@ -113,7 +90,7 @@ alchemy\event\EventHub::addListener('app\event\OnAddToCart', function($event){
 });
 ```
 
-`alchemy\event\EventHub` is global event center- here goes all events dispatched by your controllers/models, so you can
+`alchemy\event\EventHub` is global event centre- here goes all events dispatched by your controllers/models, so you can
 simply extend/pluginize your application just by using this special class.
 
 You should also be aware of dispatching to many events from your controllers/models because it can influent on your application robustness.
