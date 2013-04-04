@@ -23,7 +23,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
      * @param array $data
      * @return array if query is fetchable otherwise bool true on success false on failure
      */
-    public function query($sql, ISchema $schema = null, array $data = null)
+    public function query($sql, array $data = null, ISchema $schema = null)
     {
         $query = $this->prepare($sql);
 
@@ -90,7 +90,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
 
         //add pk value and execute
         $changes['pk'] = $model->getPK();
-        if (!$this->query($sql, $schema, $changes)) {
+        if (!$this->query($sql, $changes, $schema)) {
             $error = $this->errorInfo();
             throw new SQLException('Cannot save model: ' . $error[2]);
         }
@@ -114,7 +114,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
         }
 
         $sql = sprintf(self::INSERT_SQL, $schema->getCollectionName(), implode(',', $fields), implode(',', $binds));
-        if(!$this->query($sql, null, $model->serialize())) {
+        if(!$this->query($sql, $model->serialize())) {
             $error = $this->errorInfo();
             throw new SQLException('Cannot save model: ' . $error[2]);
         }
@@ -138,7 +138,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
         $where = '`' . $pkField->getName() . '` = :pk';
 
         $sql = sprintf(self::DELETE_SQL, $schema->getCollectionName(), $where);
-        $this->query($sql, null, array('pk' => $model->getPK()));
+        $this->query($sql, array('pk' => $model->getPK()));
     }
 
     public function get($model, $pkValue)
@@ -150,7 +150,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
 
         $sql = sprintf(self::GET_SQL, $fieldList, $schema->getCollectionName(), $where);
 
-        $result = $this->query($sql, $schema, array('pk' => $pkValue));
+        $result = $this->query($sql, array('pk' => $pkValue), $schema);
         if (!$result) {
             return false;
         }
@@ -188,13 +188,13 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
     public function find(ISchema $schema, array $query = null, array $sort = null)
     {
         $sql = $this->generateFindSQL($schema, $query, $sort);
-        return $this->query($sql, $schema, $query);
+        return $this->query($sql, $query, $schema);
     }
 
     public function findOne(ISchema $schema, array $query = null, array $sort = null)
     {
         $sql = $this->generateFindSQL($schema, $query, $sort, 1);
-        return current($this->query($sql, $schema, $query));
+        return current($this->query($sql, $query, $schema));
     }
 
     /**
@@ -237,7 +237,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
         if ($returnData) {
             $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
             $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
-            $returnData = $this->query($sql, $schema, $query);
+            $returnData = $this->query($sql, $query, $schema);
         }
 
         $sql = sprintf(self::UPDATE_SQL, $schema->getCollectionName(), implode(',', $updateFields), $where);
@@ -269,7 +269,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
         if ($returnData) {
             $fieldList = '`' . implode('`,`', $schema->getPropertyList()) . '`';
             $sql = sprintf(self::FIND_SQL, $fieldList, $schema->getCollectionName(), $where);
-            $returnData = $this->query($sql, $schema, $query);
+            $returnData = $this->query($sql, $query, $schema);
         }
 
         $sql = sprintf(self::DELETE_SQL, $schema->getCollectionName(), $where);
