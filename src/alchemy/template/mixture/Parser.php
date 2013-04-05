@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\future\template\renderer\mixture;
+namespace alchemy\template\mixture;
 
 class ParserException extends \Exception
 {
@@ -56,13 +56,13 @@ class Parser
         $this->tree = new Node();
 
         //add default expressions
-        $this->addExpression('\alchemy\future\template\renderer\mixture\expression\BlockExpression');
-        $this->addExpression('\alchemy\future\template\renderer\mixture\expression\I18nExpression');
-        $this->addExpression('\alchemy\future\template\renderer\mixture\expression\EachExpression');
-        $this->addExpression('\alchemy\future\template\renderer\mixture\expression\IfExpression');
-        $this->addExpression('\alchemy\future\template\renderer\mixture\expression\ImportExpression');
-        $this->addExpression('\alchemy\future\template\renderer\mixture\expression\UseExpression');
-        $this->addExpression('\alchemy\future\template\renderer\mixture\expression\ExtendExpression');
+        $this->addExpression('\alchemy\template\mixture\expression\BlockExpression');
+        $this->addExpression('\alchemy\template\mixture\expression\I18nExpression');
+        $this->addExpression('\alchemy\template\mixture\expression\EachExpression');
+        $this->addExpression('\alchemy\template\mixture\expression\IfExpression');
+        $this->addExpression('\alchemy\template\mixture\expression\ImportExpression');
+        $this->addExpression('\alchemy\template\mixture\expression\UseExpression');
+        $this->addExpression('\alchemy\template\mixture\expression\ExtendExpression');
     }
 
     public function addExpression($className)
@@ -160,7 +160,7 @@ class Parser
                     $type = $current->getTagname();
                     if (!$this->isValidExpression($type)) {
                         //register helper expression
-                        $current->setHandler('\alchemy\future\template\renderer\mixture\expression\HelperExpression');
+                        $current->setHandler('\alchemy\template\mixture\expression\HelperExpression');
                         $current = $current->getParent();
                         break;
                     }
@@ -229,5 +229,5 @@ class Parser
 
 
     const BLOCK_END_EXPR = 'end';
-    const VAR_HANDLER = '\alchemy\future\template\renderer\mixture\expression\VarExpression';
+    const VAR_HANDLER = '\alchemy\template\mixture\expression\VarExpression';
 }

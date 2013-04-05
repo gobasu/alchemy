@@ -27,4 +27,6 @@ class TestResource
     {
         throw new Exception($msg);
     }
+
+    public $var = 'test_var';
 }

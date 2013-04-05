@@ -6,8 +6,8 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\future\template\renderer\mixture;
-use alchemy\future\template\renderer\mixture\Compiler;
+namespace alchemy\template\mixture;
+use alchemy\template\mixture\Compiler;
 class ExpressionException extends \Exception {}
 interface IExpression
 {

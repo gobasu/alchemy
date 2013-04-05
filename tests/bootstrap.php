@@ -12,6 +12,7 @@ require_once 'src/alchemy/app/Application.php';
 //alchemy framework constans
 define('AL_APP_DIR', __DIR__);
 define('AL_APP_CACHE_DIR', sys_get_temp_dir());
+define('ASSETS_DIR', __DIR__ . '/bootstrap');
 
 require_once 'test_resources.php';
 require_once 'dummy_events.php';

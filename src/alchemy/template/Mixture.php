@@ -6,11 +6,11 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\future\template\renderer;
-use alchemy\future\template\renderer\mixture\Tokenizer;
-use alchemy\future\template\renderer\mixture\Parser;
-use alchemy\future\template\renderer\mixture\Compiler;
-use alchemy\future\template\renderer\mixture\Template;
+namespace alchemy\template;
+use alchemy\template\mixture\Tokenizer;
+use alchemy\template\mixture\Parser;
+use alchemy\template\mixture\Compiler;
+use alchemy\template\mixture\Template;
 
 class MixtureException extends \Exception {}
 /**
@@ -95,9 +95,18 @@ class Mixture
         $this->cache = $dir;
     }
 
+    public function disableCache()
+    {
+        $this->cache = false;
+    }
+
     public function render($name, &$data = array())
     {
-        Template::setCacheDir($this->cache);
+        if ($this->cache) {
+            Template::setCacheDir($this->cache);
+        } else {
+            Template::setCacheDir(false);
+        }
         Template::setTemplateDir($this->dir);
         $tpl = Template::factory($name, $data);
         return $tpl->render();

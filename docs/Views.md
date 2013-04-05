@@ -234,7 +234,7 @@ Extending
 
 `child.html`
 ```html
-{% extend "parent.html" %}
+{% extends "parent.html" %}
 {% block body %}
   This is sample extension
 {% endblock %}

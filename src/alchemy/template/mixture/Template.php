@@ -6,8 +6,8 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\future\template\renderer\mixture;
-use alchemy\future\template\renderer\MixtureException;
+namespace alchemy\template\mixture;
+use alchemy\template\MixtureException;
 
 class TemplateException extends MixtureException {}
 
@@ -54,11 +54,17 @@ class Template
             return true;
         }
 
-        //template from cache
-        $templateCacheFileName = self::$cacheDir . DIRECTORY_SEPARATOR . $templateClassName . '.php';
-        if (is_readable($templateCacheFileName) && filemtime($templateCacheFileName) >= filemtime($templateFileName)) {
-            require_once $templateCacheFileName;
-            return true;
+        $templateCacheFileName = DIRECTORY_SEPARATOR . $templateClassName . '.php';
+
+        //template from cache if cache was not disabled
+        if (self::$cacheDir) {
+            $templateCacheFileName = self::$cacheDir . $templateCacheFileName;
+            if (is_readable($templateCacheFileName) && filemtime($templateCacheFileName) >= filemtime($templateFileName)) {
+                require_once $templateCacheFileName;
+                return true;
+            }
+        } else {
+            $templateCacheFileName = sys_get_temp_dir() . $templateCacheFileName;
         }
 
         //parse template
@@ -110,8 +116,6 @@ class Template
         self::$templateDir = $dir;
     }
 
-
-
     protected function __construct(&$data = array())
     {
         if ($data instanceof VarStack) {
@@ -128,7 +132,7 @@ class Template
      */
     public function import($name)
     {
-        self::factory($name, $this->stack)->render();
+        echo self::factory($name, $this->stack)->render();
     }
 
     /**

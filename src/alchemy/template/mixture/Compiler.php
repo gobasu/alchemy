@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\future\template\renderer\mixture;
+namespace alchemy\template\mixture;
 class CompilerException extends \Exception {}
 class Compiler
 {
@@ -43,17 +43,24 @@ class Compiler
     public function getOutput($className)
     {
         ob_start();
-        echo '<?php ';
+        //add use statements
+        echo '<?php use alchemy\template\Mixture; use \alchemy\template\mixture\Template;';
+
         if ($this->dependencyFile) {
-            echo '\alchemy\future\template\renderer\mixture\Template::load(\'' . $this->dependencyFile . '\');';
+            echo 'Template::load(\'' . $this->dependencyFile . '\');';
         }
         echo 'class ' . $className . ' extends ' . $this->extends . '{';
 
         foreach ($this->source as $methodName => $content) {
-            if ($this->dependencyFile && $methodName == self::MAIN_FUNCTION_NAME) {//ommit render function
+            if ($this->dependencyFile && $methodName == self::MAIN_FUNCTION_NAME) {//ommit render function for children templates
                 continue;
+            } elseif ($methodName == self::MAIN_FUNCTION_NAME) {
+                //main render method should not echo the template but return result as a string
+                echo    'public function ' . $methodName . '() {ob_start();?>' . $content .
+                        '<? $renderedTemplate = ob_get_contents(); ob_end_clean(); return $renderedTemplate;}';
+            } else {
+                echo 'public function ' . $methodName . '() {?>' . $content . '<?}';
             }
-            echo 'public function ' . $methodName . '() {?>' . $content . '<?}';
         }
 
         echo '}';
@@ -122,11 +129,7 @@ class Compiler
      * 'name' <--- other functions
      * )
      */
-    const TEMPLATE_EXTENDS = 'alchemy\future\template\renderer\mixture\Template';
+    const TEMPLATE_EXTENDS = 'Template';
     const MAIN_FUNCTION_NAME = 'render';
     const TEMPLATE_CLASS_SUFFIX = 'MixtureTemplate';
-    const TEMPLATE_CLASS = 'class Tpl extends alchemy\future\template\renderer\mixture\Template
-    {
-        %s
-    }';
 }

@@ -6,12 +6,12 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\future\template\renderer\mixture\expression;
+namespace alchemy\template\mixture\expression;
 
-use alchemy\future\template\renderer\mixture\IExpression;
-use alchemy\future\template\renderer\mixture\Node;
-use alchemy\future\template\renderer\mixture\Compiler;
-use alchemy\future\template\renderer\mixture\CompilerException;
+use alchemy\template\mixture\ExpressionException;
+use alchemy\template\mixture\IExpression;
+use alchemy\template\mixture\Node;
+use alchemy\template\mixture\Compiler;
 
 class EachExpression implements IExpression
 {

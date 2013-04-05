@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\future\template\renderer\mixture;
+namespace alchemy\template\mixture;
 
 //use alchemy\future\template\renderer\MixtureException;
 
