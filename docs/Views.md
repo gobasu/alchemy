@@ -253,3 +253,23 @@ Will output:
 </html>
 ```
 
+Defining Helpers
+-----
+To create custom helpers simply use `Mixture::addHelper($helper, $callable)`, eg:
+```php
+$helperName = 'pre';
+$callable = function(){
+    echo '<pre>';
+    print_r(func_get_args());
+    echo '</pre>';
+}
+alchemy\future\template\renderer\Mixture::addHelper($helperName, $callable);
+```
+
+Using helpers in your template
+----
+To use your custom helper just put the name of defined helper between `{%` and `%}` tags. You can also
+pass parameters to your helper function, example below:
+```html
+{% pre $param1 $param2 'String' 12 %}
+```
