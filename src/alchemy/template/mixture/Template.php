@@ -77,8 +77,13 @@ class Template
         $compiler->compile($parser->parse());
 
         //save cache & return new template object
-        file_put_contents($templateCacheFileName, $compiler->getOutput($templateClassName));
-        require_once $templateCacheFileName;
+        if (self::$cacheDir) {
+            file_put_contents($templateCacheFileName, $compiler->getOutput($templateClassName));
+            require_once $templateCacheFileName;
+        } else {
+            eval('?>' . $compiler->getOutput($templateClassName));
+        }
+
 
         return true;
     }
