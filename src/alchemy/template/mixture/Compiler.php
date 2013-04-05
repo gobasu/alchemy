@@ -44,26 +44,26 @@ class Compiler
     {
         ob_start();
         //add use statements
-        echo '<?php use alchemy\template\Mixture; use \alchemy\template\mixture\Template;';
+        echo '<?php use alchemy\template\Mixture; use \alchemy\template\mixture\Template;' . PHP_EOL;
 
         if ($this->dependencyFile) {
-            echo 'Template::load(\'' . $this->dependencyFile . '\');';
+            echo 'Template::load(\'' . $this->dependencyFile . '\'); ' . PHP_EOL;
         }
-        echo 'class ' . $className . ' extends ' . $this->extends . '{';
+        echo 'class ' . $className . ' extends ' . $this->extends . ' {' . PHP_EOL;
 
         foreach ($this->source as $methodName => $content) {
             if ($this->dependencyFile && $methodName == self::MAIN_FUNCTION_NAME) {//ommit render function for children templates
                 continue;
             } elseif ($methodName == self::MAIN_FUNCTION_NAME) {
                 //main render method should not echo the template but return result as a string
-                echo    'public function ' . $methodName . '() {ob_start();?>' . $content .
-                        '<? $renderedTemplate = ob_get_contents(); ob_end_clean(); return $renderedTemplate;}';
+                echo    PHP_EOL . 'public function ' . $methodName . '() {' . PHP_EOL . 'ob_start();?>' . PHP_EOL . $content . PHP_EOL .
+                        '<?php $renderedTemplate = ob_get_contents(); ob_end_clean(); return $renderedTemplate;' . PHP_EOL . '}';
             } else {
-                echo 'public function ' . $methodName . '() {?>' . $content . '<?}';
+                echo 'public function ' . $methodName . '() {' . PHP_EOL . '?>' . $content . '<?php' . PHP_EOL . ' }';
             }
         }
 
-        echo '}';
+        echo PHP_EOL . '}' . PHP_EOL;
 
         $class = ob_get_contents();
         ob_end_clean();

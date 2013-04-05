@@ -48,7 +48,7 @@ class IfExpression implements IExpression
     public function handle(Compiler $compiler)
     {
         if ($this->node->getTagname() == self::getCloseTag()) {
-            $compiler->appendText('<?endif;?>');
+            $compiler->appendText('<?php endif;?>');
             return;
         }
 
