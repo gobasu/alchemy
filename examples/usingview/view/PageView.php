@@ -7,7 +7,7 @@
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
 namespace usingview\view;
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 
 class PageView extends \alchemy\app\View
 {

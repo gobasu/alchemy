@@ -1,6 +1,5 @@
 Templating Engine
 =====
-**Note this is still experimental package**
 
 Alchemy has its own fast templating system inspired by jinja and mustashe. 
 It is as fast as smarty 3 but eats less more memory.
@@ -8,7 +7,7 @@ It is as fast as smarty 3 but eats less more memory.
 Basic usage
 ------
 ```php
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 $tpl = new Mixture($dirToTemplates = '$appdir/templates', $dirToCache = sys_get_tmp_dir());
 $tpl->render('filename.html', $exampleData = array(
   'hello' => 'World!', 
@@ -29,28 +28,28 @@ $tpl->render('filename.html', $exampleData = array(
 Setting global date format
 -----
 ```php
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 Mixture::setDateFormat($format = 'Y.m.d');
 ```
 
 Setting global datetime format
 -----
 ```php
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 Mixture::setDatetimeFormat($format = 'Y.m.d H:i:s');
 ```
 
 Setting global number format
 -----
 ```php
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 Mixture::setNumberFormat($decimals = 0, $decimalsSeparator = '.', $thousandsSeparator = ',');
 ```
 
 Setting global currency suffix
 ----
 ```php
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 Mixture::setCurrencySuffix($suffix = null);
 ```
 
@@ -263,7 +262,7 @@ $callable = function(){
     print_r(func_get_args());
     echo '</pre>';
 }
-alchemy\future\template\renderer\Mixture::addHelper($helperName, $callable);
+alchemy\template\Mixture::addHelper($helperName, $callable);
 ```
 
 Using helpers in your template
