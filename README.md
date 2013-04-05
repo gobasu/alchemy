@@ -37,7 +37,7 @@ Couple of words how to define controllers
 
 Explanation of model system used in alchemy as well as simple search API
 
-**[Views](/docs/Views.md)**
+**[Views & templates](/docs/Views.md)**
 
 **[Events](/docs/Events.md)**
 
