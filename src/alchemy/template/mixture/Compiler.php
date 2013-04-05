@@ -56,7 +56,7 @@ class Compiler
                 continue;
             } elseif ($methodName == self::MAIN_FUNCTION_NAME) {
                 //main render method should not echo the template but return result as a string
-                echo    PHP_EOL . 'public function ' . $methodName . '() {' . PHP_EOL . 'ob_start();?>' . PHP_EOL . $content . PHP_EOL .
+                echo    PHP_EOL . 'public function ' . $methodName . '() {' . PHP_EOL . 'ob_start();?>' . $content .
                         '<?php $renderedTemplate = ob_get_contents(); ob_end_clean(); return $renderedTemplate;' . PHP_EOL . '}';
             } else {
                 echo 'public function ' . $methodName . '() {' . PHP_EOL . '?>' . $content . '<?php' . PHP_EOL . ' }';
