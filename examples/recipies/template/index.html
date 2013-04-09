@@ -1,0 +1,17 @@
+{% extends html.html%}
+{% block head %}
+<title>Welcome to your recipes database</title>
+{% endblock %}
+{% block body %}
+<div class="tabbable" style="padding: 20px">
+    {% view app\view\Menu %}
+    <div class="tab-content">
+        <div class="tab-pane active" id="recipe-tab-browse">
+            {% view app\view\RecipeList %}
+        </div>
+        <div class="tab-pane" id="recipe-tab-new">
+            {% view app\view\AddRecipe %}
+        </div>
+    </div>
+</div>
+{% endblock %}

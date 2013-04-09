@@ -1,0 +1,23 @@
+<form method="post" action="page/addrecipe">
+    <fieldset>
+        <legend>Add new recipe</legend>
+        <label>Name</label>
+        <input type="text" name="recipe_data[title]" placeholder="Name">
+        <label>Description</label>
+        <textarea name="recipe_data[description]"></textarea>
+        <label>Ingredients</label>
+        <input type="text" name="ingredients" id="recipe-ingredients" style="width: 400px;"><br>
+
+        <button type="submit" class="btn">Submit</button>
+    </fieldset>
+</form>
+
+<script type="text/javascript">
+
+    var data = ${ingredients unescape};
+
+    $('#recipe-ingredients').select2({
+        tags : data
+    });
+
+</script>

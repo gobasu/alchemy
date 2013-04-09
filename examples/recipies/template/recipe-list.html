@@ -1,0 +1,25 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Ingredients</th>
+            <th>Created On</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% each $recipe in $recipes %}
+        <tr>
+            <td>${@key}</td>
+            <td>${recipe.title}</td>
+            <td>${recipe.description}</td>
+            <td>${recipe.ingredientNamesList}</td>
+            <td>${recipe.created_on date}</td>
+            <td><a class="btn btn-danger" href="page/deleterecipe/${@key}">Delete</a></td>
+        </tr>
+    {% endeach %}
+    </tbody>
+</table>
