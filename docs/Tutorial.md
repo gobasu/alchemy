@@ -416,3 +416,35 @@ Now our `index.php` file is almost done. Notice I've also addded additional line
     $app->onURI('*', 'app\controller\Page->indexAction');
 
 This one created default route for all request to Page controller. More about routes you can read [here](/docs/Routing.md)
+
+Now go to the `BaseController.php` and change it to:
+```php
+<?php
+namespace app\controller;
+
+use alchemy\app\Controller;
+use app\model\Setup;
+
+class BaseController extends Controller
+{
+    public function onLoad()
+    {
+        if (defined('RUN_SETUP')) {
+            Setup::buildDatabase();
+        }
+    }
+}
+```
+
+Right now everything is set:).
+
+More models
+-----------
+
+We need two models for our simple application:
+    - `Recipe`
+    - `Ingredient`
+
+Let's create them
+[`Recipe.php`](/examples/recipies/model/Recipe.php)
+[`Ingredient.php`](/examples/recipies/model/Ingredient.php)
