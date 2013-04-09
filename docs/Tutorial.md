@@ -25,16 +25,18 @@ Let's start
 
 First we will create our application's dir structure similar to this one:
 
-    - `app` (root folder)
-        - `controller`
-        - `data` (here we will keep our sqlite database)
-        - `model`
-        - `public`
-        - `template`
-            - `cache` (template's cache dir)
-        - `view`
+- `app` (root folder)
+    - `controller`
+    - `data` (here we will keep our sqlite database)
+    - `model`
+    - `public`
+    - `template`
+        - `cache` (template's cache dir)
+    - `view`
+
 
 Now in `public` dir let's create our bootstrap file `index.php`
+
 ```php
 <?php
    //require alchemy application
@@ -47,9 +49,11 @@ Now in `public` dir let's create our bootstrap file `index.php`
    $app->setApplicationDir(realpath(dirname(__FILE__) . '/../'));
 
    //run application
-   $app->run();```
+   $app->run();
+```
 
 And .htaccess file
+
 ```
 RewriteEngine On
 RewriteBase /
@@ -62,7 +66,8 @@ RewriteRule . /index.php [L]
 The .htaccess file will forward all requests to `index.php`
 
 If you run your application right now you should see error, similar to this one:
-```Fatal error: Uncaught exception 'alchemy\app\ApplicationResourceNotFoundException' with message 'No callable resource found' in...```
+
+    Fatal error: Uncaught exception 'alchemy\app\ApplicationResourceNotFoundException' with message 'No callable resource found' in...
 
 This means our framework hasn't found any controller which will handle the request.
 
