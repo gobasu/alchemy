@@ -374,6 +374,24 @@ set to virtual.
 
 `alchemy\storage\db\Model::query` allows programmer to do direct queries to database we will use this functionality to create database's schema.
 
+Our schema looks like this:
+    - recipe
+        * recipe_id
+        * title
+        * description
+        * created_on
+    - ingredient
+        * ingredient_id
+        * title
+    - recipe_has_ingredient
+        * recipe_has_ingredient_id
+        * recipe_id
+        * ingredient_id
+
+`recipe` - table containing our recipes
+`ingredient` - table containing all used ingredients
+`recipe_has_ingredient` - many to many relation between recipes and ingredients.
+
 Okie dokie ladies and gentleman. The last thing to move our database and whole setup process is again to modify our `index.php` file as well as some others classes.
 Let's go to `index.php` and put database credintals before `Application::instance`
 
@@ -448,3 +466,19 @@ We need two models for our simple application:
 Let's create them
 [`Recipe.php`](/examples/recipies/model/Recipe.php)
 [`Ingredient.php`](/examples/recipies/model/Ingredient.php)
+
+Alchemy's ORM does not provides relation support in direct way. But we can simply program it in clever way instead
+sending thousands sqls to the database or consuming lot of cpu and memory.
+In this task alchemy is very helpfull. Lest see what happens in each of methods
+
+- `onLoad` method load all data from table `recipe_has_ingredient` and put its into class' array to use it later on
+- `onGet` is a internal alchemy's ORM method it is called every time record is loaded from database it uses earlier created array to simulate many-to-many relation
+- `addExistingIngredient` as name says its adds ingredient to the model
+- `ingredientNamesList` outputs ingredients names separeted by semicolons
+- `saveIngredients` saves recipe's ingredients to the databse (created new ingredient or simply add relation)
+
+`@param` annotation tells ORM which object's variables should be treated as a table's columns (note that their names should be the same)
+
+
+
+

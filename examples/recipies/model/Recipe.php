@@ -47,11 +47,10 @@ class Recipe extends Model
         $this->ingredients[$ingredient->getPK()] = $ingredient;
     }
 
-    public function getIngredients()
-    {
-        return $this->ingredients;
-    }
-
+    /**
+     * Outputs ingredients names separeted by semicolons
+     * @return string
+     */
     public function ingredientNamesList()
     {
         $names = array();
@@ -62,6 +61,11 @@ class Recipe extends Model
         return join(',', $names);
     }
 
+    /**
+     * Saves recipe's ingredients to database
+     *
+     * @param $ingredients
+     */
     public function saveIngredients($ingredients)
     {
         //find out which are new ingredients
