@@ -8,11 +8,13 @@ class AddRecipe extends BaseView
     public function render()
     {
         $ingredients = IngredientModel::find();
-        $json = array();
-        foreach ($ingredients as $i) {
-            $json[] = array('text' => $i->title, 'id' => $i->getPK());
+        if ($ingredients) {
+            $json = array();
+            foreach ($ingredients as $i) {
+                $json[] = array('text' => $i->title, 'id' => $i->getPK());
+            }
+            $this->ingredients = json_encode($json);
         }
-        $this->ingredients = json_encode($json);
         echo $this->template->render('recipe-add.html', $this->vars);
     }
 }

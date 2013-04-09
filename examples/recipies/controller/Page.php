@@ -10,7 +10,7 @@ use app\view\Index as IndexView;
 class Page extends BaseController
 {
 
-    public function errorAction($e)
+    public function errorAction(\Exception $e)
     {
 
         //404 - display index

@@ -1,12 +1,4 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: lunereaper
- * Date: 09.04.2013
- * Time: 11:16
- * To change this template use File | Settings | File Templates.
- */
-
 namespace app\view;
 
 

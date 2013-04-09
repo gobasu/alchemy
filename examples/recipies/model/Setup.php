@@ -1,7 +1,6 @@
 <?php
 namespace app\model;
 
-
 use alchemy\storage\db\Model;
 
 class SetupException extends \Exception {}

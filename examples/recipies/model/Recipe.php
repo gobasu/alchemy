@@ -16,11 +16,13 @@ class Recipe extends Model
     public static function onLoad()
     {
         $data = self::query('SELECT recipe_id, ingredient_id FROM recipe_has_ingredient');
-        foreach ($data as $i) {
-            if (!isset(self::$recipeHasIngredient[$i['recipe_id']])) {
-                self::$recipeHasIngredient[$i['recipe_id']] = array();
+        if ($data) {
+            foreach ($data as $i) {
+                if (!isset(self::$recipeHasIngredient[$i['recipe_id']])) {
+                    self::$recipeHasIngredient[$i['recipe_id']] = array();
+                }
+                self::$recipeHasIngredient[$i['recipe_id']][] = $i['ingredient_id'];
             }
-            self::$recipeHasIngredient[$i['recipe_id']][] = $i['ingredient_id'];
         }
 
         //get all ingredients
