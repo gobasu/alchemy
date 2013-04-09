@@ -17,6 +17,8 @@ What differs this framework from others:
 List of contents
 ----------------
 
+**[15 minutes tutorial](/docs/Tutorial.md)
+
 **[Setup](/docs/Setup.md)**
 
 **[Basics](/docs/Basics.md)**

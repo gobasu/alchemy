@@ -18,6 +18,14 @@ class HelloWorld extends Controller
 }
 ```
 
+onLoad and onUnload
+-------------------
+Alchemy's controllers has two special methods:
+    - onLoad
+    - onUnload
+
+One is called when instance of given controller is created, another is called before instance is removed from memory.
+
 Tying route to a controller
 ---------------------------
 
