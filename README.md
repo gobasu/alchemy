@@ -1,6 +1,6 @@
 ![Alchemy Logo](https://raw.github.com/dkraczkowski/alchemy/master/docs/alchemy_black_180.png)
 
-[Google Groups](https://groups.google.com/forum/?fromgroups#!forum/alchemy-php-framework)
+[Alchemy on google groups](https://groups.google.com/forum/?fromgroups#!forum/alchemy-php-framework)
 
 [![Build Status](https://travis-ci.org/dkraczkowski/alchemy.png)](https://travis-ci.org/dkraczkowski/alchemy)
 
