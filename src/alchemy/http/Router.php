@@ -92,7 +92,6 @@ class Router
     public function addResource($route, $resource)
     {
         $pos = strpos($route, ' ');
-
         if ($pos === false || $pos == 0) {
             $method = self::WILD_CARD;
             $path = $route;

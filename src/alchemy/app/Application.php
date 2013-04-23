@@ -42,7 +42,8 @@ class Application
         if (self::$instance instanceof Application) {
             return self::$instance;
         }
-        return self::$instance = new Application();
+        $class = get_called_class();
+        return self::$instance = new $class;
     }
 
     /**

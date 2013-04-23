@@ -24,15 +24,11 @@ use alchemy\util\CLI;
 
 class Console extends \alchemy\app\Application
 {
-    public function __construct($appDir)
+    protected function __construct()
     {
-        if (self::$instance) {
-            throw new \Exception('Only one instance of Console can be created');
-        }
         \alchemy\http\router\Route::setSeparator(':');
-        parent::__construct($appDir);
+        parent::__construct();
         $this->router->setForceMode();
-        self::$instance = $this;
     }
 
     public function run($mode = null)
@@ -63,14 +59,6 @@ class Console extends \alchemy\app\Application
         }
     }
 
-    /**
-     * @return Console
-     */
-    public static function instance()
-    {
-        return self::$instance;
-    }
-
     public function switchContext($callable)
     {
         $this->context = $callable;
@@ -85,12 +73,6 @@ class Console extends \alchemy\app\Application
     {
         return $this->input;
     }
-
-    /**
-     *
-     * @var Console
-     */
-    public static $instance;
 
     protected $input;
 

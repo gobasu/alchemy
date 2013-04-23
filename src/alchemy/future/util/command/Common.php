@@ -48,7 +48,7 @@ WELCOME;
         CLI::multiLineCenteredOutput($welcome, 80);
         CLI::output('Command list:');
         CLI::eol();
-        CLI::output("\t" . sprintf('%-30s', '- application:create [name] '), 'red');
+        CLI::output("\t" . sprintf('%-30s', '- create:application [name] '), 'red');
         CLI::output('creates bootstrap application in current working directory');
         CLI::eol();
         CLI::output("\t" . sprintf('%-30s', '- locale:generate'), 'red');

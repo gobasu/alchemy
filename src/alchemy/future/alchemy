@@ -3,14 +3,16 @@
 /**
  * Command line utility for alchemy framework
  */
-require_once __DIR__ . '/app/Application.php';
-$app = new \alchemy\future\util\Console(__DIR__ . '/future/util');
-//$app->addRoute('generate:{$what}', )
-$app->onURI('locale:{$func:.*}', 'util\command\Locale::{$func}');
+require_once realpath(__DIR__ . '/../app/') .'/Application.php';
+$app = \alchemy\future\util\Console::instance();
+$app->setApplicationDir(__DIR__ . '/util');
+
+$app->onURI('locale:{$func}', 'util\command\Locale::{$func}');
+$app->onURI('create:{$obj}', 'util\command\Generator::create');
 $app->onURI('help', 'util\command\Common::help');
 $app->onURI('exit', 'util\command\Common::close');
-$app->onURI('close', 'util\command\Common::close');
 $app->onURI('*','util\command\Common::error');
+
 $app->onStartup('util\command\Common::help');
 $app->onError('util\command\Common::error');
 $app->run();
