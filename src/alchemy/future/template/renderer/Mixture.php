@@ -17,7 +17,7 @@ class MixtureException extends \Exception {}
  * Mixture templating engine is mixin of
  * mustashe and jinja templating systems
  *
- * It gathers the best parts of boft simplifies
+ * It gathers the best parts of both simplifies
  * and compound them into one not too much logic tpl
  */
 class Mixture

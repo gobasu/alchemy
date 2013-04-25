@@ -44,16 +44,21 @@ class HelperExpression implements IExpression
 
 
             foreach ($parameters as $p) {
-                $p = '\'' . addcslashes($p, '\'') . '\'';
-                preg_match_all('#[^\\\](\$[a-z0-9\.-_]+)#i', $p, $m);
-                if ($m[0]) {
-
-                    for ($i = 0; $i < count($m[0]); $i++) {
-                        $p = str_replace($m[1][$i], ('\' . ' . VarExpression::getVariableReference($m[1][$i]) . ' . \'') , $p);
-                    }
-                    $params[] = $p;
+                if (preg_match('#^\$[a-z0-9\.-_]+$#', $p)) {//only variable
+                    $params[] =  VarExpression::getVariableReference($p);
                 } else {
-                    $params[] = $p;
+
+                    $p = '\'' . addcslashes($p, '\'') . '\'';
+                    preg_match_all('#[^\\\](\$[a-z0-9\.-_]+)#i', $p, $m);
+                    if ($m[0]) {
+
+                        for ($i = 0; $i < count($m[0]); $i++) {
+                            $p = str_replace($m[1][$i], ('\' . ' . VarExpression::getVariableReference($m[1][$i]) . ' . \'') , $p);
+                        }
+                        $params[] = $p;
+                    } else {
+                        $params[] = $p;
+                    }
                 }
             }
 

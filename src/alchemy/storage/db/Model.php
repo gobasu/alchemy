@@ -86,7 +86,7 @@ abstract class Model extends EventDispatcher
      *
      * @param array $data
      */
-    public function set(array $data)
+    public function set(array $data, $force = false)
     {
         foreach ($data as $property => $value) {
             $this->__set($property, $value);
@@ -191,8 +191,12 @@ abstract class Model extends EventDispatcher
     public function __set($name, $value)
     {
         if (!self::getSchema()->propertyExists($name)) {
-            throw new ModelException('Non existing property `' . $name . '` in model ' . get_called_class());
+            throw new ModelException('Trying to set non existing property `' . $name . '` in model ' . get_called_class());
         }
+
+        //add to set fields
+        $this->setFields[$name] = $name;
+
         if (!isset($this->changes[$name])) {
             if ($this->{$name} != $value) {
                 $this->changes[$name] = $value;
@@ -253,7 +257,9 @@ abstract class Model extends EventDispatcher
     public function onDelete()
     {}
 
-
+    /**
+     * Called everytime when model's property changes
+     */
     public function onChange()
     {}
 
@@ -356,6 +362,13 @@ abstract class Model extends EventDispatcher
 
     public function getChanges()
     {
+        if ($this->forceSave) {
+            $changes = array();
+            foreach ($this->setFields as $field) {
+                $changes[$field] = $this->__get($field);
+            }
+            return $changes;
+        }
         return $this->changes;
     }
 
@@ -393,6 +406,8 @@ abstract class Model extends EventDispatcher
     protected $forceSave = false;
 
     protected $changes = array();
+
+    protected $setFields = array();
 
     protected $isChanged = false;
 

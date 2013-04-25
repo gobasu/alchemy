@@ -81,6 +81,11 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
 
         $changes = $model->getChanges();
 
+        //no changes so do not save the model
+        if (empty($changes)) {
+            return false;
+        }
+
         $fields = array();
         foreach ($changes as $key => $value) {
             $fields[] = '`' . $key . '` = :' . $key;
@@ -108,13 +113,16 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
         $fields = array();
         $binds = array();
 
-        foreach ($schema as $field) {
-            $fields[] = '`' . $field->getName() . '`';
-            $binds[] = ':' . $field->getName();
+        $changes = $model->getChanges();
+
+
+        foreach ($changes as $key => $value) {
+            $fields[] = '`' . $key . '`';
+            $binds[] = ':' . $key;
         }
 
         $sql = sprintf(self::INSERT_SQL, $schema->getCollectionName(), implode(',', $fields), implode(',', $binds));
-        if(!$this->query($sql, $model->serialize())) {
+        if(!$this->query($sql, $changes)) {
             $error = $this->errorInfo();
             throw new SQLException('Cannot save model: ' . $error[2]);
         }
