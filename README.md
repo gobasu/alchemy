@@ -1,5 +1,7 @@
 ![Alchemy Logo](https://raw.github.com/dkraczkowski/alchemy/master/docs/alchemy_black_180.png)
 
+[Alchemy on google groups](https://groups.google.com/forum/?fromgroups#!forum/alchemy-php-framework)
+
 [![Build Status](https://travis-ci.org/dkraczkowski/alchemy.png)](https://travis-ci.org/dkraczkowski/alchemy)
 
 Alchemy is lightweight and very fast PHP framework. Alchemy main points are:
@@ -17,27 +19,19 @@ What differs this framework from others:
 List of contents
 ----------------
 
-**[Setup](/docs/Setup.md)**
+**[20 minutes tutorial](/docs/Tutorial.md)**
 
-How to setup your enviroment to make alchemy framework run on it
+**[Setup](/docs/Setup.md)**
 
 **[Basics](/docs/Basics.md)**
 
-Basics information about the alchemy framework
-
 **[Routing](/docs/Routing.md)**
-
-How to create and controll your application's resources accessibility
 
 **[Controllers](/docs/Controllers.md)**
 
-Couple of words how to define controllers
-
 **[Models](/docs/Models.md)**
 
-Explanation of model system used in alchemy as well as simple search API
-
-**[Views](/docs/Views.md)**
+**[Views & templates](/docs/Views.md)**
 
 **[Events](/docs/Events.md)**
 
@@ -45,21 +39,11 @@ Explanation of model system used in alchemy as well as simple search API
 
 **[Session](/docs/Session.md)**
 
-How to use session's data in alchemy
-
 **[Acl](/docs/Acl.md)**
-
-Alchemy provides simple and easy in usage Acl system. This chapter will show you
-how to manage groups and their permisssions.
 
 **[I18n](/docs/I18n.md)**
 
-Internationalization extension to make your gettext usage simpler
-
 **[Image manipulation](/docs/ImageManipulation.md)**
-
-Image manipulation library explained
 
 **[Other](/docs/Other.md)**
 
-Some other stuff you may consider as usefull

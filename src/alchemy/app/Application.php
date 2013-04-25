@@ -29,6 +29,7 @@ use alchemy\storage\Session;
 
 class ApplicationException extends \Exception {}
 class ApplicationInvalidDirnameException extends ApplicationException {}
+class ApplicationResourceNotFoundException extends ApplicationException {}
 class Application
 {
     /**
@@ -189,7 +190,7 @@ class Application
     public function run($mode = self::MODE_DEVELOPMENT)
     {
         if (!defined('AL_APP_DIR')) {
-            throw new ApplicationException('Application dir has not been set. Please use Application::setApplicationDir before use Application::run');
+            throw new ApplicationException('No application dir set. Please use Application::setApplicationDir before use Application::run');
         }
         Session::start();
         $this->getConfig();
@@ -211,7 +212,7 @@ class Application
         }
 
         if (!$match || !$this->resource->isCallable()) {
-            $e = new ApplicationException('No callable resource found');
+            $e = new ApplicationResourceNotFoundException('No callable resource found');
             EventHub::dispatch(new OnError($e));
             if ($this->onErrorHandler && $this->onErrorHandler->isCallable()) { //is app error handler registered
                 $this->onErrorHandler->call($e);
@@ -325,5 +326,5 @@ class Application
     const MODE_DEVELOPMENT = 1;
     const MODE_PRODUCTION = 2;
 
-    const VERSION = '0.9.4';
+    const VERSION = '0.9.5';
 }

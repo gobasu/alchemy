@@ -1,6 +1,5 @@
 Templating Engine
 =====
-**Note this is still experimental package**
 
 Alchemy has its own fast templating system inspired by jinja and mustashe. 
 It is as fast as smarty 3 but eats less more memory.
@@ -8,7 +7,7 @@ It is as fast as smarty 3 but eats less more memory.
 Basic usage
 ------
 ```php
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 $tpl = new Mixture($dirToTemplates = '$appdir/templates', $dirToCache = sys_get_tmp_dir());
 $tpl->render('filename.html', $exampleData = array(
   'hello' => 'World!', 
@@ -29,28 +28,28 @@ $tpl->render('filename.html', $exampleData = array(
 Setting global date format
 -----
 ```php
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 Mixture::setDateFormat($format = 'Y.m.d');
 ```
 
 Setting global datetime format
 -----
 ```php
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 Mixture::setDatetimeFormat($format = 'Y.m.d H:i:s');
 ```
 
 Setting global number format
 -----
 ```php
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 Mixture::setNumberFormat($decimals = 0, $decimalsSeparator = '.', $thousandsSeparator = ',');
 ```
 
 Setting global currency suffix
 ----
 ```php
-use alchemy\future\template\renderer\Mixture;
+use alchemy\template\Mixture;
 Mixture::setCurrencySuffix($suffix = null);
 ```
 
@@ -234,7 +233,7 @@ Extending
 
 `child.html`
 ```html
-{% extend "parent.html" %}
+{% extends "parent.html" %}
 {% block body %}
   This is sample extension
 {% endblock %}
@@ -253,3 +252,23 @@ Will output:
 </html>
 ```
 
+Defining Helpers
+-----
+To create custom helpers simply use `Mixture::addHelper($helper, $callable)`, eg:
+```php
+$helperName = 'pre';
+$callable = function(){
+    echo '<pre>';
+    print_r(func_get_args());
+    echo '</pre>';
+}
+alchemy\template\Mixture::addHelper($helperName, $callable);
+```
+
+Using helpers in your template
+----
+To use your custom helper just put the name of defined helper between `{%` and `%}` tags. You can also
+pass parameters to your helper function, example below:
+```html
+{% pre $param1 $param2 'String' 12 %}
+```
