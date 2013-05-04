@@ -1,7 +1,7 @@
 <?php
-use alchemy\storage\DB;
+use alchemy\storage\Storage;
 
-class DBTest extends PHPUnit_Framework_TestCase
+class StorageTest extends PHPUnit_Framework_TestCase
 {
     public static function setUpBeforeClass()
     {
@@ -10,7 +10,7 @@ class DBTest extends PHPUnit_Framework_TestCase
 
     public function testAdd()
     {
-        DB::add(self::$connection);
+        Storage::add(self::$connection);
     }
 
     /**
@@ -18,7 +18,7 @@ class DBTest extends PHPUnit_Framework_TestCase
      */
     public function testGet()
     {
-        $connection = DB::get();
+        $connection = Storage::get();
         $this->assertSame(self::$connection, $connection);
     }
 

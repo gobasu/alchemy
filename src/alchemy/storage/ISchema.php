@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\storage\db;
+namespace alchemy\storage;
 
 interface ISchema
 {
@@ -23,7 +23,7 @@ interface ISchema
     /**
      * @return string
      */
-    public function getConnectionName();
+    public function getStorageClass();
 
     /**
      * @param string $name

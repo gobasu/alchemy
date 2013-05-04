@@ -50,7 +50,7 @@ class HelperExpression implements IExpression
                 } else {
 
                     $p = '\'' . addcslashes($p, '\'') . '\'';
-                    preg_match_all('#[^\\\](\$[a-z0-9\.-_]+)#i', $p, $m);
+                    preg_match_all('#[^\\\](\$[a-z0-9\._]+)#i', $p, $m);
                     if ($m[0]) {
 
                         for ($i = 0; $i < count($m[0]); $i++) {

@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\storage\db;
+namespace alchemy\storage;
 /**
  * Property
  *
@@ -46,7 +46,7 @@ class Property
 
     public function __toString()
     {
-        return $this->localName;
+        return (string) $this->localName;
     }
 
     private $type;

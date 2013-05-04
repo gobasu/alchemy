@@ -46,7 +46,12 @@ abstract class View extends EventDispatcher
      */
     public function __toString()
     {
-        return (string) $this->render();
+        try {
+            $return = $this->render();
+        } catch (\Exception $e) {
+            $return = $e;
+        }
+        return (string) $return;
     }
 
     /**

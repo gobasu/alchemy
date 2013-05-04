@@ -73,7 +73,7 @@ class Template
         } catch (\Exception $e) {
             throw new TemplateException('Unexpected error occured while loading your template file');
         }
-        $compiler = new Compiler();
+        $compiler = new Compiler($templateFileName);
         $compiler->compile($parser->parse());
 
         $template = $compiler->getOutput($templateClassName);

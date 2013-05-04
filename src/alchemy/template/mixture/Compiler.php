@@ -10,8 +10,9 @@ namespace alchemy\template\mixture;
 class CompilerException extends \Exception {}
 class Compiler
 {
-    public function __construct()
+    public function __construct($fileName = '')
     {
+        $this->fileName = $fileName;
         $this->setContext(self::MAIN_FUNCTION_NAME);
     }
 
@@ -45,6 +46,7 @@ class Compiler
         ob_start();
         //add use statements
         echo '<?php use alchemy\template\Mixture; use \alchemy\template\mixture\Template;' . PHP_EOL;
+        echo '//filename:' . $this->fileName . PHP_EOL;
 
         if ($this->dependencyFile) {
             echo 'Template::load(\'' . $this->dependencyFile . '\'); ' . PHP_EOL;
@@ -121,6 +123,7 @@ class Compiler
     protected $source = array();
     protected $extends = self::TEMPLATE_EXTENDS;
     protected $dependencyFile;
+    protected $fileName;
 
 
     /**

@@ -1,12 +1,13 @@
 <?php
-use alchemy\storage\db\Model;
-use alchemy\storage\db\Property;
+use alchemy\storage\Model;
+use alchemy\storage\Property;
+use alchemy\storage\SchemaBuilder;
 
 class ModelTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        \alchemy\storage\db\SchemaBuilder::disableCache();
+        \alchemy\storage\SchemaBuilder::disableCache();
     }
 
     public function testSchema()

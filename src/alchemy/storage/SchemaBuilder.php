@@ -6,9 +6,10 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\storage\db;
+namespace alchemy\storage;
 
-use alchemy\storage\db\ModelException;
+use alchemy\storage\ModelException;
+use alchemy\storage\ISchema;
 use alchemy\util\AnnotationReflection;
 use alchemy\app\Loader;
 
@@ -65,7 +66,7 @@ class SchemaBuilder
 
         $classAnnotations = $annotationReflection->getFromClass();
         $propertyList = $annotationReflection->getDeclaredProperties();
-        $connectionName = \alchemy\storage\DB::DEFAULT_NAME;
+        $storageClass = 'alchemy\storage\sql\SQLite';
 
         //get PK for Entity
         if (!isset($classAnnotations[self::ANNOTATION_PK])) {
@@ -77,9 +78,8 @@ class SchemaBuilder
             throw new ModelException('Alchemy models does not support compound keys yet!');
         }
 
-
-        if (isset($classAnnotations[self::ANNOTATION_CONNECTION])) {
-            $connectionName = $classAnnotations[self::ANNOTATION_CONNECTION];
+        if (!isset($classAnnotations[self::ANNOTATION_STORAGE_CLASS])) {
+            $storageClass = $classAnnotations[self::ANNOTATION_STORAGE_CLASS];
         }
         $className = explode('\\', $this->className);
         $namespace = implode('\\', array_slice($className,0, -1));
@@ -112,7 +112,7 @@ class SchemaBuilder
             //add property to schema
             $property = '        $this->propertyList[\'' . $propertyName . '\']';
 
-            $constructBody .= PHP_EOL . $property . ' = new \alchemy\storage\db\Property(\'' . $propertyName . '\');';
+            $constructBody .= PHP_EOL . $property . ' = new \alchemy\storage\Property(\'' . $propertyName . '\');';
 
             if (isset($annotation[self::PROPERTY_ATTRIBUTE_NAME])) {
                 $propertyAliases[] = "\n\t" . '\'' . $propertyName . '\' => \'' . $annotation[self::PROPERTY_ATTRIBUTE_NAME] . '\'';
@@ -120,16 +120,13 @@ class SchemaBuilder
                 $propertyAliases[] = "\n\t" . '\'' . $propertyName . '\' => \'' . $propertyName . '\'';
             }
 
-            if (!isset($annotation[self::PROPERTY_ATTRIBUTE_TYPE])) {
-                throw new ModelException('Missing attribute `' . self::PROPERTY_ATTRIBUTE_TYPE . '` in @' . self::ANNOTATION_PROPERTY . ' annotation used at ' . $this->className . '::$' . $propertyName);
-            }
-
             //set property type
-            if (isset(self::$typeMap[$annotation[self::PROPERTY_ATTRIBUTE_TYPE]])) {
-                $constructBody .= PHP_EOL . $property . '->setType(' . self::$typeMap[$annotation[self::PROPERTY_ATTRIBUTE_TYPE]] . ');';
+            if (!isset($annotation[self::PROPERTY_ATTRIBUTE_TYPE])) {
+                $type = self::$typeMap['string'];
             } else {
-                $constructBody .= PHP_EOL . $property . '->setType(' . self::$typeMap['default'] . ');';
+                $type = isset(self::$typeMap[$annotation[self::PROPERTY_ATTRIBUTE_TYPE]]) ? self::$typeMap[$annotation[self::PROPERTY_ATTRIBUTE_TYPE]] : self::$typeMap['default'];
             }
+            $constructBody .= PHP_EOL . $property . '->setType(' . $type . ');';
 
             //is property required
             if (isset($annotation[self::PROPERTY_ATTRIBUTE_REQUIRED])) {
@@ -142,7 +139,7 @@ class SchemaBuilder
             $className, //Schame class name
             $constructBody, //set properties
             $pk, //set pk field name
-            $connectionName, //set used connection name
+            $storageClass, //set storage class name
             implode(',', $propertyAliases), //set property fields name
             $collectionName, // set collection name
             $this->className // set model class name
@@ -187,7 +184,7 @@ class SchemaBuilder
 
     const ANNOTATION_PK = 'pk';
     const ANNOTATION_PROPERTY = 'param';
-    const ANNOTATION_CONNECTION = 'connection';
+    const ANNOTATION_STORAGE_CLASS = 'storage';
     const ANNOTATION_COLLECTION = 'collection';
 
     const PROPERTY_ATTRIBUTE_NAME = 'name';
@@ -199,10 +196,10 @@ class SchemaBuilder
     const CLASS_TEMPLATE = <<<CLASS
 %s
 /**
- * Class generated automatically via \alchemy\storage\db\SchemaBuilder
+ * Class generated automatically by \alchemy\storage\SchemaBuilder
  * DO NOT CHANGE THIS MANUALLY
  */
-final class %s implements \alchemy\storage\db\ISchema, \Iterator
+final class %s implements \alchemy\storage\ISchema, \Iterator
 {
     public function __construct()
     {
@@ -239,9 +236,9 @@ final class %s implements \alchemy\storage\db\ISchema, \Iterator
         return isset(\$this->propertyList[\$name]);
     }
 
-    public function getConnectionName()
+    public function getStorageClass()
     {
-        return \$this->connectionName;
+        return \$this->storageClass;
     }
     public function rewind()
     {
@@ -272,7 +269,7 @@ final class %s implements \alchemy\storage\db\ISchema, \Iterator
 
     protected \$pk = '%s';
     protected \$propertyList = array();
-    protected \$connectionName = '%s';
+    protected \$storageClass = '%s';
     protected \$propertyNameList = array(%s);
     protected \$collectionName = '%s';
     protected \$modelClass = '%s';
