@@ -27,9 +27,18 @@ use alchemy\util\CLI;
 class Generator
 {
     public static function create($input) {
-        switch($input) {
+        print_r($input);
+        $input = explode(' ', $input);
+        switch($input[0]) {
             case 'app':
             case 'application':
+                print_r($input);
+                break;
         }
+    }
+
+    private static function createApplication($name)
+    {
+
     }
 }
