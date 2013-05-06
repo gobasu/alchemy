@@ -15,8 +15,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $route = $router->getRoute();
         $resource = $router->getResource();
-ppopopoopoioiiokbft hijp§§§§//
-        $this->assertEquals($route->getPattern(), 'post/edit/{$id}');ohdx
+        $this->assertEquals($route->getPattern(), 'post/edit/{$id}');
         $this->assertEquals($route->id, '2');
         $this->assertEquals($resource->getFunctionName(), 'b');
         $this->assertTrue($resource->isFunction());
