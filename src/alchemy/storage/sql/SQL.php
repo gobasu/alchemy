@@ -6,20 +6,21 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\storage\db\connection;
-use alchemy\storage\db\Model;
-use alchemy\storage\db\ISchema;
+namespace alchemy\storage\sql;
+use alchemy\storage\Model;
+use alchemy\storage\ISchema;
+use alchemy\storage\IStorage;
 
 /**
  * SQL Connection class
  */
-class SQL extends \PDO implements \alchemy\storage\db\IConnection
+class SQL extends \PDO implements IStorage
 {
     /**
      * Performes clear SQL query
      *
      * @param string $sql
-     * @param \alchemy\storage\db\ISchema $schema
+     * @param ISchema $schema
      * @param array $data
      * @return array if query is fetchable otherwise bool true on success false on failure
      */
@@ -54,7 +55,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
     /**
      * Saves model
      *
-     * @param \alchemy\storage\db\Model $model
+     * @param Model $model
      */
     public function save(Model $model)
     {
@@ -71,7 +72,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
     /**
      * Updates existing record based on model changes
      *
-     * @param \alchemy\storage\db\Model $model
+     * @param Model $model
      */
     protected function update(Model $model)
     {
@@ -80,6 +81,11 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
         $where = '`' . $pkField . '` = :pk';
 
         $changes = $model->getChanges();
+
+        //no changes so do not save the model
+        if (empty($changes)) {
+            return false;
+        }
 
         $fields = array();
         foreach ($changes as $key => $value) {
@@ -99,7 +105,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
     /**
      * Inserts new record based on model data
      *
-     * @param \alchemy\storage\db\Model $model
+     * @param Model $model
      */
     protected function insert(Model $model)
     {
@@ -108,13 +114,16 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
         $fields = array();
         $binds = array();
 
-        foreach ($schema as $field) {
-            $fields[] = '`' . $field->getName() . '`';
-            $binds[] = ':' . $field->getName();
+        $changes = $model->getChanges();
+
+
+        foreach ($changes as $key => $value) {
+            $fields[] = '`' . $key . '`';
+            $binds[] = ':' . $key;
         }
 
         $sql = sprintf(self::INSERT_SQL, $schema->getCollectionName(), implode(',', $fields), implode(',', $binds));
-        if(!$this->query($sql, $model->serialize())) {
+        if(!$this->query($sql, $changes)) {
             $error = $this->errorInfo();
             throw new SQLException('Cannot save model: ' . $error[2]);
         }
@@ -129,7 +138,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
     /**
      * Removes record from database
      *
-     * @param \alchemy\storage\db\Model $model
+     * @param Model $model
      */
     public function delete(Model $model)
     {
@@ -180,7 +189,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
      * </code>
      * Will sort records DESC by fieldName
      *
-     * @param \alchemy\storage\db\ISchema $schema
+     * @param ISchema $schema
      * @param $query
      * @param null $sort
      * @return array
@@ -200,7 +209,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
     /**
      * Finds data matching the query and modifies it
      *
-     * @param \alchemy\storage\db\ISchema $schema
+     * @param ISchema $schema
      * @param array $query query term
      * @param array $update specify update fields
      * @param bool $returnData whatever data which will be modified should be returned
@@ -258,7 +267,7 @@ class SQL extends \PDO implements \alchemy\storage\db\IConnection
 
     /**
      * Finds and remove rows from DB
-     * @param \alchemy\storage\db\ISchema $schema
+     * @param ISchema $schema
      * @param array $query
      * @param bool $returnData
      * @return mixed returns set of models if $returnData = true or boolean otherwise

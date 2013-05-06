@@ -6,10 +6,11 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\storage\db;
-use alchemy\storage\DB;
+namespace alchemy\storage;
+use alchemy\storage\Storage;
 use alchemy\app\Loader;
 use alchemy\event\EventDispatcher;
+use alchemy\storage\ISchema;
 
 class ModelException extends \Exception {}
 /**
@@ -86,7 +87,7 @@ abstract class Model extends EventDispatcher
      *
      * @param array $data
      */
-    public function set(array $data)
+    public function set(array $data, $force = false)
     {
         foreach ($data as $property => $value) {
             $this->__set($property, $value);
@@ -119,8 +120,8 @@ abstract class Model extends EventDispatcher
         $modelName = get_called_class();
 
         $schema = self::getSchema();
-        $connection = DB::get($schema->getConnectionName());
-        return $connection->get($modelName, $pk);
+        $storage = Store::get($schema->getStorageClass());
+        return $storage->get($modelName, $pk);
     }
 
     /**
@@ -133,8 +134,8 @@ abstract class Model extends EventDispatcher
     public static function findOne(array $query = array(), array $sort = null)
     {
         $schema = self::getSchema();
-        $connection = DB::get($schema->getConnectionName());
-        return $connection->findOne($schema, $query, $sort);
+        $storage = Store::get($schema->getStorageClass());
+        return $storage->findOne($schema, $query, $sort);
 
     }
 
@@ -149,15 +150,15 @@ abstract class Model extends EventDispatcher
     public static function find(array $query = array(), array $sort = null)
     {
         $schema = self::getSchema();
-        $connection = DB::get($schema->getConnectionName());
-        return $connection->find($schema, $query, $sort);
+        $storage = Store::get($schema->getStorageClass());
+        return $storage->find($schema, $query, $sort);
     }
 
     public static function findAndRemove($query, $returnData = false)
     {
         $schema = self::getSchema();
-        $connection = DB::get($schema->getConnectionName());
-        return $connection->findAndRemove($schema, $query, $returnData);
+        $storage = Store::get($schema->getStorageClass());
+        return $storage->findAndRemove($schema, $query, $returnData);
     }
 
     public static function findAndModify(array $query = null, array $update, $returnData = false)
@@ -191,8 +192,12 @@ abstract class Model extends EventDispatcher
     public function __set($name, $value)
     {
         if (!self::getSchema()->propertyExists($name)) {
-            throw new ModelException('Non existing property `' . $name . '` in model ' . get_called_class());
+            throw new ModelException('Trying to set non existing property `' . $name . '` in model ' . get_called_class());
         }
+
+        //add to set fields
+        $this->setFields[$name] = $name;
+
         if (!isset($this->changes[$name])) {
             if ($this->{$name} != $value) {
                 $this->changes[$name] = $value;
@@ -253,7 +258,9 @@ abstract class Model extends EventDispatcher
     public function onDelete()
     {}
 
-
+    /**
+     * Called everytime when model's property changes
+     */
     public function onChange()
     {}
 
@@ -356,6 +363,13 @@ abstract class Model extends EventDispatcher
 
     public function getChanges()
     {
+        if ($this->forceSave) {
+            $changes = array();
+            foreach ($this->setFields as $field) {
+                $changes[$field] = $this->__get($field);
+            }
+            return $changes;
+        }
         return $this->changes;
     }
 
@@ -375,7 +389,7 @@ abstract class Model extends EventDispatcher
      *
      * @return IConnection|\PDO
      */
-    protected static function getConnection()
+    protected static function getStorage()
     {
         $schema = self::getSchema();
         return DB::get($schema->getConnectionName());
@@ -393,6 +407,8 @@ abstract class Model extends EventDispatcher
     protected $forceSave = false;
 
     protected $changes = array();
+
+    protected $setFields = array();
 
     protected $isChanged = false;
 

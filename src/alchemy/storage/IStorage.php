@@ -6,14 +6,14 @@
  * @copyright Copyright (c) 2012-2013 Dawid Kraczkowski
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
-namespace alchemy\storage\db;
+namespace alchemy\storage;
+
 /**
- * IDriver
+ * IStorage
  *
  * @author: lunereaper
  */
-
-interface IConnection
+interface IStorage
 {
     public function save(Model $model);
     public function delete(Model $model);

@@ -1,10 +1,11 @@
 <?php
-use alchemy\storage\db\Model;
+use alchemy\storage\Model;
 /**
  * DummyModel
  *
  * @Pk id
  * @Collection dummyCollection
+ * @Storage DummyConnection
  */
 class DummyModel extends Model
 {

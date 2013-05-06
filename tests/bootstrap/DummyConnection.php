@@ -1,12 +1,12 @@
 <?php
-use alchemy\storage\db\IConnection;
-use alchemy\storage\db\Model;
-use alchemy\storage\db\ISchema;
+use alchemy\storage\Model;
+use alchemy\storage\ISchema;
+use alchemy\storage\IStorage;
 /**
  * Dummy Connection class
  */
 
-class DummyConnection implements IConnection
+class DummyConnection implements IStorage
 {
     public function save(Model $model)
     {
