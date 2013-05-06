@@ -7,7 +7,7 @@
  * @license   https://raw.github.com/dkraczkowski/alchemy/master/LICENSE New BSD License
  */
 namespace alchemy\storage;
-use alchemy\storage\store\IStore;
+use alchemy\storage\IStore;
 
 class StorageException extends \Exception {}
 /**
@@ -24,7 +24,9 @@ class Storage
      */
     public static function add(IStorage $storage)
     {
-        self::$storages[get_class($storage)] = $storage;
+        $className = get_class($storage);
+        self::$storages[$className] = $storage;
+        self::$defaultStorage = $className;
     }
 
     /**

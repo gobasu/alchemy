@@ -1,12 +1,11 @@
 <?php
-use alchemy\storage\db\Model;
-use alchemy\storage\DB;
+use alchemy\storage\Model;
 /**
  * TestCollection
  *
  * @Pk id
  * @Collection testCollection
- * @connection sqlite
+ * @storage alchemy\storage\sql\SQLite
  */
 class TestCollection extends Model
 {

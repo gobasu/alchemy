@@ -23,7 +23,7 @@ class StorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @var \alchemy\storage\db\IConnection
+     * @var \alchemy\storage\IStorage
      */
     protected static $connection;
 }

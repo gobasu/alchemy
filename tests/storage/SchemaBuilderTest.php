@@ -1,16 +1,13 @@
 <?php
-use alchemy\storage\db\Model;
-use alchemy\storage\DB;
-use alchemy\storage\db\connection\SQLite;
-
-//add sql connection
-DB::add(new SQLite(SQLite::USE_MEMORY), 'sqlite');
+use alchemy\storage\Model;
+use alchemy\storage\Storage;
+use alchemy\storage\SchemaBuilder;
 
 class SQLConnectionTests extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        \alchemy\storage\db\SchemaBuilder::disableCache();
+        SchemaBuilder::disableCache();
     }
 
     public function testNew()
@@ -30,7 +27,7 @@ class SQLConnectionTests extends PHPUnit_Framework_TestCase
 
     /**
      * @depends testNew
-     * @expectedException \alchemy\storage\db\ModelException
+     * @expectedException \alchemy\storage\ModelException
      */
     public function testUnexistendPropertyException()
     {

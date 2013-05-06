@@ -5,7 +5,7 @@ use alchemy\storage\Model;
  *
  * @Pk id
  * @Collection dummyCollection
- * @Storage DummyConnection
+ * @storage DummyConnection
  */
 class DummyModel extends Model
 {

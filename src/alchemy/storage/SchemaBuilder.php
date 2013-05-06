@@ -78,8 +78,9 @@ class SchemaBuilder
             throw new ModelException('Alchemy models does not support compound keys yet!');
         }
 
-        if (!isset($classAnnotations[self::ANNOTATION_STORAGE_CLASS])) {
+        if (isset($classAnnotations[self::ANNOTATION_STORAGE_CLASS])) {
             $storageClass = $classAnnotations[self::ANNOTATION_STORAGE_CLASS];
+            echo 'storageClass:' . $storageClass;
         }
         $className = explode('\\', $this->className);
         $namespace = implode('\\', array_slice($className,0, -1));

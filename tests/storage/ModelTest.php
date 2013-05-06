@@ -7,21 +7,21 @@ class ModelTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        \alchemy\storage\SchemaBuilder::disableCache();
+        SchemaBuilder::disableCache();
     }
 
     public function testSchema()
     {
         $schema = DummyModel::getSchema();
-        $this->assertInstanceOf('\alchemy\storage\db\ISchema', $schema);
+
+        $this->assertInstanceOf('\alchemy\storage\ISchema', $schema);
         $this->assertEquals('DummyModel', $schema->getModelClass());
-        $this->assertEquals('dummyCollection', $schema->getCollectionName());
-        $this->assertInstanceOf('\alchemy\storage\db\Property', $prop = $schema->getPKProperty());
+        $this->assertEquals('DummyConnection', $schema->getStorageClass());
+        $this->assertInstanceOf('\alchemy\storage\Property', $prop = $schema->getPKProperty());
         $this->assertEquals('id', $prop->getName());
         $this->assertEquals(Property::TYPE_NUMBER, $prop->getType());
         unset($prop);
 
-        $this->assertEquals('default', $schema->getConnectionName());
         $this->assertTrue($schema->propertyExists('propertyA'));
         $this->assertTrue($schema->propertyExists('propertyB'));
         $this->assertFalse($schema->propertyExists('propertyC'));
@@ -103,6 +103,6 @@ class ModelTest extends PHPUnit_Framework_TestCase
             'id'        => 1
         );
         $m = DummyModel::create($data);
-        print_r($m);
+
     }
 }

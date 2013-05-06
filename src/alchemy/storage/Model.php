@@ -118,9 +118,7 @@ abstract class Model extends EventDispatcher
     public static function get($pk)
     {
         $modelName = get_called_class();
-
-        $schema = self::getSchema();
-        $storage = Store::get($schema->getStorageClass());
+        $storage = self::getStorage();
         return $storage->get($modelName, $pk);
     }
 
@@ -133,9 +131,8 @@ abstract class Model extends EventDispatcher
      */
     public static function findOne(array $query = array(), array $sort = null)
     {
-        $schema = self::getSchema();
-        $storage = Store::get($schema->getStorageClass());
-        return $storage->findOne($schema, $query, $sort);
+        $storage = self::getStorage();
+        return $storage->findOne(self::getSchema(), $query, $sort);
 
     }
 
@@ -149,23 +146,20 @@ abstract class Model extends EventDispatcher
      */
     public static function find(array $query = array(), array $sort = null)
     {
-        $schema = self::getSchema();
-        $storage = Store::get($schema->getStorageClass());
-        return $storage->find($schema, $query, $sort);
+        $storage = self::getStorage();
+        return $storage->find(self::getSchema(), $query, $sort);
     }
 
     public static function findAndRemove($query, $returnData = false)
     {
-        $schema = self::getSchema();
-        $storage = Store::get($schema->getStorageClass());
-        return $storage->findAndRemove($schema, $query, $returnData);
+        $storage = self::getStorage();
+        return $storage->findAndRemove(self::getSchema(), $query, $returnData);
     }
 
     public static function findAndModify(array $query = null, array $update, $returnData = false)
     {
-        $schema = self::getSchema();
-        $connection = DB::get($schema->getConnectionName());
-        return $connection->findAndModify($schema, $query, $update, $returnData);
+        $storage = self::getStorage();
+        return $storage->findAndModify(self::getSchema(), $query, $update, $returnData);
     }
 
     /**
@@ -174,12 +168,11 @@ abstract class Model extends EventDispatcher
      */
     public static function query(/** mutable **/)
     {
-        $schema = self::getSchema();
-        $connection = DB::get($schema->getConnectionName());
-        if (!method_exists($connection, 'query')) {
+        $storage = self::getStorage();
+        if (!method_exists($storage, 'query')) {
             throw new ModelException(get_class($connection) . ' does not support custom queries');
         }
-        return call_user_func_array(array($connection, 'query'), func_get_args());
+        return call_user_func_array(array($storage, 'query'), func_get_args());
     }
 
     /**
@@ -308,10 +301,9 @@ abstract class Model extends EventDispatcher
      */
     public function save()
     {
-        $schema = self::getSchema();
-        $connection = DB::get($schema->getConnectionName());
+        $storage = self::getStorage();
         $this->onSave();
-        $connection->save($this);
+        $storage->save($this);
         $this->applyChanges();
         $this->onPersists();
         return true;
@@ -323,10 +315,9 @@ abstract class Model extends EventDispatcher
      */
     public function delete()
     {
-        $schema = self::getSchema();
-        $connection = DB::get($schema->getConnectionName());
+        $storage = self::getStorage();
         $this->onDelete();
-        $connection->delete($this);
+        $storage->delete($this);
 
         //set model as fresh one after deletion
         $this->isChanged = true;
@@ -387,12 +378,12 @@ abstract class Model extends EventDispatcher
     /**
      * Gets model's connection
      *
-     * @return IConnection|\PDO
+     * @return IStorage|\PDO
      */
     protected static function getStorage()
     {
         $schema = self::getSchema();
-        return DB::get($schema->getConnectionName());
+        return Storage::get($schema->getStorageClass());
     }
 
     private function applyChanges()
