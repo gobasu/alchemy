@@ -327,5 +327,5 @@ class Application
     const MODE_DEVELOPMENT = 1;
     const MODE_PRODUCTION = 2;
 
-    const VERSION = '0.9.5';
+    const VERSION = '0.9.6';
 }
