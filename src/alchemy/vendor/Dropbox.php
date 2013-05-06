@@ -15,7 +15,7 @@ class DropboxException extends \Exception {}
  */
 class Dropbox
 {
-    public function __construct($key = 'pwgvypkmmjat3jz', $secret = 'w2b7en2xwlfrmoo', $namespace = 'dropbox')
+    public function __construct($key = '', $secret = '', $namespace = '')
     {
 
         $this->key = $key;
