@@ -25,7 +25,7 @@ class Dropbox
         $this->token = &$_SESSION[$namespace . '_token'];
     }
 
-    public function getAuthorizationURL($callback = 'http://lotos/lotos/projects/edit/1')
+    public function getAuthorizationURL($callback = '')
     {
         if (!$this->requestToken || !$this->requestTokenSecret) {
             $token = $this->doRequest('/request_token');
