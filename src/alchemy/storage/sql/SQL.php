@@ -26,6 +26,8 @@ class SQL extends \PDO implements IStorage
      */
     public function query($sql, array $data = null, ISchema $schema = null)
     {
+        //echo $sql;
+        //print_r($data);
         $query = $this->prepare($sql);
 
         if (!($query instanceof \PDOStatement) || !$query->execute($data)) {

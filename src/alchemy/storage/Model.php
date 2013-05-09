@@ -44,11 +44,16 @@ abstract class Model extends EventDispatcher
      */
     public function __construct($data = null)
     {
+        $pkName = self::getSchema()->getPKProperty()->getName();
         if ($data === null) {
             return;
         } elseif (is_string($data) || is_numeric($data)) {
-            $this->{self::getSchema()->getPKProperty()->getName()} = $data;
+            $this->{$pkName} = $data;
         } elseif (is_array($data)) {
+            //if PK is set
+            if (isset($data[$pkName])) {
+                $this->{$pkName} = $data[$pkName];
+            }
             $this->set($data);
         } else {
             throw new ModelException('Model::__construct() accepts string|int|array, ' . gettype($data) . ' passed');

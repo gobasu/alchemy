@@ -66,7 +66,7 @@ class SchemaBuilder
 
         $classAnnotations = $annotationReflection->getFromClass();
         $propertyList = $annotationReflection->getDeclaredProperties();
-        $storageClass = 'alchemy\storage\sql\SQLite';
+        $storageClass = Storage::getDefaultStorage();
 
         //get PK for Entity
         if (!isset($classAnnotations[self::ANNOTATION_PK])) {

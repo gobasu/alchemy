@@ -58,6 +58,11 @@ class Storage
         }
     }
 
-    protected static $defaultStorage;
+    public static function getDefaultStorage()
+    {
+        return self::$defaultStorage;
+    }
+
+    protected static $defaultStorage = 'alchemy\storage\sql\SQLite';
     protected static $storages = array();
 }
