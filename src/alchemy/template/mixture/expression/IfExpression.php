@@ -8,6 +8,7 @@
  */
 namespace alchemy\template\mixture\expression;
 
+use alchemy\template\mixture\CompilerException;
 use alchemy\template\mixture\ExpressionException;
 use alchemy\template\mixture\IExpression;
 use alchemy\template\mixture\Node;
@@ -43,7 +44,7 @@ class IfExpression implements IExpression
      * {% if $var is odd %} <-- loop proposal (will parse into if($_eachodd_x)
      *
      * {% if $var is 3|string|number
-     * @param \alchemy\future\template\renderer\mixture\Compiler $compiler
+     * @param \alchemy\template\mixture\Compiler $compiler
      */
     public function handle(Compiler $compiler)
     {
@@ -62,6 +63,12 @@ class IfExpression implements IExpression
 
         if ($length == 2) {
             $compiler->appendText('<?php if(' . VarExpression::getVariableReference($parameters[1]) . '):?>');
+            return;
+        }
+
+        // if not $var expression
+        if ($length == 3 && $parameters[1] == 'not') {
+            $compiler->appendText('<?php if(!' . VarExpression::getVariableReference($parameters[2]) . '):?>');
             return;
         }
 
@@ -84,6 +91,12 @@ class IfExpression implements IExpression
                 case $parameters[3] == 'last' && EachExpression::isIterationAvailable($iteratedItem):
                     $compiler->appendText('<?php if(' . $not . EachExpression::getVariable($parameters[3], $iteratedItem) . '):?>');
                     break;
+                case $parameters[3] == 'false':
+                    $compiler->appendText('<?php if(' . VarExpression::getVariableReference($parameters[1]) . ' ' . ($not ? $not : '='   ) . '= false):?>');
+                    break;
+                case $parameters[3] == 'true':
+                    $compiler->appendText('<?php if(' . VarExpression::getVariableReference($parameters[1]) . ' ' . ($not ? $not : '='   ) . '= true):?>');
+                    break;
                 case is_numeric($parameters[3]):
                     $compiler->appendText('<?php if(' . VarExpression::getVariableReference($parameters[1]) . ' ' . ($not ? $not : '='   ) . '= ' . $parameters[3] . '):?>');
                     break;
@@ -94,7 +107,7 @@ class IfExpression implements IExpression
             return;
         }
 
-        throw new CompilerException('An error occured in if expression');
+        throw new CompilerException('An error occured in if expression' . print_r($parameters, true));
     }
 
     /**

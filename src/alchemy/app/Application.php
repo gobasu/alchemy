@@ -97,7 +97,7 @@ class Application
                 require_once $path;
 
                 //provide onLoad static call for models
-                if (is_subclass_of($className, 'alchemy\storage\db\Model')) {
+                if (is_subclass_of($className, 'alchemy\storage\Model')) {
                     $className::onLoad();
                 }
             }
