@@ -10,33 +10,64 @@
 namespace alchemy\future\app;
 
 
+use alchemy\app\Callback;
 use alchemy\future\app\router\Route;
 
 class Router
 {
     /**
      * Creates new route
-     * @param $uri
+     * @see Route
+     * @see Callback
+     *
+     * @param $pattern
      * @param $resource
+     *
+     * eg.
+     * addRoute('some/${controller}/${action}?', '${controller}Controller->${action:defaultAction};
      */
-    public function addRoute(Route $route, $resource)
+    public function addRoute($pattern, $callback)
+    {
+        if (!isset($this->routes[$callback])) {
+            $this->routes[$callback] = array();
+        }
+        $this->routes[$callback][] = new Route($pattern);
+    }
+
+    public function addTranslator($callable)
     {
 
     }
 
     /**
      * Gets route from set URI
+     * @param string $uri
+     * @return Callback
      */
-    public function getRoute($uri)
+    public function getCallback($uri)
     {
+        foreach ($this->routes as $callback => $routes) {
+            foreach ($routes as $route) {
 
+                if ($route->isMatch($uri)) {
+                    $callback = new Callback($callback);
+                    $data = $route->getData();
+                    $callback->bindParameters($data);
+                    $callback->setArguments(array($data));
+                    return $callback;
+                }
+            }
+        }
     }
 
     /**
-     * Gets URI from set resource
+     * Gets URI for callable
      */
-    public function getURI($resource)
+    public function getURI($callable, $data = array())
     {
-
+        
     }
+
+    protected $routes = array();
+    protected $translators = array();
 }

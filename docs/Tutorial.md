@@ -478,7 +478,3 @@ In this task alchemy is very helpfull. Lest see what happens in each of methods
 - `saveIngredients` saves recipe's ingredients to the databse (created new ingredient or simply add relation)
 
 `@param` annotation tells ORM which object's variables should be treated as a table's columns (note that their names should be the same)
-
-
-
-

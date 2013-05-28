@@ -41,11 +41,14 @@ class Storage
         }
 
         if (!isset(self::$storages[$id])) {
-            if (class_exists($id) && is_subclass_of($id, 'alchemy\storage\IStorage')) {
-                self::$storages[$id] = new $id;
-            } else {
-                throw new StorageException('Storage `' . $id . '` is not defined or does not implement alchemy\storage\store\IStorage');
+            if (!class_exists($id)){
+                throw new StorageException('Storage `' . $id . '` class doed not exists');
             }
+            if (!class_implements($id, 'alchemy\storage\IStorage')) {
+                throw new StorageException('Storage `' . $id . '` does not implement alchemy\storage\IStorage');
+            }
+
+            self::$storages[$id] = new $id;
         }
 
         return self::$storages[$id];
@@ -53,8 +56,13 @@ class Storage
 
     public static function setDefaultStorage($className)
     {
-        if (class_exists($className) && is_subclass_of($className, 'alchemy\storage\IStorage')) {
+        if (!class_exists($className)) {
+            throw new StorageException('Class ' . $className . ' does not exists');
+        }
+        if (is_subclass_of($className, 'alchemy\storage\IStorage')) {
             self::$defaultStorage = $className;
+        } else {
+            throw new StorageException('Class ' . $className . ' must implement alchemy\storage\IStorage');
         }
     }
 

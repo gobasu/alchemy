@@ -1,11 +1,11 @@
 <?php
-class ResourceTest extends PHPUnit_Framework_TestCase
+class CallbackTest extends PHPUnit_Framework_TestCase
 {
     public function testBindableResource()
     {
         
         //test object call
-        $r = new alchemy\app\Resource('{$class}->{$method}');
+        $r = new alchemy\app\Callback('${class}->${method}');
         $r->bindParameters(array(
             'class'   => 'class',
             'method'  => 'method'
@@ -14,14 +14,14 @@ class ResourceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($r->getFunctionName(), 'method');
         
         //test function
-        $r = new alchemy\app\Resource('{$function}');
+        $r = new alchemy\app\Callback('${function}');
         $r->bindParameters(array(
             'function'  => 'function'
         ));
         $this->assertEquals($r->getFunctionName(), 'function');
         
         //test static call
-        $r = new alchemy\app\Resource(array('{$class}', '{$method}'));
+        $r = new alchemy\app\Callback(array('${class}', '${method}'));
         $r->bindParameters(array(
             'class'   => 'class',
             'method'  => 'method'
@@ -34,38 +34,38 @@ class ResourceTest extends PHPUnit_Framework_TestCase
     public function testDefiningResources()
     {
         //test object call
-        $r = new alchemy\app\Resource('{$class}->{$method}');
+        $r = new alchemy\app\Callback('${class}->${method}');
         $this->assertTrue($r->isObject());
         $this->assertFalse($r->isClosure());
         $this->assertFalse($r->isFunction());
-        $this->assertEquals($r->getClassName(), '{$class}');
-        $this->assertEquals($r->getFunctionName(), '{$method}');
+        $this->assertEquals($r->getClassName(), '${class}');
+        $this->assertEquals($r->getFunctionName(), '${method}');
         
         //test closure
-        $r = new alchemy\app\Resource(function(){return true;});
+        $r = new alchemy\app\Callback(function(){return true;});
         $this->assertFalse($r->isObject());
         $this->assertTrue($r->isClosure());
         $this->assertFalse($r->isFunction());
         
         //test static call
-        $r = new alchemy\app\Resource(array('{$class}', '{$method}'));
+        $r = new alchemy\app\Callback(array('${class}', '${method}'));
         $this->assertFalse($r->isObject());
         $this->assertFalse($r->isClosure());
         $this->assertTrue($r->isFunction());
-        $this->assertEquals($r->getClassName(), '{$class}');
-        $this->assertEquals($r->getFunctionName(), '{$method}');
+        $this->assertEquals($r->getClassName(), '${class}');
+        $this->assertEquals($r->getFunctionName(), '${method}');
         
         //test function call
-        $r = new alchemy\app\Resource('{$function}');
+        $r = new alchemy\app\Callback('${function}');
         $r->bindParameters(array());
         $this->assertFalse($r->isObject());
         $this->assertFalse($r->isClosure());
         $this->assertTrue($r->isFunction());
         $this->assertEquals($r->getClassName(), null);
-        $this->assertEquals($r->getFunctionName(), '{$function}');
+        $this->assertEquals($r->getFunctionName(), '${function}');
         
         
-        $r = new alchemy\app\Resource('b');
+        $r = new alchemy\app\Callback('b');
         $r->bindParameters(array());
         $this->assertFalse($r->isObject());
         $this->assertFalse($r->isClosure());
@@ -76,7 +76,7 @@ class ResourceTest extends PHPUnit_Framework_TestCase
     
     public function testIsCallableResource()
     {
-        $r = new alchemy\app\Resource('{$class}->{$method}');
+        $r = new alchemy\app\Callback('${class}->${method}');
         $this->assertFalse($r->isCallable());
         $r->bindParameters(array(
             'class'   => 'TestResource',
@@ -86,10 +86,10 @@ class ResourceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, call_user_func($r->getResource()));
         $resource = $r->getResource();
 
-        $r = new alchemy\app\Resource(function(){return 2;});
+        $r = new alchemy\app\Callback(function(){return 2;});
         $this->assertTrue($r->isCallable());
         
-        $r = new alchemy\app\Resource('a');
+        $r = new alchemy\app\Callback('a');
         $this->assertTrue($r->isCallable());
     }
 }

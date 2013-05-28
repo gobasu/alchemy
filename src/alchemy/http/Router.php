@@ -8,7 +8,7 @@
  */
 namespace alchemy\http;
 use alchemy\http\Request;
-use alchemy\app\Resource;
+use alchemy\app\Callback;
 use alchemy\http\router\Route;
 
 class RouterException extends \Exception {}
@@ -41,7 +41,7 @@ class Router
     /**
      * Gets current resource
      *
-     * @return \alchemy\app\Resource
+     * @return \alchemy\app\Callback
      */
     public function getResource()
     {
@@ -103,7 +103,7 @@ class Router
             $path = substr($route, $pos + 1);
         }
 
-        $resource = new Resource($resource);
+        $resource = new Callback($resource);
 
         $this->routes[$method][$path] = $resource;
         $this->resources[$resource->getClassName()][$resource->getFunctionName()] = $route;
@@ -192,7 +192,7 @@ class Router
 
     /**
      *
-     * @var \alchemy\app\Resource
+     * @var \alchemy\app\Callback
      */
     private $currentResource;
 

@@ -8,4 +8,6 @@
  */
 namespace alchemy\storage\sql;
 
-class SQLException extends \PDOException {}
+use alchemy\storage\StorageException;
+
+class SQLException extends StorageException {}

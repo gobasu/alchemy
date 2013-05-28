@@ -144,12 +144,12 @@ class Application
 
     public function onError($callable)
     {
-        $this->onErrorHandler = new Resource($callable);
+        $this->onErrorHandler = new Callback($callable);
     }
 
     public function onStartup($callable)
     {
-        $this->onStartupHandler = new Resource($callable);
+        $this->onStartupHandler = new Callback($callable);
     }
 
     /**
@@ -283,12 +283,12 @@ class Application
     }
 
     /**
-     * @var \alchemy\app\Resource
+     * @var \alchemy\app\Callback
      */
     protected $onErrorHandler;
 
     /**
-     * @var \alchemy\app\Resource
+     * @var \alchemy\app\Callback
      */
     protected $onStartupHandler;
 
@@ -298,7 +298,7 @@ class Application
     protected $router;
 
     /**
-     * @var \alchemy\app\Resource
+     * @var \alchemy\app\Callback
      */
     protected $resource;
 

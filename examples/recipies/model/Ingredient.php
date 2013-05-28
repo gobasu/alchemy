@@ -1,7 +1,7 @@
 <?php
 namespace app\model;
 
-use alchemy\storage\db\Model;
+use alchemy\storage\Model;
 
 /**
  * Class Recipe

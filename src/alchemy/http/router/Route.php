@@ -88,7 +88,7 @@ class Route
             unset($route);
             return $regex;
         }, $pattern);
-        
+
         $this->regex = '^' . $pattern . '\/?$';
     }
 

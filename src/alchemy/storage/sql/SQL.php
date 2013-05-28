@@ -10,6 +10,7 @@ namespace alchemy\storage\sql;
 use alchemy\storage\Model;
 use alchemy\storage\ISchema;
 use alchemy\storage\IStorage;
+use alchemy\storage\StorageException;
 
 /**
  * SQL Connection class
@@ -22,16 +23,19 @@ class SQL extends \PDO implements IStorage
      * @param string $sql
      * @param ISchema $schema
      * @param array $data
+     * @throws SQLException in case schema violation or other SQL problem
      * @return array if query is fetchable otherwise bool true on success false on failure
      */
     public function query($sql, array $data = null, ISchema $schema = null)
     {
-        //echo $sql;
-        //print_r($data);
         $query = $this->prepare($sql);
 
         if (!($query instanceof \PDOStatement) || !$query->execute($data)) {
-            return false;
+            $error = $this->errorInfo();
+            if ($error[1]) {
+                throw new SQLException('[SQL ERROR] ' . $error[2] . ($schema ? ' in model class:' . $schema->getModelClass() : ''));
+            }
+            return;
         }
 
         //try to findout whatever query is fetchable or not

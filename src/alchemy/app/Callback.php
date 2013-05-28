@@ -8,28 +8,28 @@
  */
 namespace alchemy\app;
 
-class ResourceException extends \Exception {}
-class ResourceNoCallableException extends ResourceException {}
-class Resource 
+class CallbackException extends \Exception {}
+class CallbackNotExistsException extends CallbackException {}
+class Callback
 {
     /**
-     * Creates callable resource from given string, array or closure.
+     * Creates callable object from given string, array or closure.
      * Both string and array can contain bindable values ex.
-     *      MyInstance::{$methodName}
-     *      {$functionName}
-     *      array ("ClassName", "{$method}"
+     *      MyInstance::${methodName}
+     *      ${functionName}
+     *      array ("ClassName", "${method}"
      * 
      * Than you can bind the parameters through the Resource::bindParameters
-     * Resource::bindParameters(array('method' => 'myMethod'))
+     * Callback::bindParameters(array('method' => 'myMethod'))
      *
      * Creating a callable object's method call
-     * $resource = new Resource("MyClass->myFunction");
+     * $callback = new Resource("MyClass->myFunction");
      *
      * Creating a callable static method call
-     * $resource = new Resource("MyClass::myFunction");
+     * $callback = new Resource("MyClass::myFunction");
      *
      * @param mixed $callable callable string, array or closure
-     * @throws ResourceException when wrong parameter passed
+     * @throws CallbackException when wrong parameter passed
      */
     public function __construct($callable)
     {
@@ -61,7 +61,7 @@ class Resource
             }
             
         } else {
-            throw new ResourceException('Expected argument to be string, closure or array,' . gettype($callable) . ' given');
+            throw new CallbackException('Expected argument to be string, closure or array,' . gettype($callable) . ' given');
         }
         
     }
@@ -141,27 +141,36 @@ class Resource
         return $this->resource;
     }
 
+    public function setArguments(array $args)
+    {
+        $this->arguments = $args;
+    }
+
     public function call(/** mutable **/)
     {
         $className = $this->getClassName();
         $functionName = $this->getFunctionName();
+        $args = func_get_args();
+        if (empty($args)) {
+            $args = $this->arguments;
+        }
 
         if ($this->isObject()) {
             if (!class_exists($className)) {
-                throw new ResourceNoCallableException('Class ' . $className . ' does not exists');
+                throw new CallbackNotExistsException('Class ' . $className . ' does not exists');
             }
             $object = new $className();
             if (!method_exists($object, $functionName)) {
-                throw new ResourceNoCallableException('Object ' . $className . ' has not got method ' . $functionName);
+                throw new CallbackNotExistsException('Object ' . $className . ' has not got method ' . $functionName);
             }
-            return call_user_func_array(array($object, $functionName), func_get_args());
+            return call_user_func_array(array($object, $functionName), $args);
         }
 
         if (!is_callable($this->resource)) {
-            throw new ResourceNoCallableException('Non callable resource');
+            throw new CallbackNotExistsException('Non callable resource');
         }
 
-        return call_user_func($this->resource, func_get_args());
+        return call_user_func($this->resource, $args);
     }
 
     private function bindString($string, $parameters)
@@ -170,7 +179,7 @@ class Resource
         if (strstr($string, '$') === false) {
             return $string;
         }
-        preg_match_all('#(\{\$([a-z0-9\-]+)\})#is', $string, $matches);
+        preg_match_all('#(\$\{([a-z0-9\-]+)\})#is', $string, $matches);
 
         $length = count($matches[0]);
         for ($i = 0; $i < $length; $i++) {
@@ -186,13 +195,11 @@ class Resource
     const INSTANCE_METHOD_SEPARATOR = '->';
     const CLASS_METHOD_SEPARATOR = '::';
 
-    private $parameters = array();
-    private $callable;
     private $className;
     private $functionName;
     private $isObject = false;
     private $isClosure = false;
     private $isFunction = false;
     private $resource;
-    private $parsedResource;
+    private $arguments = array();
 }

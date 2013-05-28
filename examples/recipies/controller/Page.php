@@ -1,6 +1,8 @@
 <?php
 namespace app\controller;
 use alchemy\app\ApplicationResourceNotFoundException;
+use alchemy\future\app\Router;
+use alchemy\future\app\router\Route;
 use app\model\Recipe as RecipeModel;
 use app\model\Recipe;
 use app\model\Setup;
@@ -32,6 +34,7 @@ class Page extends BaseController
         $view = new IndexView();
         echo $view;
     }
+
 
     public function addrecipeAction()
     {

@@ -1,7 +1,7 @@
 <?php
 namespace app\model;
 
-use alchemy\storage\db\Model;
+use alchemy\storage\Model;
 
 
 /**
@@ -15,6 +15,9 @@ class Recipe extends Model
 
     public static function onLoad()
     {
+        //get all ingredients
+        self::$avaibleIngredients = Ingredient::find();
+
         $data = self::query('SELECT recipe_id, ingredient_id FROM recipe_has_ingredient');
         if ($data) {
             foreach ($data as $i) {
@@ -24,9 +27,6 @@ class Recipe extends Model
                 self::$recipeHasIngredient[$i['recipe_id']][] = $i['ingredient_id'];
             }
         }
-
-        //get all ingredients
-        self::$avaibleIngredients = Ingredient::find();
     }
 
     /**
@@ -115,6 +115,7 @@ class Recipe extends Model
      * @param(type=number)
      */
     protected $updated_on;
+
 
     protected $ingredients = array();
 

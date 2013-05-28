@@ -1,14 +1,14 @@
 <?php
 namespace app\model;
 
-use alchemy\storage\db\Model;
+use alchemy\storage\Model;
 
 class SetupException extends \Exception {}
 
 /**
  * Class Setup
  * @package app\model
-
+ * @pk none
  * @collection virtual
  */
 class Setup extends Model
@@ -22,7 +22,8 @@ class Setup extends Model
             recipe_id INTEGER PRIMARY KEY AUTOINCREMENT,
             title VARCHAR(255),
             description TEXT,
-            created_on INTEGER
+            created_on INTEGER,
+            updated_on INTEGER
         )')) {
             throw new SetupException('COULD NOT CREATE TABLE: recipe');
         }

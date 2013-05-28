@@ -44,7 +44,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         
         $router = new Router();
         $router->setURI('sample:separator');
-        $router->addResource('{$resource}:{$action}', '{$resource}->{$action}');
+        $router->addResource('{$resource}:{$action}', '${resource}->${action}');
 
         $resource = $router->getResource();
 
