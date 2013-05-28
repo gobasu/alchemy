@@ -14,6 +14,7 @@ What differs this framework from others:
 - It does not try force on you to use predefined dir structure you may not like or don't want to have.
 - It does not mix framework files with your application files
 - Say no to intricate configurations and setups, alchemy requires no configuration
+- One file framework (starting from version 0.9.6 whole framework will be also realeased in one file version, check [here](/releases))
 
 
 List of contents
