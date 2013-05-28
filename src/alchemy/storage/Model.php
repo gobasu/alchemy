@@ -175,7 +175,7 @@ abstract class Model extends EventDispatcher
     {
         $storage = self::getStorage();
         if (!method_exists($storage, 'query')) {
-            throw new ModelException(get_class($connection) . ' does not support custom queries');
+            throw new ModelException(get_class($storage) . ' does not support custom queries');
         }
         return call_user_func_array(array($storage, 'query'), func_get_args());
     }

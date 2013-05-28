@@ -83,15 +83,18 @@ class Image
         switch ($this->type) {
             case self::IMAGE_JPG: {
                 $this->image = imagecreatefromjpeg($this->file);
+                $this->mimeType = 'image/jpeg';
                 break;
             }
             case self::IMAGE_GIF: {
                 $this->image = imagecreatefromgif($this->file);
+                $this->mimeType = 'image/gif';
                 if ($this->transparency) $this->preserveTransparency($this->image);
                 break;
             }
             case self::IMAGE_PNG: {
                 $this->image = imagecreatefrompng($this->file);
+                $this->mimeType = 'image/png';
                 if ($this->transparency) $this->preserveTransparency($this->image);
                 break;
             }
@@ -100,6 +103,25 @@ class Image
         $this->currentWidth = $size[0];
         $this->currentHeight = $size[1];
 
+    }
+
+    public function getExtension()
+    {
+        switch ($this->type) {
+            case self::IMAGE_BMP:
+                return 'bmp';
+            case self::IMAGE_GIF:
+                return 'gif';
+            case self::IMAGE_JPG:
+                return 'jpg';
+            case self::IMAGE_PNG:
+                return 'png';
+        }
+    }
+
+    public function getMimeType()
+    {
+        return $this->mimeType;
     }
 
     public function __destruct()
@@ -419,6 +441,7 @@ class Image
     protected $file;
     protected $type;
     protected $image;
+    protected $mimeType;
     private $transparency = true;
 
     const IMAGE_PNG = 1;
